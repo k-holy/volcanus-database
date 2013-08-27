@@ -1,0 +1,21 @@
+{
+    "name": "volcanus/database",
+    "homepage": "https://github.com/k-holy/volcanus-database",
+    "type": "library",
+    "description": "database abstraction layer",
+    "version": "0.1.0",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "k-holy",
+            "email": "k.holy74@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-0": { "Volcanus\\Database": "" }
+    },
+    "target-dir": "Volcanus/Database"
+    "require": {
+        "php": ">=5.3.3"
+    }
+}
