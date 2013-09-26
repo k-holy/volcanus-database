@@ -57,6 +57,16 @@ class Column implements \ArrayAccess, \IteratorAggregate
 	private $primaryKey;
 
 	/**
+	 * @var bool UNIQUE KEYかどうか
+	 */
+	private $uniqueKey;
+
+	/**
+	 * @var bool AUTO INCREMENTかどうか
+	 */
+	private $autoIncrement;
+
+	/**
 	 * @var string コメント
 	 */
 	private $comment;

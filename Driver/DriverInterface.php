@@ -32,6 +32,13 @@ interface DriverInterface
 	public function disconnect();
 
 	/**
+	 * DBと接続中かどうかを返します。
+	 *
+	 * @return bool
+	 */
+	public function connected();
+
+	/**
 	 * SQL実行準備を行い、ステートメントオブジェクトを返します。
 	 *
 	 * @string SQL
