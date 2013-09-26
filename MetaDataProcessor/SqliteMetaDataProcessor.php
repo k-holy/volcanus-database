@@ -85,6 +85,7 @@ class SqliteMetaDataProcessor implements MetaDataProcessorInterface
 			}
 			$column->notNull = (bool)$cols[3];
 			$column->primaryKey = (bool)$cols[5];
+			$column->autoIncrement = ($column->primaryKey && strcasecmp($column->type, 'INTEGER') === 0);
 			$column->binary = (strcasecmp($column->type, 'BLOB') === 0);
 			if (!$column->binary && strcmp($cols[4], '') !== 0 && strcasecmp($cols[4], 'NULL') !== 0) {
 				$column->default = $cols[4];

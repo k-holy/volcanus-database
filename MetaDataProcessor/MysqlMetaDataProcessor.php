@@ -89,6 +89,8 @@ class MysqlMetaDataProcessor implements MetaDataProcessorInterface
 			}
 			$column->notNull = ($cols['Null'] !== 'YES');
 			$column->primaryKey = ($cols['Key'] === 'PRI');
+			$column->uniqueKey = ($cols['Key'] === 'UNI');
+			$column->autoIncrement  = (strpos($cols['Extra'], 'auto_increment') !== false);
 			$column->binary = (strpos($cols['Type'],'blob') !== false);
 			if (!$column->binary && strcmp($cols['Default'], '') !== 0 && strcasecmp($cols['Default'], 'NULL') !== 0) {
 				$column->default = $cols['Default'];

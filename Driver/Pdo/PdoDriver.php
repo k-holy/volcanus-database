@@ -78,6 +78,16 @@ class PdoDriver implements DriverInterface
 	}
 
 	/**
+	 * DBと接続中かどうかを返します。
+	 *
+	 * @return bool
+	 */
+	public function connected()
+	{
+		return isset($this->pdo);
+	}
+
+	/**
 	 * SQL実行準備を行い、ステートメントオブジェクトを返します。
 	 *
 	 * @param string SQL
