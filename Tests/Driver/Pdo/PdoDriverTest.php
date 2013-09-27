@@ -20,7 +20,6 @@ class PdoDriverTest extends \PHPUnit_Framework_TestCase
 {
 
 	private static $pdo;
-	private static $metaDataProcessor;
 
 	public function tearDown()
 	{
@@ -41,14 +40,6 @@ SQL
 			);
 		}
 		return static::$pdo;
-	}
-
-	public function getMetaDataProcessor()
-	{
-		if (!isset(static::$metaDataProcessor)) {
-			static::$metaDataProcessor = new SqliteMetaDataProcessor();
-		}
-		return static::$metaDataProcessor;
 	}
 
 	public function testConnect()
@@ -144,7 +135,7 @@ SQL
 
 	public function testGetMetaTables()
 	{
-		$driver = new PdoDriver($this->getPdo(), $this->getMetaDataProcessor());
+		$driver = new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor());
 		$tables = $driver->getMetaTables();
 		$this->assertArrayHasKey('test', $tables);
 		$this->assertInstanceOf('\Volcanus\Database\Table', $tables['test']);
@@ -152,7 +143,7 @@ SQL
 
 	public function testGetMetaColumns()
 	{
-		$driver = new PdoDriver($this->getPdo(), $this->getMetaDataProcessor());
+		$driver = new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor());
 		$columns = $driver->getMetaColumns('test');
 		$this->assertArrayHasKey('id'  , $columns);
 		$this->assertArrayHasKey('name', $columns);
@@ -176,6 +167,13 @@ SQL
 	{
 		$driver = new PdoDriver($this->getPdo());
 		$driver->getMetaColumns('test');
+	}
+
+	public function testQuote()
+	{
+		$driver = new PdoDriver($this->getPdo());
+		$this->assertEquals("'Foo'", $driver->quote('Foo'));
+		$this->assertEquals("'''Foo'''", $driver->quote("'Foo'"));
 	}
 
 }

@@ -206,4 +206,15 @@ class PdoDriver implements DriverInterface
 		);
 	}
 
+	/**
+	 * 文字列を引用符で適切にクォートして返します。
+	 *
+	 * @param string クォートしたい値
+	 * @return string クォート結果の文字列
+	 */
+	public function quote($value)
+	{
+		return $this->pdo->quote($value, \PDO::PARAM_STR);
+	}
+
 }
