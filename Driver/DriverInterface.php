@@ -19,10 +19,10 @@ interface DriverInterface
 	/**
 	 * DBに接続します。
 	 *
-	 * @param string DSN
-	 * @return $this
+	 * @param mixed DSN、コネクションリソース等 (Driverクラス依存)
+	 * @return self
 	 */
-	public function connect($dsn);
+	public function connect($resource);
 
 	/**
 	 * DBとの接続を解放します。
@@ -60,6 +60,13 @@ interface DriverInterface
 	 * @string SQL
 	 */
 	public function execute($query);
+
+	/**
+	 * 最後に発行(prepare/query/execute)したクエリを返します。
+	 *
+	 * @return string
+	 */
+	public function getLastQuery();
 
 	/**
 	 * 最後に発生したエラーを返します。

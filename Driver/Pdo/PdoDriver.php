@@ -8,8 +8,6 @@
 
 namespace Volcanus\Database\Driver\Pdo;
 
-use Volcanus\Database\Database;
-use Volcanus\Database\Column;
 use Volcanus\Database\Driver\DriverInterface;
 use Volcanus\Database\MetaDataProcessor\MetaDataProcessorInterface;
 
@@ -27,6 +25,11 @@ class PdoDriver implements DriverInterface
 	private $pdo;
 
 	/**
+	 * @var string LastQuery
+	 */
+	private $lastQuery;
+
+	/**
 	 * @var \Volcanus\Database\MetaDataProcessorInterface
 	 */
 	private $metaDataProcessor;
@@ -40,13 +43,23 @@ class PdoDriver implements DriverInterface
 	public function __construct(\PDO $pdo = null, MetaDataProcessorInterface $metaDataProcessor = null)
 	{
 		$this->pdo = null;
-		$this->queryBuilder = null;
+		$this->lastQuery = null;
 		if (isset($pdo)) {
 			$this->connect($pdo);
 		}
 		if (isset($metaDataProcessor)) {
-			$this->metaDataProcessor = $metaDataProcessor;
+			$this->setMetaDataProcessor($metaDataProcessor);
 		}
+	}
+
+	/**
+	 * メタデータプロセッサをセットします。
+	 *
+	 * @param \Volcanus\Database\MetaDataProcessorInterface
+	 */
+	public function setMetaDataProcessor(MetaDataProcessorInterface $metaDataProcessor)
+	{
+		$this->metaDataProcessor = $metaDataProcessor;
 	}
 
 	/**
@@ -95,6 +108,7 @@ class PdoDriver implements DriverInterface
 	 */
 	public function prepare($query)
 	{
+		$this->lastQuery = $query;
 		return new PdoStatement($this->pdo->prepare($query));
 	}
 
@@ -106,6 +120,7 @@ class PdoDriver implements DriverInterface
 	 */
 	public function query($query)
 	{
+		$this->lastQuery = $query;
 		return new PdoStatement($this->pdo->query($query));
 	}
 
@@ -117,7 +132,18 @@ class PdoDriver implements DriverInterface
 	 */
 	public function execute($query)
 	{
+		$this->lastQuery = $query;
 		return $this->pdo->exec($query);
+	}
+
+	/**
+	 * 最後に発行(prepare/query/execute)したクエリを返します。
+	 *
+	 * @return string
+	 */
+	public function getLastQuery()
+	{
+		return $this->lastQuery;
 	}
 
 	/**
@@ -148,10 +174,15 @@ class PdoDriver implements DriverInterface
 	 */
 	public function getMetaTables()
 	{
+		if (!isset($this->metaDataProcessor)) {
+			throw new \RuntimeException(
+				'metaDataProcessor is not set'
+			);
+		}
 		return $this->metaDataProcessor->getMetaTables(
-			new PdoStatement($this->pdo->query(
+			$this->query(
 				$this->metaDataProcessor->metaTablesQuery()
-			))
+			)
 		);
 	}
 
@@ -163,10 +194,15 @@ class PdoDriver implements DriverInterface
 	 */
 	public function getMetaColumns($table)
 	{
+		if (!isset($this->metaDataProcessor)) {
+			throw new \RuntimeException(
+				'metaDataProcessor is not set'
+			);
+		}
 		return $this->metaDataProcessor->getMetaColumns(
-			new PdoStatement($this->pdo->query(
+			$this->query(
 				$this->metaDataProcessor->metaColumnsQuery($table)
-			))
+			)
 		);
 	}
 
