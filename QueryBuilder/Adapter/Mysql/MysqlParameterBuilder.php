@@ -55,7 +55,7 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 	/**
 	 * 値を可変長/固定長文字列を表すSQLパラメータ値に変換します。
 	 *
-	 * @param string 値
+	 * @param mixed 値
 	 * @return string 変換結果
 	 */
 	public function toText($value)
@@ -72,7 +72,7 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 	/**
 	 * 値を数値を表すSQLパラメータ値に変換します。
 	 *
-	 * @param string 値
+	 * @param mixed 値
 	 * @param string 型名 ($typesフィールド参照)
 	 * @return string 変換結果
 	 */
@@ -95,7 +95,7 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 	/**
 	 * 値を浮動小数点数を表すSQLパラメータ値に変換します。
 	 *
-	 * @param string 値
+	 * @param mixed 値
 	 * @param string 型名 ($typesフィールド参照)
 	 * @return string 変換結果
 	 */
@@ -125,7 +125,7 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 	/**
 	 * 値を真偽値を表すSQLパラメータ値に変換します。
 	 *
-	 * @param string 値
+	 * @param mixed 値
 	 * @return string 変換結果
 	 */
 	public function toBool($value)
@@ -150,7 +150,7 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 	/**
 	 * 値を日付を表すSQLパラメータ値に変換します。
 	 *
-	 * @param string 値
+	 * @param mixed 値 int | DateTime | string | array
 	 * @return string 変換結果
 	 */
 	public function toDate($value)
@@ -164,7 +164,7 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 				. '%d';
 
 		// Unix Timestamp
-		if (is_int($value) || is_float($value)) {
+		if (is_int($value)) {
 			$value = new \DateTime(sprintf('@%d', $value));
 			$value->setTimezone(new \DateTimeZone(date_default_timezone_get()));
 		}
@@ -211,24 +211,32 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 			return sprintf("STR_TO_DATE('%s', '%s')", $value, $format);
 		}
 
-		if (!isset($value[0])) {
-			return 'NULL';
+		// array
+		if (is_array($value)) {
+			if (!isset($value[0])) {
+				return 'NULL';
+			}
+			return sprintf("STR_TO_DATE('%04d%s%02d%s%02d', '%s')",
+				(int)$value[0],
+				static::$dateDelimiter,
+				(isset($value[1]) && $value[1] !== '') ? (int)$value[1] : 1,
+				static::$dateDelimiter,
+				(isset($value[2]) && $value[2] !== '') ? (int)$value[2] : 1,
+				$format
+			);
 		}
 
-		return sprintf("STR_TO_DATE('%04d%s%02d%s%02d', '%s')",
-			(int)$value[0],
-			static::$dateDelimiter,
-			(isset($value[1]) && $value[1] !== '') ? (int)$value[1] : 1,
-			static::$dateDelimiter,
-			(isset($value[2]) && $value[2] !== '') ? (int)$value[2] : 1,
-			$format
+		throw new \InvalidArgumentException(
+			sprintf('The value is invalid toDate(), type:%s',
+				(is_object($value)) ? get_class($value) : gettype($value)
+			)
 		);
 	}
 
 	/**
 	 * 値を日時を表すSQLパラメータ値に変換します。
 	 *
-	 * @param string 値
+	 * @param mixed 値 int | DateTime | string | array
 	 * @return string 変換結果
 	 */
 	public function toTimestamp($value)
@@ -245,7 +253,7 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 				. '%s';
 
 		// Unix Timestamp
-		if (is_int($value) || is_float($value)) {
+		if (is_int($value)) {
 			$value = new \DateTime(sprintf('@%d', $value));
 			$value->setTimezone(new \DateTimeZone(date_default_timezone_get()));
 		}
@@ -305,30 +313,38 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 			return sprintf("STR_TO_DATE('%s', '%s')", $value, $format);
 		}
 
-		if (!isset($value[0])) {
-			return 'NULL';
+		// array
+		if (is_array($value)) {
+			if (!isset($value[0])) {
+				return 'NULL';
+			}
+			return sprintf("STR_TO_DATE('%04d%s%02d%s%02d%s%02d%s%02d%s%02d', '%s')",
+				(int)$value[0],
+				static::$dateDelimiter,
+				(isset($value[1]) && $value[1] !== '') ? (int)$value[1] : 1,
+				static::$dateDelimiter,
+				(isset($value[2]) && $value[2] !== '') ? (int)$value[2] : 1,
+				static::$dateTimeDelimiter,
+				(isset($value[3]) && $value[3] !== '') ? (int)$value[3] : 0,
+				static::$timeDelimiter,
+				(isset($value[4]) && $value[4] !== '') ? (int)$value[4] : 0,
+				static::$timeDelimiter,
+				(isset($value[5]) && $value[5] !== '') ? (int)$value[5] : 0,
+				$format
+			);
 		}
 
-		return sprintf("STR_TO_DATE('%04d%s%02d%s%02d%s%02d%s%02d%s%02d', '%s')",
-			(int)$value[0],
-			static::$dateDelimiter,
-			(isset($value[1]) && $value[1] !== '') ? (int)$value[1] : 1,
-			static::$dateDelimiter,
-			(isset($value[2]) && $value[2] !== '') ? (int)$value[2] : 1,
-			static::$dateTimeDelimiter,
-			(isset($value[3]) && $value[3] !== '') ? (int)$value[3] : 0,
-			static::$timeDelimiter,
-			(isset($value[4]) && $value[4] !== '') ? (int)$value[4] : 0,
-			static::$timeDelimiter,
-			(isset($value[5]) && $value[5] !== '') ? (int)$value[5] : 0,
-			$format
+		throw new \InvalidArgumentException(
+			sprintf('The value is invalid toTimestamp(), type:%s',
+				(is_object($value)) ? get_class($value) : gettype($value)
+			)
 		);
 	}
 
 	/**
 	 * 値をTINYINT型を表すSQLパラメータ値に変換します。
 	 *
-	 * @param string 値
+	 * @param mixed 値
 	 * @return string 変換結果
 	 */
 	public function toTinyInt($value)
@@ -339,7 +355,7 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 	/**
 	 * 値をSMALLINT型を表すSQLパラメータ値に変換します。
 	 *
-	 * @param string 値
+	 * @param mixed 値
 	 * @return string 変換結果
 	 */
 	public function toSmallInt($value)
@@ -350,7 +366,7 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 	/**
 	 * 値をMEDIUMINT型を表すSQLパラメータ値に変換します。
 	 *
-	 * @param string 値
+	 * @param mixed 値
 	 * @return string 変換結果
 	 */
 	public function toMediumInt($value)
@@ -361,7 +377,7 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 	/**
 	 * 値をBIGINT型を表すSQLパラメータ値に変換します。
 	 *
-	 * @param string 値
+	 * @param mixed 値
 	 * @return string 変換結果
 	 */
 	public function toBigInt($value)

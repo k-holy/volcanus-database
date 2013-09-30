@@ -378,6 +378,17 @@ class MysqlParameterBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals('NULL', $builder->ToDate(''));
 	}
 
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testToDateRaiseExceptionWhenInvalidValue()
+	{
+		$builder = new MysqlParameterBuilder(
+			new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor())
+		);
+		$builder->ToDate(new \stdClass());
+	}
+
 	public function testToTimestampString()
 	{
 		$builder = new MysqlParameterBuilder(
@@ -457,6 +468,17 @@ class MysqlParameterBuilderTest extends \PHPUnit_Framework_TestCase
 			new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor())
 		);
 		$this->assertEquals('NULL', $builder->toTimestamp(''));
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testToTimestampRaiseExceptionWhenInvalidValue()
+	{
+		$builder = new MysqlParameterBuilder(
+			new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor())
+		);
+		$builder->toTimestamp(new \stdClass());
 	}
 
 	public function testToBool()

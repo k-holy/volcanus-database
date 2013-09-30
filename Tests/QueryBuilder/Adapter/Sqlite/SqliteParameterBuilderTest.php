@@ -308,6 +308,17 @@ class SqliteParameterBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals('NULL', $builder->ToDate(''));
 	}
 
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testToDateRaiseExceptionWhenInvalidValue()
+	{
+		$builder = new SqliteParameterBuilder(
+			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
+		);
+		$builder->ToDate(new \stdClass());
+	}
+
 	public function testToTimestampString()
 	{
 		$builder = new SqliteParameterBuilder(
@@ -387,6 +398,17 @@ class SqliteParameterBuilderTest extends \PHPUnit_Framework_TestCase
 			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
 		);
 		$this->assertEquals('NULL', $builder->toTimestamp(''));
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testToTimestampRaiseExceptionWhenInvalidValue()
+	{
+		$builder = new SqliteParameterBuilder(
+			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
+		);
+		$builder->toTimestamp(new \stdClass());
 	}
 
 	public function testToBool()
