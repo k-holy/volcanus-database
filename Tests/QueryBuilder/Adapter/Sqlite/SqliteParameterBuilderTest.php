@@ -6,11 +6,11 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database\Tests\QueryBuilder\ParameterBuilder;
+namespace Volcanus\Database\Tests\QueryBuilder\Adapter\Sqlite;
 
-use Volcanus\Database\QueryBuilder\ParameterBuilder\SqliteParameterBuilder;
-use Volcanus\Database\QueryBuilder\ParameterBuilder\ParameterBuilderInterface;
 use Volcanus\Database\QueryBuilder\QueryBuilder;
+use Volcanus\Database\QueryBuilder\Adapter\Sqlite\SqliteParameterBuilder;
+
 use Volcanus\Database\Driver\Pdo\PdoDriver;
 use Volcanus\Database\MetaDataProcessor\SqliteMetaDataProcessor;
 
@@ -30,65 +30,6 @@ class SqliteParameterBuilderTest extends \PHPUnit_Framework_TestCase
 			static::$pdo = new \PDO('sqlite::memory:');
 		}
 		return static::$pdo;
-	}
-
-	public function testParameterTypeOfText()
-	{
-		$builder = new SqliteParameterBuilder(
-			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
-		);
-		$this->assertEquals('text', $builder->parameterType('char'));
-		$this->assertEquals('text', $builder->parameterType('varchar'));
-		$this->assertEquals('text', $builder->parameterType('character'));
-		$this->assertEquals('text', $builder->parameterType('varying character'));
-		$this->assertEquals('text', $builder->parameterType('nchar'));
-		$this->assertEquals('text', $builder->parameterType('native character'));
-		$this->assertEquals('text', $builder->parameterType('nvarchar'));
-		$this->assertEquals('text', $builder->parameterType('text'));
-		$this->assertEquals('text', $builder->parameterType('clob'));
-	}
-
-	public function testParameterTypeOfInt()
-	{
-		$builder = new SqliteParameterBuilder(
-			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
-		);
-		$this->assertEquals('int', $builder->parameterType('int'));
-		$this->assertEquals('int', $builder->parameterType('integer'));
-		$this->assertEquals('int', $builder->parameterType('tinyint'));
-		$this->assertEquals('int', $builder->parameterType('smallint'));
-		$this->assertEquals('int', $builder->parameterType('mediumint'));
-		$this->assertEquals('int', $builder->parameterType('bigint'));
-		$this->assertEquals('int', $builder->parameterType('int2'));
-		$this->assertEquals('int', $builder->parameterType('int4'));
-		$this->assertEquals('int', $builder->parameterType('int8'));
-	}
-
-	public function testParameterTypeOfFloat()
-	{
-		$builder = new SqliteParameterBuilder(
-			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
-		);
-		$this->assertEquals('float', $builder->parameterType('real'));
-		$this->assertEquals('float', $builder->parameterType('double'));
-		$this->assertEquals('float', $builder->parameterType('float'));
-	}
-
-	public function testParameterTypeOfDate()
-	{
-		$builder = new SqliteParameterBuilder(
-			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
-		);
-		$this->assertEquals('date', $builder->parameterType('date'));
-	}
-
-	public function testParameterTypeOfTimestamp()
-	{
-		$builder = new SqliteParameterBuilder(
-			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
-		);
-		$this->assertEquals('timestamp', $builder->parameterType('timestamp'));
-		$this->assertEquals('timestamp', $builder->parameterType('datetime'));
 	}
 
 	public function testToText()
@@ -156,6 +97,96 @@ class SqliteParameterBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals('NULL', $builder->toInt(''));
 	}
 
+	public function testToSmallInt()
+	{
+		$builder = new SqliteParameterBuilder(
+			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
+		);
+		$this->assertEquals('1', $builder->toInt(1, 'smallint'));
+		$this->assertEquals('1', $builder->toInt(1, 'int2'));
+	}
+
+	public function testToSmallIntMin()
+	{
+		$builder = new SqliteParameterBuilder(
+			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
+		);
+		$this->assertEquals('-32768', $builder->toInt(QueryBuilder::MIN, 'smallint'));
+		$this->assertEquals('-32768', $builder->toInt(QueryBuilder::MIN, 'int2'));
+	}
+
+	public function testToSmallIntMax()
+	{
+		$builder = new SqliteParameterBuilder(
+			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
+		);
+		$this->assertEquals('32767', $builder->toInt(QueryBuilder::MAX, 'smallint'));
+		$this->assertEquals('32767', $builder->toInt(QueryBuilder::MAX, 'int2'));
+	}
+
+	public function testToSmallIntNull()
+	{
+		$builder = new SqliteParameterBuilder(
+			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
+		);
+		$this->assertEquals('NULL', $builder->toInt(null, 'smallint'));
+		$this->assertEquals('NULL', $builder->toInt(null, 'int2'));
+	}
+
+	public function testToSmallIntEmptyString()
+	{
+		$builder = new SqliteParameterBuilder(
+			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
+		);
+		$this->assertEquals('NULL', $builder->toInt('', 'smallint'));
+		$this->assertEquals('NULL', $builder->toInt('', 'int2'));
+	}
+
+	public function testToBigInt()
+	{
+		$builder = new SqliteParameterBuilder(
+			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
+		);
+		$this->assertEquals('1', $builder->toInt(1, 'bigint'));
+		$this->assertEquals('1', $builder->toInt(1, 'int8'));
+	}
+
+	public function testToBigIntMin()
+	{
+		$builder = new SqliteParameterBuilder(
+			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
+		);
+		$this->assertEquals('-9223372036854775808', $builder->toInt(QueryBuilder::MIN, 'bigint'));
+		$this->assertEquals('-9223372036854775808', $builder->toInt(QueryBuilder::MIN, 'int8'));
+	}
+
+	public function testToBigIntMax()
+	{
+		$builder = new SqliteParameterBuilder(
+			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
+		);
+		$this->assertEquals('9223372036854775807', $builder->toInt(QueryBuilder::MAX, 'bigint'));
+		$this->assertEquals('9223372036854775807', $builder->toInt(QueryBuilder::MAX, 'int8'));
+	}
+
+	public function testToBigIntNull()
+	{
+		$builder = new SqliteParameterBuilder(
+			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
+		);
+		$this->assertEquals('NULL', $builder->toInt(null, 'bigint'));
+		$this->assertEquals('NULL', $builder->toInt(null, 'int8'));
+	}
+
+	public function testToBigIntEmptyString()
+	{
+		$builder = new SqliteParameterBuilder(
+			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
+		);
+		$this->assertEquals('NULL', $builder->toInt('', 'bigint'));
+		$this->assertEquals('NULL', $builder->toInt('', 'int8'));
+	}
+
 	public function testToFloat()
 	{
 		$builder = new SqliteParameterBuilder(
@@ -219,6 +250,22 @@ class SqliteParameterBuilderTest extends \PHPUnit_Framework_TestCase
 			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
 		);
 		$this->assertEquals("date('2013-01-02')", $builder->ToDate(array(2013, 1, 2)));
+	}
+
+	public function testToDateForDateTime()
+	{
+		$builder = new SqliteParameterBuilder(
+			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
+		);
+		$this->assertEquals("date('2013-01-02')", $builder->ToDate(new \DateTime('2013-01-02')));
+	}
+
+	public function testToDateForUnixTimestamp()
+	{
+		$builder = new SqliteParameterBuilder(
+			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
+		);
+		$this->assertEquals("date('2013-01-02')", $builder->ToDate(mktime(0, 0, 0, 1, 2, 2013)));
 	}
 
 	public function testToDateMin()
@@ -286,6 +333,22 @@ class SqliteParameterBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals("datetime('2013-01-02 03:04:05')", $builder->toTimestamp(array(2013, 1, 2, 3, 4, 5)));
 	}
 
+	public function testToTimestampForDateTime()
+	{
+		$builder = new SqliteParameterBuilder(
+			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
+		);
+		$this->assertEquals("datetime('2013-01-02 03:04:05')", $builder->toTimestamp(new \DateTime('2013-01-02 03:04:05')));
+	}
+
+	public function testToTimestampForUnixTimestamp()
+	{
+		$builder = new SqliteParameterBuilder(
+			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
+		);
+		$this->assertEquals("datetime('2013-01-02 03:04:05')", $builder->toTimestamp(mktime(3, 4, 5, 1, 2, 2013)));
+	}
+
 	public function testToTimestampMin()
 	{
 		$builder = new SqliteParameterBuilder(
@@ -326,52 +389,47 @@ class SqliteParameterBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals('NULL', $builder->toTimestamp(''));
 	}
 
-	public function testToInt2()
+	public function testToBool()
 	{
 		$builder = new SqliteParameterBuilder(
 			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
 		);
-		$this->assertEquals('1', $builder->toInt2(1));
+		$this->assertEquals('1', $builder->toBool(1));
+		$this->assertEquals('0', $builder->toBool(0));
+		$this->assertEquals('1', $builder->toBool(true));
+		$this->assertEquals('0', $builder->toBool(false));
 	}
 
-	public function testToInt2Min()
+	public function testToBoolMin()
 	{
 		$builder = new SqliteParameterBuilder(
 			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
 		);
-		$this->assertEquals('-32768', $builder->toInt2(QueryBuilder::MIN));
+		$this->assertEquals('0', $builder->toBool(QueryBuilder::MIN));
 	}
 
-	public function testToInt2Max()
+	public function testToBoolMax()
 	{
 		$builder = new SqliteParameterBuilder(
 			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
 		);
-		$this->assertEquals('32767', $builder->toInt2(QueryBuilder::MAX));
+		$this->assertEquals('1', $builder->toBool(QueryBuilder::MAX));
 	}
 
-	public function testToInt8()
+	public function testToBoolNull()
 	{
 		$builder = new SqliteParameterBuilder(
 			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
 		);
-		$this->assertEquals('1', $builder->toInt8(1));
+		$this->assertEquals('NULL', $builder->toBool(null));
 	}
 
-	public function testToInt8Min()
+	public function testToBoolEmptyString()
 	{
 		$builder = new SqliteParameterBuilder(
 			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
 		);
-		$this->assertEquals('-9223372036854775808', $builder->toInt8(QueryBuilder::MIN));
-	}
-
-	public function testToInt8Max()
-	{
-		$builder = new SqliteParameterBuilder(
-			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
-		);
-		$this->assertEquals('9223372036854775807', $builder->toInt8(QueryBuilder::MAX));
+		$this->assertEquals('NULL', $builder->toBool(''));
 	}
 
 }

@@ -6,14 +6,14 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database\QueryBuilder\ParameterBuilder;
+namespace Volcanus\Database\QueryBuilder;
 
 /**
- * パラメータビルダ抽象クラス
+ * クエリビルダ抽象クラス
  *
  * @author k_horii@rikcorp.jp
  */
-abstract class AbstractParameterBuilder
+abstract class AbstractQueryBuilder
 {
 
 	/**
@@ -49,12 +49,12 @@ abstract class AbstractParameterBuilder
 			);
 		}
 		$methodName = 'to' . ucfirst($sqlType);
-		if (!method_exists($this, $methodName)) {
+		if (!method_exists($this->parameterBuilder, $methodName)) {
 			throw new \RuntimeException(
 				sprintf('Method not exists, Unsupported type:"%s"', $type)
 			);
 		}
-		return $this->$methodName($value, $type);
+		return $this->parameterBuilder->$methodName($value, $type);
 	}
 
 }

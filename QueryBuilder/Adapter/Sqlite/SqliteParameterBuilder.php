@@ -6,13 +6,16 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database\QueryBuilder\ParameterBuilder;
+namespace Volcanus\Database\QueryBuilder\Adapter\Sqlite;
+
+use Volcanus\Database\QueryBuilder\ParameterBuilderInterface;
+use Volcanus\Database\QueryBuilder\AbstractParameterBuilder;
 
 use Volcanus\Database\Driver\DriverInterface;
 use Volcanus\Database\QueryBuilder\QueryBuilder;
 
 /**
- * Sqliteパラメータビルダ
+ * SQLite パラメータビルダ
  *
  * @author k_horii@rikcorp.jp
  */
@@ -33,17 +36,6 @@ class SqliteParameterBuilder extends AbstractParameterBuilder implements Paramet
 	 * @var string 日付区切符（年月日と時分秒）
 	 */
 	protected static $dateTimeDelimiter = ' ';
-
-	/**
-	 * @var array サポートするデータ型名
-	 */
-	protected static $types = array(
-		'int'       => array('int', 'integer', 'tinyint', 'smallint', 'mediumint', 'bigint', 'int2', 'int4', 'int8'),
-		'float'     => array('real', 'double', 'float'),
-		'text'      => array('char', 'varchar', 'character', 'varying character', 'nchar', 'native character', 'nvarchar', 'text', 'clob'),
-		'date'      => array('date'),
-		'timestamp' => array('timestamp', 'datetime'),
-	);
 
 	/**
 	 * @var \Volcanus\Database\Driver\DriverInterface
@@ -88,30 +80,12 @@ class SqliteParameterBuilder extends AbstractParameterBuilder implements Paramet
 	{
 		if (isset($type)) {
 			if ($type === 'smallint' || $type === 'int2') {
-				return $this->toInt2($value);
+				return parent::toInt2($value);
 			} elseif ($type === 'bigint' || $type === 'int8') {
-				return $this->toInt8($value);
+				return parent::toInt8($value);
 			}
 		}
-		if (!isset($value)) {
-			return 'NULL';
-		}
-		if (is_int($value) || is_float($value)) {
-			return sprintf('%d', $value);
-		}
-		if (is_string($value)) {
-			if (strlen($value) === 0) {
-				return 'NULL';
-			}
-			if ($value === QueryBuilder::MIN) {
-				return '-2147483648';
-			}
-			if ($value === QueryBuilder::MAX) {
-				return '2147483647';
-			}
-			return $value;
-		}
-		return (string)$value;
+		return parent::toInt4($value);
 	}
 
 	/**
@@ -145,8 +119,34 @@ class SqliteParameterBuilder extends AbstractParameterBuilder implements Paramet
 	}
 
 	/**
-	 * データを date 型を表すSQLに変換します。
-	 * @param string データ
+	 * 値を真偽値を表すSQLパラメータ値に変換します。
+	 *
+	 * @param string 値
+	 * @return string 変換結果
+	 */
+	public function toBool($value)
+	{
+		if (!isset($value)) {
+			return 'NULL';
+		}
+		if ($value === QueryBuilder::MIN) {
+			return '0';
+		}
+		if ($value === QueryBuilder::MAX) {
+			return '1';
+		}
+		if (is_string($value)) {
+			if (strlen($value) === 0) {
+				return 'NULL';
+			}
+		}
+		return sprintf('%d', (bool)$value ? 1 : 0);
+	}
+
+	/**
+	 * 値を日付を表すSQLパラメータ値に変換します。
+	 *
+	 * @param string 値
 	 * @return string 変換結果
 	 */
 	public function toDate($value)
@@ -155,6 +155,23 @@ class SqliteParameterBuilder extends AbstractParameterBuilder implements Paramet
 			return 'NULL';
 		}
 
+		// Unix Timestamp
+		if (is_int($value) || is_float($value)) {
+			$value = new \DateTime(sprintf('@%d', $value));
+			$value->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+		}
+
+		// DateTime
+		if ($value instanceof \DateTime) {
+			return sprintf("date('%s')",
+				$value->format(sprintf('Y%sm%sd',
+					static::$dateDelimiter,
+					static::$dateDelimiter
+				))
+			);
+		}
+
+		// String of a date
 		if (is_string($value)) {
 			if (strlen($value) === 0) {
 				return 'NULL';
@@ -163,10 +180,22 @@ class SqliteParameterBuilder extends AbstractParameterBuilder implements Paramet
 				return "date('now')";
 			}
 			if ($value == QueryBuilder::MIN) {
-				return "date('0000-01-01')";
+				return sprintf("date('%04d%s%02d%s%02d')",
+					0,
+					static::$dateDelimiter,
+					1,
+					static::$dateDelimiter,
+					1
+				);
 			}
 			if ($value == QueryBuilder::MAX) {
-				return "date('9999-12-31')";
+				return sprintf("date('%04d%s%02d%s%02d')",
+					9999,
+					static::$dateDelimiter,
+					12,
+					static::$dateDelimiter,
+					31
+				);
 			}
 			return sprintf("date('%s')", $value);
 		}
@@ -185,8 +214,9 @@ class SqliteParameterBuilder extends AbstractParameterBuilder implements Paramet
 	}
 
 	/**
-	 * データを timestamp 型を表すSQLに変換します。
-	 * @param string データ
+	 * 値を日時を表すSQLパラメータ値に変換します。
+	 *
+	 * @param string 値
 	 * @return string 変換結果
 	 */
 	public function toTimestamp($value)
@@ -195,6 +225,26 @@ class SqliteParameterBuilder extends AbstractParameterBuilder implements Paramet
 			return 'NULL';
 		}
 
+		// Unix Timestamp
+		if (is_int($value) || is_float($value)) {
+			$value = new \DateTime(sprintf('@%d', $value));
+			$value->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+		}
+
+		// DateTime
+		if ($value instanceof \DateTime) {
+			return sprintf("datetime('%s')",
+				$value->format(sprintf('Y%sm%sd%sH%si%ss',
+					static::$dateDelimiter,
+					static::$dateDelimiter,
+					static::$dateTimeDelimiter,
+					static::$timeDelimiter,
+					static::$timeDelimiter
+				))
+			);
+		}
+
+		// Datetime string
 		if (is_string($value)) {
 			if (strlen($value) === 0) {
 				return 'NULL';
@@ -203,10 +253,34 @@ class SqliteParameterBuilder extends AbstractParameterBuilder implements Paramet
 				return "datetime('now')";
 			}
 			if ($value == QueryBuilder::MIN) {
-				return "datetime('0000-01-01 00:00:00')";
+				return sprintf("datetime('%04d%s%02d%s%02d%s%02d%s%02d%s%02d')",
+					0,
+					static::$dateDelimiter,
+					1,
+					static::$dateDelimiter,
+					1,
+					static::$dateTimeDelimiter,
+					0,
+					static::$timeDelimiter,
+					0,
+					static::$timeDelimiter,
+					0
+				);
 			}
 			if ($value == QueryBuilder::MAX) {
-				return "datetime('9999-12-31 23:59:59')";
+				return sprintf("datetime('%04d%s%02d%s%02d%s%02d%s%02d%s%02d')",
+					9999,
+					static::$dateDelimiter,
+					12,
+					static::$dateDelimiter,
+					31,
+					static::$dateTimeDelimiter,
+					23,
+					static::$timeDelimiter,
+					59,
+					static::$timeDelimiter,
+					59
+				);
 			}
 			return "datetime('{$value}')";
 		}
@@ -228,64 +302,6 @@ class SqliteParameterBuilder extends AbstractParameterBuilder implements Paramet
 			static::$timeDelimiter,
 			(isset($value[5]) && $value[5] !== '') ? (int)$value[5] : 0
 		);
-	}
-
-	/**
-	 * 値を2ビットの数値を表すSQLパラメータ値に変換します。
-	 *
-	 * @param string 値
-	 * @return string 変換結果
-	 */
-	public function toInt2($value)
-	{
-		if (!isset($value)) {
-			return 'NULL';
-		}
-		if (is_int($value) || is_float($value)) {
-			return sprintf('%d', $value);
-		}
-		if (is_string($value)) {
-			if (strlen($value) === 0) {
-				return 'NULL';
-			}
-			if ($value === QueryBuilder::MIN) {
-				return '-32768';
-			}
-			if ($value === QueryBuilder::MAX) {
-				return '32767';
-			}
-			return $value;
-		}
-		return (string)$value;
-	}
-
-	/**
-	 * 値を8ビットの数値を表すSQLパラメータ値に変換します。
-	 *
-	 * @param string 値
-	 * @return string 変換結果
-	 */
-	public function toInt8($value)
-	{
-		if (!isset($value)) {
-			return 'NULL';
-		}
-		if (is_int($value) || is_float($value)) {
-			return sprintf('%d', $value);
-		}
-		if (is_string($value)) {
-			if (strlen($value) === 0) {
-				return 'NULL';
-			}
-			if ($value === QueryBuilder::MIN) {
-				return '-9223372036854775808';
-			}
-			if ($value === QueryBuilder::MAX) {
-				return '9223372036854775807';
-			}
-			return $value;
-		}
-		return (string)$value;
 	}
 
 }
