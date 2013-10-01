@@ -27,13 +27,13 @@ class SqliteExpressionBuilderTest extends \PHPUnit_Framework_TestCase
 	public function testAsDate()
 	{
 		$builder = new SqliteExpressionBuilder();
-		$this->assertEquals("strftime('%Y-%m-%d', \"name\")", $builder->asDate('name'));
+		$this->assertEquals("strftime('%Y-%m-%d', name)", $builder->asDate('name'));
 	}
 
 	public function testAsTimestamp()
 	{
 		$builder = new SqliteExpressionBuilder();
-		$this->assertEquals("strftime('%Y-%m-%d %H:%i:%s', \"name\")", $builder->asTimestamp('name'));
+		$this->assertEquals("strftime('%Y-%m-%d %H:%i:%s', name)", $builder->asTimestamp('name'));
 	}
 
 }

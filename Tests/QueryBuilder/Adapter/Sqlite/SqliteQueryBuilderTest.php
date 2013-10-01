@@ -264,7 +264,7 @@ class SqliteQueryBuilderTest extends \PHPUnit_Framework_TestCase
 			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
 		);
 		$this->assertEquals(
-			"strftime('%Y-%m-%d', \"birthday\") AS \"birthday\"",
+			"strftime('%Y-%m-%d', birthday) AS \"birthday\"",
 			$builder->expression('birthday', 'date')
 		);
 	}
@@ -276,7 +276,7 @@ class SqliteQueryBuilderTest extends \PHPUnit_Framework_TestCase
 			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
 		);
 		$this->assertEquals(
-			"strftime('%Y-%m-%d', \"birthday\") AS \"birthday_formatted\"",
+			"strftime('%Y-%m-%d', birthday) AS \"birthday_formatted\"",
 			$builder->expression('birthday', 'date', 'birthday_formatted')
 		);
 	}
@@ -288,7 +288,7 @@ class SqliteQueryBuilderTest extends \PHPUnit_Framework_TestCase
 			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
 		);
 		$this->assertEquals(
-			"strftime('%Y-%m-%d %H:%i:%s', \"birthday\") AS \"birthday\"",
+			"strftime('%Y-%m-%d %H:%i:%s', birthday) AS \"birthday\"",
 			$builder->expression('birthday', 'timestamp')
 		);
 	}
@@ -300,7 +300,7 @@ class SqliteQueryBuilderTest extends \PHPUnit_Framework_TestCase
 			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
 		);
 		$this->assertEquals(
-			"strftime('%Y-%m-%d %H:%i:%s', \"birthday\") AS \"birthday_formatted\"",
+			"strftime('%Y-%m-%d %H:%i:%s', birthday) AS \"birthday_formatted\"",
 			$builder->expression('birthday', 'timestamp', 'birthday_formatted')
 		);
 	}

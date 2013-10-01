@@ -264,7 +264,7 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
 		);
 		$this->assertEquals(
-			"DATE_FORMAT(`birthday`, '%Y-%m-%d') AS `birthday`",
+			"DATE_FORMAT(birthday, '%Y-%m-%d') AS `birthday`",
 			$builder->expression('birthday', 'date')
 		);
 	}
@@ -276,7 +276,7 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
 		);
 		$this->assertEquals(
-			"DATE_FORMAT(`birthday`, '%Y-%m-%d') AS `birthday_formatted`",
+			"DATE_FORMAT(birthday, '%Y-%m-%d') AS `birthday_formatted`",
 			$builder->expression('birthday', 'date', 'birthday_formatted')
 		);
 	}
@@ -288,7 +288,7 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
 		);
 		$this->assertEquals(
-			"DATE_FORMAT(`birthday`, '%Y-%m-%d %H:%i:%s') AS `birthday`",
+			"DATE_FORMAT(birthday, '%Y-%m-%d %H:%i:%s') AS `birthday`",
 			$builder->expression('birthday', 'timestamp')
 		);
 	}
@@ -300,7 +300,7 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
 		);
 		$this->assertEquals(
-			"DATE_FORMAT(`birthday`, '%Y-%m-%d %H:%i:%s') AS `birthday_formatted`",
+			"DATE_FORMAT(birthday, '%Y-%m-%d %H:%i:%s') AS `birthday_formatted`",
 			$builder->expression('birthday', 'timestamp', 'birthday_formatted')
 		);
 	}

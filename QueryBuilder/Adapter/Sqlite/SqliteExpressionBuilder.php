@@ -74,7 +74,7 @@ class SqliteExpressionBuilder implements ExpressionBuilderInterface
 		$format = '%Y' . self::$dateDelimiter
 				. '%m' . self::$dateDelimiter
 				. '%d';
-		return sprintf("strftime('%s', \"%s\")", $format, $name);
+		return sprintf("strftime('%s', %s)", $format, $name);
 	}
 
 	/**
@@ -91,7 +91,7 @@ class SqliteExpressionBuilder implements ExpressionBuilderInterface
 				. '%H' . self::$timeDelimiter
 				. '%i' . self::$timeDelimiter
 				. '%s';
-		return sprintf("strftime('%s', \"%s\")", $format, $name);
+		return sprintf("strftime('%s', %s)", $format, $name);
 	}
 
 }

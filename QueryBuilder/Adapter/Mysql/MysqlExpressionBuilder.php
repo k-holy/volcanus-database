@@ -75,7 +75,7 @@ class MysqlExpressionBuilder implements ExpressionBuilderInterface
 		$format = '%Y' . self::$dateDelimiter
 				. '%m' . self::$dateDelimiter
 				. '%d';
-		return sprintf("DATE_FORMAT(`%s`, '%s')", $name, $format);
+		return sprintf("DATE_FORMAT(%s, '%s')", $name, $format);
 	}
 
 	/**
@@ -93,7 +93,7 @@ class MysqlExpressionBuilder implements ExpressionBuilderInterface
 				. '%H' . self::$timeDelimiter
 				. '%i' . self::$timeDelimiter
 				. '%s';
-		return sprintf("DATE_FORMAT(`%s`, '%s')", $name, $format);
+		return sprintf("DATE_FORMAT(%s, '%s')", $name, $format);
 	}
 
 }
