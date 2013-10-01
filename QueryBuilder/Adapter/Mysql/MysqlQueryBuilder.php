@@ -22,6 +22,11 @@ class MysqlQueryBuilder extends AbstractQueryBuilder implements QueryBuilderInte
 {
 
 	/**
+	 * @var Volcanus\Database\QueryBuilder\Adapter\Mysql\MysqlExpressionBuilder
+	 */
+	protected $expressionBuilder;
+
+	/**
 	 * @var Volcanus\Database\QueryBuilder\Adapter\Mysql\MysqlParameterBuilder
 	 */
 	protected $parameterBuilder;
@@ -41,11 +46,13 @@ class MysqlQueryBuilder extends AbstractQueryBuilder implements QueryBuilderInte
 	/**
 	 * コンストラクタ
 	 *
+	 * @param Volcanus\Database\QueryBuilder\Adapter\Mysql\MysqlExpressionBuilder
 	 * @param Volcanus\Database\QueryBuilder\Adapter\Mysql\MysqlParameterBuilder
 	 */
-	public function __construct(MysqlParameterBuilder $parameterBuilder)
+	public function __construct(MysqlExpressionBuilder $expressionBuilder, MysqlParameterBuilder $parameterBuilder)
 	{
-		$this->parameterBuilder = $parameterBuilder;
+		parent::setExpressionBuilder($expressionBuilder);
+		parent::setParameterBuilder($parameterBuilder);
 	}
 
 	/**

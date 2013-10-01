@@ -9,6 +9,7 @@
 namespace Volcanus\Database\Tests\QueryBuilder\Adapter\Mysql;
 
 use Volcanus\Database\QueryBuilder\Adapter\Mysql\MysqlQueryBuilder;
+use Volcanus\Database\QueryBuilder\Adapter\Mysql\MysqlExpressionBuilder;
 use Volcanus\Database\QueryBuilder\Adapter\Mysql\MysqlParameterBuilder;
 
 use Volcanus\Database\Driver\Pdo\PdoDriver;
@@ -32,17 +33,12 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 		return static::$pdo;
 	}
 
-	private function getParameterBuilderMock($method = null)
-	{
-		return $this->getMock('Volcanus\Database\QueryBuilder\Adapter\Mysql\MysqlParameterBuilder',
-			isset($method) ? array($method) : array(),
-			array(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
-		);
-	}
-
 	public function testParameterTypeOfText()
 	{
-		$builder = new MysqlQueryBuilder($this->getParameterBuilderMock());
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
 		$this->assertEquals('text', $builder->parameterType('text'));
 		$this->assertEquals('text', $builder->parameterType('char'));
 		$this->assertEquals('text', $builder->parameterType('varchar'));
@@ -53,7 +49,10 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
 	public function testParameterTypeOfInt()
 	{
-		$builder = new MysqlQueryBuilder($this->getParameterBuilderMock());
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
 		$this->assertEquals('int', $builder->parameterType('int'));
 		$this->assertEquals('int', $builder->parameterType('integer'));
 		$this->assertEquals('int', $builder->parameterType('tinyint'));
@@ -65,7 +64,10 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
 	public function testParameterTypeOfFloat()
 	{
-		$builder = new MysqlQueryBuilder($this->getParameterBuilderMock());
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
 		$this->assertEquals('float', $builder->parameterType('real'));
 		$this->assertEquals('float', $builder->parameterType('double'));
 		$this->assertEquals('float', $builder->parameterType('float'));
@@ -73,87 +75,90 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
 	public function testParameterTypeOfDate()
 	{
-		$builder = new MysqlQueryBuilder($this->getParameterBuilderMock());
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
 		$this->assertEquals('date', $builder->parameterType('date'));
 	}
 
 	public function testParameterTypeOfTimestamp()
 	{
-		$builder = new MysqlQueryBuilder($this->getParameterBuilderMock());
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
 		$this->assertEquals('timestamp', $builder->parameterType('timestamp'));
 		$this->assertEquals('timestamp', $builder->parameterType('datetime'));
 	}
 
 	public function testParameterTypeReturnFalseWhenUnsupportedType()
 	{
-		$builder = new MysqlQueryBuilder($this->getParameterBuilderMock());
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
 		$this->assertFalse($builder->parameterType('unsupported-type'));
 	}
 
 	public function testParameterCallParameterBuilderToText()
 	{
-		$parameterBuilder = $this->getParameterBuilderMock('toText');
-		$parameterBuilder->expects($this->any())
-			->method('toText')
-			->will($this->returnValue('Foo'));
-
-		$builder = new MysqlQueryBuilder($parameterBuilder);
-		$this->assertEquals('Foo', $builder->parameter('Foo', 'text'));
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
+		$this->assertEquals("'Foo'", $builder->parameter('Foo', 'text'));
 	}
 
 	public function testParameterCallParameterBuilderToInt()
 	{
-		$parameterBuilder = $this->getParameterBuilderMock('toInt');
-		$parameterBuilder->expects($this->any())
-			->method('toInt')
-			->will($this->returnValue('1'));
-
-		$builder = new MysqlQueryBuilder($parameterBuilder);
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
 		$this->assertEquals('1', $builder->parameter(1, 'int'));
 	}
 
 	public function testParameterCallParameterBuilderToFloat()
 	{
-		$parameterBuilder = $this->getParameterBuilderMock('toFloat');
-		$parameterBuilder->expects($this->any())
-			->method('toFloat')
-			->will($this->returnValue('0.1'));
-
-		$builder = new MysqlQueryBuilder($parameterBuilder);
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
 		$this->assertEquals('0.1', $builder->parameter(0.1, 'float'));
 	}
 
 	public function testParameterCallParameterBuilderToBool()
 	{
-		$parameterBuilder = $this->getParameterBuilderMock('toBool');
-		$parameterBuilder->expects($this->any())
-			->method('toBool')
-			->will($this->returnValue('1'));
-
-		$builder = new MysqlQueryBuilder($parameterBuilder);
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
 		$this->assertEquals('1', $builder->parameter(true, 'bool'));
 	}
 
 	public function testParameterCallParameterBuilderToDate()
 	{
-		$parameterBuilder = $this->getParameterBuilderMock('toDate');
-		$parameterBuilder->expects($this->any())
-			->method('toDate')
-			->will($this->returnValue("STR_TO_DATE('2013-01-02', '%Y-%m-%d')"));
-
-		$builder = new MysqlQueryBuilder($parameterBuilder);
-		$this->assertEquals("STR_TO_DATE('2013-01-02', '%Y-%m-%d')", $builder->parameter('2013-01-02', 'date'));
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
+		$this->assertEquals(
+			"STR_TO_DATE('2013-01-02', '%Y-%m-%d')",
+			$builder->parameter('2013-01-02', 'date')
+		);
 	}
 
 	public function testParameterCallParameterBuilderToTimestamp()
 	{
-		$parameterBuilder = $this->getParameterBuilderMock('toTimestamp');
-		$parameterBuilder->expects($this->any())
-			->method('toTimestamp')
-			->will($this->returnValue("STR_TO_DATE('2013-01-02 00:00:00' '%Y-%m-%d %h:%i:%s')"));
-
-		$builder = new MysqlQueryBuilder($parameterBuilder);
-		$this->assertEquals("STR_TO_DATE('2013-01-02 00:00:00' '%Y-%m-%d %h:%i:%s')", $builder->parameter('2013-01-02 00:00:00', 'timestamp'));
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
+		$this->assertEquals(
+			"STR_TO_DATE('2013-01-02 00:00:00', '%Y-%m-%d %H:%i:%s')",
+			$builder->parameter('2013-01-02 00:00:00', 'timestamp')
+		);
 	}
 
 	/**
@@ -161,18 +166,19 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testParameterRaiseExceptionWhenUnsupportedType()
 	{
-		$builder = new MysqlQueryBuilder($this->getParameterBuilderMock());
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
 		$builder->parameter('Foo', 'unsupported-type');
 	}
 
 	public function testSelectLimit()
 	{
-		$parameterBuilder = $this->getParameterBuilderMock('toInt');
-		$parameterBuilder->expects($this->any())
-			->method('toInt')
-			->will($this->returnValue('20'));
-
-		$builder = new MysqlQueryBuilder($parameterBuilder);
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
 		$this->assertEquals(
 			'SELECT * FROM test LIMIT 20,20',
 			$builder->selectLimit('SELECT * FROM test', 20, 20)
@@ -181,12 +187,10 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
 	public function testSelectLimitWithoutOffset()
 	{
-		$parameterBuilder = $this->getParameterBuilderMock('toInt');
-		$parameterBuilder->expects($this->any())
-			->method('toInt')
-			->will($this->returnValue('20'));
-
-		$builder = new MysqlQueryBuilder($parameterBuilder);
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
 		$this->assertEquals(
 			'SELECT * FROM test LIMIT 20',
 			$builder->selectLimit('SELECT * FROM test', 20)
@@ -195,12 +199,10 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
 	public function testSelectLimitWithoutLimit()
 	{
-		$parameterBuilder = $this->getParameterBuilderMock('toInt');
-		$parameterBuilder->expects($this->any())
-			->method('toInt')
-			->will($this->returnValue('20'));
-
-		$builder = new MysqlQueryBuilder($parameterBuilder);
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
 		$this->assertEquals(
 			'SELECT * FROM test LIMIT 20,18446744073709551615',
 			$builder->selectLimit('SELECT * FROM test', null, 20)
@@ -209,7 +211,10 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
 	public function testSelectCount()
 	{
-		$builder = new MysqlQueryBuilder($this->getParameterBuilderMock());
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
 		$this->assertEquals(
 			'SELECT COUNT(*) FROM (SELECT * FROM test) AS X',
 			$builder->selectCount('SELECT * FROM test')
@@ -218,10 +223,85 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
 	public function testSelectCountWithSqlCalcFoundRows()
 	{
-		$builder = new MysqlQueryBuilder($this->getParameterBuilderMock());
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
 		$this->assertEquals(
 			'SELECT FOUND_ROWS()',
 			$builder->selectCount('SELECT SQL_CALC_FOUND_ROWS  * FROM test')
+		);
+	}
+
+	public function testExpressionAsText()
+	{
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
+		$this->assertEquals(
+			'name',
+			$builder->expression('name', 'text')
+		);
+	}
+
+	public function testExpressionAsTextWithAlias()
+	{
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
+		$this->assertEquals(
+			'name AS `alias_name`',
+			$builder->expression('name', 'text', 'alias_name')
+		);
+	}
+
+	public function testExpressionAsDate()
+	{
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
+		$this->assertEquals(
+			"DATE_FORMAT(`birthday`, '%Y-%m-%d') AS `birthday`",
+			$builder->expression('birthday', 'date')
+		);
+	}
+
+	public function testExpressionAsDateWithAlias()
+	{
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
+		$this->assertEquals(
+			"DATE_FORMAT(`birthday`, '%Y-%m-%d') AS `birthday_formatted`",
+			$builder->expression('birthday', 'date', 'birthday_formatted')
+		);
+	}
+
+	public function testExpressionAsTimestamp()
+	{
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
+		$this->assertEquals(
+			"DATE_FORMAT(`birthday`, '%Y-%m-%d %H:%i:%s') AS `birthday`",
+			$builder->expression('birthday', 'timestamp')
+		);
+	}
+
+	public function testExpressionAsTimestampWithAlias()
+	{
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
+		$this->assertEquals(
+			"DATE_FORMAT(`birthday`, '%Y-%m-%d %H:%i:%s') AS `birthday_formatted`",
+			$builder->expression('birthday', 'timestamp', 'birthday_formatted')
 		);
 	}
 

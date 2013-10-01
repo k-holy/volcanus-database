@@ -45,4 +45,14 @@ interface QueryBuilderInterface
 	 */
 	public function selectCount($sql);
 
+	/**
+	 * データ型に合わせて項目を別名で取得するSQL句を生成します。
+	 *
+	 * @param string 項目名
+	 * @param string データ型
+	 * @param string 別名
+	 * @return string SQL句
+	 */
+	public function expression($expr, $type = null, $alias = null);
+
 }

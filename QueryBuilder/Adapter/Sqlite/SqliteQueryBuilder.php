@@ -22,6 +22,11 @@ class SqliteQueryBuilder extends AbstractQueryBuilder implements QueryBuilderInt
 {
 
 	/**
+	 * @var Volcanus\Database\QueryBuilder\Adapter\Sqlite\SqliteExpressionBuilder
+	 */
+	protected $expressionBuilder;
+
+	/**
 	 * @var Volcanus\Database\QueryBuilder\Adapter\Sqlite\SqliteParameterBuilder
 	 */
 	protected $parameterBuilder;
@@ -41,11 +46,13 @@ class SqliteQueryBuilder extends AbstractQueryBuilder implements QueryBuilderInt
 	/**
 	 * コンストラクタ
 	 *
+	 * @param Volcanus\Database\QueryBuilder\Adapter\Sqlite\SqliteExpressionBuilder
 	 * @param Volcanus\Database\QueryBuilder\Adapter\Sqlite\SqliteParameterBuilder
 	 */
-	public function __construct(SqliteParameterBuilder $parameterBuilder)
+	public function __construct(SqliteExpressionBuilder $expressionBuilder, SqliteParameterBuilder $parameterBuilder)
 	{
-		$this->parameterBuilder = $parameterBuilder;
+		parent::setExpressionBuilder($expressionBuilder);
+		parent::setParameterBuilder($parameterBuilder);
 	}
 
 	/**

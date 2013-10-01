@@ -9,6 +9,7 @@
 namespace Volcanus\Database\Tests\QueryBuilder;
 
 use Volcanus\Database\Tests\QueryBuilder\AbstractQueryBuilderTest\QueryBuilder;
+use Volcanus\Database\Tests\QueryBuilder\AbstractQueryBuilderTest\ExpressionBuilder;
 use Volcanus\Database\Tests\QueryBuilder\AbstractParameterBuilderTest\ParameterBuilder;
 
 /**
@@ -22,6 +23,7 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	public function testParameterTypeOfText()
 	{
 		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
 			new ParameterBuilder()
 		);
 		$this->assertEquals('text', $builder->parameterType('char'));
@@ -32,6 +34,7 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	public function testParameterTypeOfInt()
 	{
 		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
 			new ParameterBuilder()
 		);
 		$this->assertEquals('int', $builder->parameterType('int'));
@@ -41,6 +44,7 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	public function testParameterTypeOfFloat()
 	{
 		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
 			new ParameterBuilder()
 		);
 		$this->assertEquals('float', $builder->parameterType('float'));
@@ -50,6 +54,7 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	public function testParameterTypeOfBool()
 	{
 		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
 			new ParameterBuilder()
 		);
 		$this->assertEquals('bool', $builder->parameterType('bool'));
@@ -59,6 +64,7 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	public function testParameterTypeOfDate()
 	{
 		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
 			new ParameterBuilder()
 		);
 		$this->assertEquals('date', $builder->parameterType('date'));
@@ -67,6 +73,7 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	public function testParameterTypeOfTimestamp()
 	{
 		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
 			new ParameterBuilder()
 		);
 		$this->assertEquals('timestamp', $builder->parameterType('timestamp'));
@@ -76,6 +83,7 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	public function testParameterTypeReturnFalseWhenUnsupportedType()
 	{
 		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
 			new ParameterBuilder()
 		);
 		$this->assertFalse($builder->parameterType('unsupported-type'));
@@ -84,6 +92,7 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	public function testParameterToText()
 	{
 		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
 			new ParameterBuilder()
 		);
 		$this->assertEquals("'Foo'", $builder->parameter('Foo', 'text'));
@@ -92,6 +101,7 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	public function testParameterToInt()
 	{
 		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
 			new ParameterBuilder()
 		);
 		$this->assertEquals('1', $builder->parameter(1, 'int'));
@@ -100,6 +110,7 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	public function testParameterToFloat()
 	{
 		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
 			new ParameterBuilder()
 		);
 		$this->assertEquals('0.1', $builder->parameter(0.1, 'float'));
@@ -108,6 +119,7 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	public function testParameterToBool()
 	{
 		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
 			new ParameterBuilder()
 		);
 		$this->assertEquals('1', $builder->parameter(true, 'bool'));
@@ -116,6 +128,7 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	public function testParameterToDate()
 	{
 		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
 			new ParameterBuilder()
 		);
 		$this->assertEquals("TO_DATE('2013-01-02')", $builder->parameter('2013-01-02', 'date'));
@@ -124,6 +137,7 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	public function testParameterToTimestamp()
 	{
 		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
 			new ParameterBuilder()
 		);
 		$this->assertEquals("TO_TIMESTAMP('2013-01-02 00:00:00')", $builder->parameter('2013-01-02 00:00:00', 'timestamp'));
@@ -135,6 +149,7 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	public function testParameterRaiseExceptionWhenUnsupportedType()
 	{
 		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
 			new ParameterBuilder()
 		);
 		$builder->parameter('Foo', 'unsupported-type');
@@ -144,6 +159,7 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	{
 		$sql = 'SELECT * FROM test';
 		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
 			new ParameterBuilder()
 		);
 		$this->assertEquals(
@@ -156,6 +172,7 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	{
 		$sql = 'SELECT * FROM test';
 		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
 			new ParameterBuilder()
 		);
 		$this->assertEquals(
@@ -163,5 +180,86 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 			$builder->selectCount($sql)
 		);
 	}
+
+	public function testExpressionAsText()
+	{
+		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
+			new ParameterBuilder()
+		);
+		$this->assertEquals(
+			'name',
+			$builder->expression('name', 'text')
+		);
+	}
+
+	public function testExpressionAsTextWithAlias()
+	{
+		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
+			new ParameterBuilder()
+		);
+		$this->assertEquals(
+			'name AS "alias_name"',
+			$builder->expression('name', 'text', 'alias_name')
+		);
+	}
+
+	public function testExpressionAsDate()
+	{
+		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
+			new ParameterBuilder()
+		);
+		$this->assertEquals(
+			"TO_CHAR(birthday, 'YYYY-MM-DD') AS \"birthday\"",
+			$builder->expression('birthday', 'date')
+		);
+	}
+
+	public function testExpressionAsDateWithAlias()
+	{
+		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
+			new ParameterBuilder()
+		);
+		$this->assertEquals(
+			"TO_CHAR(birthday, 'YYYY-MM-DD') AS \"birthday_formatted\"",
+			$builder->expression('birthday', 'date', 'birthday_formatted')
+		);
+	}
+
+	public function testExpressionAsTimestamp()
+	{
+		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
+			new ParameterBuilder()
+		);
+		$this->assertEquals(
+			"TO_CHAR(birthday, 'YYYY-MM-DD HH24:MI:SS') AS \"birthday\"",
+			$builder->expression('birthday', 'timestamp')
+		);
+		$this->assertEquals(
+			"TO_CHAR(birthday, 'YYYY-MM-DD HH24:MI:SS') AS \"birthday\"",
+			$builder->expression('birthday', 'datetime')
+		);
+	}
+
+	public function testExpressionAsTimestampWithAlias()
+	{
+		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
+			new ParameterBuilder()
+		);
+		$this->assertEquals(
+			"TO_CHAR(birthday, 'YYYY-MM-DD HH24:MI:SS') AS \"birthday_formatted\"",
+			$builder->expression('birthday', 'timestamp', 'birthday_formatted')
+		);
+		$this->assertEquals(
+			"TO_CHAR(birthday, 'YYYY-MM-DD HH24:MI:SS') AS \"birthday_formatted\"",
+			$builder->expression('birthday', 'datetime', 'birthday_formatted')
+		);
+	}
+
 
 }

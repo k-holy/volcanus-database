@@ -46,10 +46,20 @@ class SqliteParameterBuilder extends AbstractParameterBuilder implements Paramet
 	 * コンストラクタ
 	 *
 	 * @param \Volcanus\Database\Driver\DriverInterface
+	 * @param array 設定
 	 */
-	public function __construct(DriverInterface $driver)
+	public function __construct(DriverInterface $driver, array $options = array())
 	{
 		$this->driver = $driver;
+		if (isset($options['dateDelimiter'])) {
+			static::$dateDelimiter = $options['dateDelimiter'];
+		}
+		if (isset($options['timeDelimiter'])) {
+			static::$timeDelimiter = $options['timeDelimiter'];
+		}
+		if (isset($options['dateTimeDelimiter'])) {
+			static::$dateTimeDelimiter = $options['dateTimeDelimiter'];
+		}
 	}
 
 	/**

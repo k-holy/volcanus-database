@@ -8,6 +8,9 @@
 
 namespace Volcanus\Database\QueryBuilder;
 
+use Volcanus\Database\QueryBuilder\ExpressionBuilderInterface;
+use Volcanus\Database\QueryBuilder\ParameterBuilderInterface;
+
 /**
  * クエリビルダ抽象クラス
  *
@@ -15,6 +18,32 @@ namespace Volcanus\Database\QueryBuilder;
  */
 abstract class AbstractQueryBuilder
 {
+
+	/**
+	 * @var Volcanus\Database\QueryBuilder\ExpressionBuilderInterface
+	 */
+	protected $expressionBuilder;
+
+	/**
+	 * @var Volcanus\Database\QueryBuilder\ParameterBuilderInterface
+	 */
+	protected $parameterBuilder;
+
+	/**
+	 * @param Volcanus\Database\QueryBuilder\ExpressionBuilderInterface
+	 */
+	protected function setExpressionBuilder(ExpressionBuilderInterface $expressionBuilder)
+	{
+		$this->expressionBuilder = $expressionBuilder;
+	}
+
+	/**
+	 * @param Volcanus\Database\QueryBuilder\ExpressionBuilderInterface
+	 */
+	protected function setParameterBuilder(ParameterBuilderInterface $parameterBuilder)
+	{
+		$this->parameterBuilder = $parameterBuilder;
+	}
 
 	/**
 	 * 型名から、SQLパラメータ用の型名を返します。
@@ -55,6 +84,34 @@ abstract class AbstractQueryBuilder
 			);
 		}
 		return $this->parameterBuilder->$methodName($value, $type);
+	}
+
+	/**
+	 * データ型に合わせて項目を別名で取得するSQL句を生成します。
+	 *
+	 * @param string 項目名
+	 * @param string データ型
+	 * @param string 別名
+	 * @return string SQL句
+	 */
+	public function expression($expr, $type = null, $alias = null)
+	{
+		if (isset($type)) {
+			$sqlType = $this->parameterType($type);
+			if (!$sqlType) {
+				throw new \RuntimeException(
+					sprintf('Unsupported type:"%s"', $type)
+				);
+			}
+			$methodName = 'as' . ucfirst($sqlType);
+			if (method_exists($this->expressionBuilder, $methodName)) {
+				if (!isset($alias)) {
+					$alias = $expr;
+				}
+				$expr = $this->expressionBuilder->$methodName($expr, $type);
+			}
+		}
+		return $this->expressionBuilder->resultColumn($expr, $alias);
 	}
 
 }

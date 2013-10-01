@@ -10,6 +10,7 @@ namespace Volcanus\Database\Tests\QueryBuilder\AbstractQueryBuilderTest;
 
 use Volcanus\Database\QueryBuilder\QueryBuilderInterface;
 use Volcanus\Database\QueryBuilder\AbstractQueryBuilder;
+use Volcanus\Database\QueryBuilder\ExpressionBuilderInterface;
 use Volcanus\Database\QueryBuilder\ParameterBuilderInterface;
 
 class QueryBuilder extends AbstractQueryBuilder implements QueryBuilderInterface
@@ -23,9 +24,10 @@ class QueryBuilder extends AbstractQueryBuilder implements QueryBuilderInterface
 		'timestamp' => array('timestamp', 'datetime'),
 	);
 
-	public function __construct(ParameterBuilderInterface $parameterBuilder)
+	public function __construct(ExpressionBuilderInterface $expressionBuilder, ParameterBuilderInterface $parameterBuilder)
 	{
-		$this->parameterBuilder = $parameterBuilder;
+		$this->setExpressionBuilder($expressionBuilder);
+		$this->setParameterBuilder($parameterBuilder);
 	}
 
 	public function selectLimit($sql, $limit = null, $offset = null)

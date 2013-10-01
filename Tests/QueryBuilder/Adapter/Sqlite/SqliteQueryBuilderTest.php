@@ -9,6 +9,7 @@
 namespace Volcanus\Database\Tests\QueryBuilder\Adapter\Sqlite;
 
 use Volcanus\Database\QueryBuilder\Adapter\Sqlite\SqliteQueryBuilder;
+use Volcanus\Database\QueryBuilder\Adapter\Sqlite\SqliteExpressionBuilder;
 use Volcanus\Database\QueryBuilder\Adapter\Sqlite\SqliteParameterBuilder;
 
 use Volcanus\Database\Driver\Pdo\PdoDriver;
@@ -32,17 +33,12 @@ class SqliteQueryBuilderTest extends \PHPUnit_Framework_TestCase
 		return static::$pdo;
 	}
 
-	private function getParameterBuilderMock($method = null)
-	{
-		return $this->getMock('Volcanus\Database\QueryBuilder\Adapter\Sqlite\SqliteParameterBuilder',
-			isset($method) ? array($method) : array(),
-			array(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
-		);
-	}
-
 	public function testParameterTypeOfText()
 	{
-		$builder = new SqliteQueryBuilder($this->getParameterBuilderMock());
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
 		$this->assertEquals('text', $builder->parameterType('character'));
 		$this->assertEquals('text', $builder->parameterType('varchar'));
 		$this->assertEquals('text', $builder->parameterType('varying character'));
@@ -55,7 +51,10 @@ class SqliteQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
 	public function testParameterTypeOfInt()
 	{
-		$builder = new SqliteQueryBuilder($this->getParameterBuilderMock());
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
 		$this->assertEquals('int', $builder->parameterType('int'));
 		$this->assertEquals('int', $builder->parameterType('integer'));
 		$this->assertEquals('int', $builder->parameterType('tinyint'));
@@ -68,7 +67,10 @@ class SqliteQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
 	public function testParameterTypeOfFloat()
 	{
-		$builder = new SqliteQueryBuilder($this->getParameterBuilderMock());
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
 		$this->assertEquals('float', $builder->parameterType('real'));
 		$this->assertEquals('float', $builder->parameterType('double'));
 		$this->assertEquals('float', $builder->parameterType('double precision'));
@@ -77,92 +79,98 @@ class SqliteQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
 	public function testParameterTypeOfBool()
 	{
-		$builder = new SqliteQueryBuilder($this->getParameterBuilderMock());
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
 		$this->assertEquals('bool', $builder->parameterType('boolean'));
 	}
 
 	public function testParameterTypeOfDate()
 	{
-		$builder = new SqliteQueryBuilder($this->getParameterBuilderMock());
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
 		$this->assertEquals('date', $builder->parameterType('date'));
 	}
 
 	public function testParameterTypeOfTimestamp()
 	{
-		$builder = new SqliteQueryBuilder($this->getParameterBuilderMock());
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
 		$this->assertEquals('timestamp', $builder->parameterType('datetime'));
 	}
 
 	public function testParameterTypeReturnFalseWhenUnsupportedType()
 	{
-		$builder = new SqliteQueryBuilder($this->getParameterBuilderMock());
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
 		$this->assertFalse($builder->parameterType('unsupported-type'));
 	}
 
 	public function testParameterCallParameterBuilderToText()
 	{
-		$parameterBuilder = $this->getParameterBuilderMock('toText');
-		$parameterBuilder->expects($this->any())
-			->method('toText')
-			->will($this->returnValue('Foo'));
-
-		$builder = new SqliteQueryBuilder($parameterBuilder);
-		$this->assertEquals('Foo', $builder->parameter('Foo', 'text'));
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
+		$this->assertEquals("'Foo'", $builder->parameter('Foo', 'text'));
 	}
 
 	public function testParameterCallParameterBuilderToInt()
 	{
-		$parameterBuilder = $this->getParameterBuilderMock('toInt');
-		$parameterBuilder->expects($this->any())
-			->method('toInt')
-			->will($this->returnValue('1'));
-
-		$builder = new SqliteQueryBuilder($parameterBuilder);
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
 		$this->assertEquals('1', $builder->parameter(1, 'int'));
 	}
 
 	public function testParameterCallParameterBuilderToFloat()
 	{
-		$parameterBuilder = $this->getParameterBuilderMock('toFloat');
-		$parameterBuilder->expects($this->any())
-			->method('toFloat')
-			->will($this->returnValue('0.1'));
-
-		$builder = new SqliteQueryBuilder($parameterBuilder);
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
 		$this->assertEquals('0.1', $builder->parameter(0.1, 'float'));
 	}
 
 	public function testParameterCallParameterBuilderToBool()
 	{
-		$parameterBuilder = $this->getParameterBuilderMock('toBool');
-		$parameterBuilder->expects($this->any())
-			->method('toBool')
-			->will($this->returnValue('1'));
-
-		$builder = new SqliteQueryBuilder($parameterBuilder);
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
 		$this->assertEquals('1', $builder->parameter(true, 'bool'));
 	}
 
 	public function testParameterCallParameterBuilderToDate()
 	{
-		$parameterBuilder = $this->getParameterBuilderMock('toDate');
-		$parameterBuilder->expects($this->any())
-			->method('toDate')
-			->will($this->returnValue("TO_DATE('2013-01-02')"));
-
-		$builder = new SqliteQueryBuilder($parameterBuilder);
-		$this->assertEquals("TO_DATE('2013-01-02')", $builder->parameter('2013-01-02', 'date'));
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
+		$this->assertEquals(
+			"date('2013-01-02')",
+			$builder->parameter('2013-01-02', 'date')
+		);
 	}
 
 	public function testParameterCallParameterBuilderToTimestamp()
 	{
-		$parameterBuilder = $this->getParameterBuilderMock('toTimestamp');
-		$parameterBuilder->expects($this->any())
-			->method('toTimestamp')
-			->will($this->returnValue("TO_TIMESTAMP('2013-01-02 00:00:00')"));
-
-		$builder = new SqliteQueryBuilder($parameterBuilder);
-		$this->assertEquals("TO_TIMESTAMP('2013-01-02 00:00:00')", $builder->parameter('2013-01-02 00:00:00', 'timestamp'));
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
+		$this->assertEquals(
+			"datetime('2013-01-02 00:00:00')",
+			$builder->parameter('2013-01-02 00:00:00', 'timestamp')
+		);
 	}
 
 	/**
@@ -170,18 +178,19 @@ class SqliteQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testParameterRaiseExceptionWhenUnsupportedType()
 	{
-		$builder = new SqliteQueryBuilder($this->getParameterBuilderMock());
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
 		$builder->parameter('Foo', 'unsupported-type');
 	}
 
 	public function testSelectLimit()
 	{
-		$parameterBuilder = $this->getParameterBuilderMock('toInt');
-		$parameterBuilder->expects($this->any())
-			->method('toInt')
-			->will($this->returnValue('20'));
-
-		$builder = new SqliteQueryBuilder($parameterBuilder);
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
 		$this->assertEquals(
 			'SELECT * FROM test LIMIT 20 OFFSET 20',
 			$builder->selectLimit('SELECT * FROM test', 20, 20)
@@ -190,12 +199,10 @@ class SqliteQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
 	public function testSelectLimitWithoutOffset()
 	{
-		$parameterBuilder = $this->getParameterBuilderMock('toInt');
-		$parameterBuilder->expects($this->any())
-			->method('toInt')
-			->will($this->returnValue('20'));
-
-		$builder = new SqliteQueryBuilder($parameterBuilder);
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
 		$this->assertEquals(
 			'SELECT * FROM test LIMIT 20',
 			$builder->selectLimit('SELECT * FROM test', 20)
@@ -204,12 +211,10 @@ class SqliteQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
 	public function testSelectLimitWithoutLimit()
 	{
-		$parameterBuilder = $this->getParameterBuilderMock('toInt');
-		$parameterBuilder->expects($this->any())
-			->method('toInt')
-			->will($this->returnValue('20'));
-
-		$builder = new SqliteQueryBuilder($parameterBuilder);
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
 		$this->assertEquals(
 			'SELECT * FROM test LIMIT 18446744073709551615 OFFSET 20',
 			$builder->selectLimit('SELECT * FROM test', null, 20)
@@ -218,10 +223,85 @@ class SqliteQueryBuilderTest extends \PHPUnit_Framework_TestCase
 
 	public function testSelectCount()
 	{
-		$builder = new SqliteQueryBuilder($this->getParameterBuilderMock());
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
 		$this->assertEquals(
 			'SELECT COUNT(*) FROM (SELECT * FROM test) AS X',
 			$builder->selectCount('SELECT * FROM test')
+		);
+	}
+
+	public function testExpressionAsText()
+	{
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
+		$this->assertEquals(
+			'name',
+			$builder->expression('name', 'text')
+		);
+	}
+
+	public function testExpressionAsTextWithAlias()
+	{
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
+		$this->assertEquals(
+			'name AS "alias_name"',
+			$builder->expression('name', 'text', 'alias_name')
+		);
+	}
+
+	public function testExpressionAsDate()
+	{
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
+		$this->assertEquals(
+			"strftime('%Y-%m-%d', \"birthday\") AS \"birthday\"",
+			$builder->expression('birthday', 'date')
+		);
+	}
+
+	public function testExpressionAsDateWithAlias()
+	{
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
+		$this->assertEquals(
+			"strftime('%Y-%m-%d', \"birthday\") AS \"birthday_formatted\"",
+			$builder->expression('birthday', 'date', 'birthday_formatted')
+		);
+	}
+
+	public function testExpressionAsTimestamp()
+	{
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
+		$this->assertEquals(
+			"strftime('%Y-%m-%d %H:%i:%s', \"birthday\") AS \"birthday\"",
+			$builder->expression('birthday', 'timestamp')
+		);
+	}
+
+	public function testExpressionAsTimestampWithAlias()
+	{
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
+		$this->assertEquals(
+			"strftime('%Y-%m-%d %H:%i:%s', \"birthday\") AS \"birthday_formatted\"",
+			$builder->expression('birthday', 'timestamp', 'birthday_formatted')
 		);
 	}
 
