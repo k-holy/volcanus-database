@@ -67,6 +67,19 @@ SQL
 		$driver->connect('foo');
 	}
 
+	public function testGetDriverName()
+	{
+		$driver = new PdoDriver($this->getPdo());
+		$this->assertEquals('sqlite', $driver->getDriverName());
+	}
+
+	public function testGetDriverNameReturnNullAfterDisconnected()
+	{
+		$driver = new PdoDriver($this->getPdo());
+		$driver->disconnect();
+		$this->assertNull($driver->getDriverName());
+	}
+
 	public function testPrepareReturnedPdoStatement()
 	{
 		$driver = new PdoDriver($this->getPdo());

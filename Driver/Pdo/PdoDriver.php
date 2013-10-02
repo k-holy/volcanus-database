@@ -101,6 +101,19 @@ class PdoDriver implements DriverInterface
 	}
 
 	/**
+	 * ドライバ名を返します。
+	 *
+	 * @return string ドライバ名
+	 */
+	public function getDriverName()
+	{
+		if (isset($this->pdo)) {
+			return $this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
+		}
+		return null;
+	}
+
+	/**
 	 * SQL実行準備を行い、ステートメントオブジェクトを返します。
 	 *
 	 * @param string SQL

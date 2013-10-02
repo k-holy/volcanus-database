@@ -39,6 +39,13 @@ interface DriverInterface
 	public function connected();
 
 	/**
+	 * ドライバ名を返します。
+	 *
+	 * @return string ドライバ名
+	 */
+	public function getDriverName();
+
+	/**
 	 * SQL実行準備を行い、ステートメントオブジェクトを返します。
 	 *
 	 * @string SQL
