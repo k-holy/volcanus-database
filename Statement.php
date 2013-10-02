@@ -9,15 +9,17 @@
 namespace Volcanus\Database;
 
 /**
- * データベースクラス
+ * ステートメントクラス
  *
  * @author k.holy74@gmail.com
  */
-class Database
+class Statement
 {
 
-	const FETCH_ASSOC  = 'assoc';
-	const FETCH_NUM    = 'num';
-	const FETCH_OBJECT = 'object';
+	const FETCH_ASSOC = 'assoc';
+	const FETCH_NUM   = 'num';
+	const FETCH_OBJ   = 'object';
+	const FETCH_CLASS = 'class';
+	const FETCH_FUNC  = 'function';
 
 }

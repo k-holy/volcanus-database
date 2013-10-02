@@ -26,26 +26,30 @@ interface StatementInterface
 	/**
 	 * このステートメントのデフォルトのフェッチモードを設定します。
 	 *
-	 * @param int フェッチモード定数 (\Volcanus\Database::FETCH_**)
-	 * @param mix フェッチモードのオプション
+	 * @param int フェッチモード定数 (Statement::FETCH_**)
+	 * @param mixed フェッチモードのオプション引数
 	 */
-	public function setFetchMode($mode, $value = null);
+	public function setFetchMode($mode, $option = null);
 
 	/**
 	 * 結果セットから次の行を取得して返します。
 	 *
+	 * @param int フェッチモード定数 (Statement::FETCH_**)
 	 * @return mixed
 	 */
-	public function fetch();
+	public function fetch($mode = null);
 
 	/**
-	 * 結果セットから次の行をオブジェクトで取得して返します。
+	 * 結果セットから次の行をオブジェクトのプロパティに取得して返します。
 	 *
-	 * @param string クラス名
-	 * @param array コンストラクタ引数
+	 * 第2引数が TRUE の場合は 結果セットの値をオブジェクトのプロパティにセットする前に、プロパティの存在を確認します。
+	 * ※マジックメソッド __set() を利用する場合は FALSE に設定してください。
+	 *
+	 * @param object オブジェクト
+	 * @param bool プロパティの存在をチェックするかどうか
 	 * @return mixed
 	 */
-	public function fetchObject($class, $arguments = array());
+	public function fetchInto($object, $checkPropertyExists = true);
 
 	/**
 	 * 結果セットから全ての行を取得して配列で返します。
