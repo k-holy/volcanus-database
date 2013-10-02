@@ -46,6 +46,13 @@ interface DriverInterface
 	public function getDriverName();
 
 	/**
+	 * ドライバに合ったメタデータプロセッサを生成します。
+	 *
+	 * @return Volcanus\Database\MetaDataProcessorInterface
+	 */
+	public function createMetaDataProcessor();
+
+	/**
 	 * SQL実行準備を行い、ステートメントオブジェクトを返します。
 	 *
 	 * @string SQL

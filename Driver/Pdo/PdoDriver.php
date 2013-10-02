@@ -46,6 +46,9 @@ class PdoDriver implements DriverInterface
 		$this->lastQuery = null;
 		if (isset($pdo)) {
 			$this->connect($pdo);
+			if (!isset($metaDataProcessor)) {
+				$metaDataProcessor = $this->createMetaDataProcessor();
+			}
 		}
 		if (isset($metaDataProcessor)) {
 			$this->setMetaDataProcessor($metaDataProcessor);
@@ -111,6 +114,23 @@ class PdoDriver implements DriverInterface
 			return $this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
 		}
 		return null;
+	}
+
+	/**
+	 * ドライバに合ったメタデータプロセッサを生成します。
+	 *
+	 * @return Volcanus\Database\MetaDataProcessorInterface
+	 */
+	public function createMetaDataProcessor()
+	{
+		$driverName = $this->getDriverName();
+		if (!isset($driverName)) {
+			throw new \RuntimeException('Could not create MetaDataProcessor disconnected.');
+		}
+		$className = sprintf('\\Volcanus\\Database\\MetaDataProcessor\\%sMetaDataProcessor',
+			ucfirst($driverName)
+		);
+		return new $className();
 	}
 
 	/**

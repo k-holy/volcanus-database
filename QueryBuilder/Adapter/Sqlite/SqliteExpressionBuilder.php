@@ -11,7 +11,7 @@ namespace Volcanus\Database\QueryBuilder\Adapter\Sqlite;
 use Volcanus\Database\QueryBuilder\ExpressionBuilderInterface;
 
 /**
- * SQLite フィールドビルダ
+ * SQLite Expressionビルダ
  *
  * @author k_horii@rikcorp.jp
  */

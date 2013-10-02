@@ -73,11 +73,29 @@ SQL
 		$this->assertEquals('sqlite', $driver->getDriverName());
 	}
 
-	public function testGetDriverNameReturnNullAfterDisconnected()
+	public function testGetDriverNameReturnedNullAfterDisconnected()
 	{
 		$driver = new PdoDriver($this->getPdo());
 		$driver->disconnect();
 		$this->assertNull($driver->getDriverName());
+	}
+
+	public function testCreateMetaDataProcessor()
+	{
+		$driver = new PdoDriver($this->getPdo());
+		$this->assertInstanceOf('Volcanus\Database\MetaDataProcessor\SqliteMetaDataProcessor',
+			$driver->createMetaDataProcessor()
+		);
+	}
+
+	/**
+	 * @expectedException \RuntimeException
+	 */
+	public function testCreateMetaDataProcessorRaiseExceptionWhenAfterDisconnected()
+	{
+		$driver = new PdoDriver($this->getPdo());
+		$driver->disconnect();
+		$driver->createMetaDataProcessor();
 	}
 
 	public function testPrepareReturnedPdoStatement()
@@ -148,7 +166,7 @@ SQL
 
 	public function testGetMetaTables()
 	{
-		$driver = new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor());
+		$driver = new PdoDriver($this->getPdo());
 		$tables = $driver->getMetaTables();
 		$this->assertArrayHasKey('test', $tables);
 		$this->assertInstanceOf('\Volcanus\Database\Table', $tables['test']);
@@ -156,7 +174,7 @@ SQL
 
 	public function testGetMetaColumns()
 	{
-		$driver = new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor());
+		$driver = new PdoDriver($this->getPdo());
 		$columns = $driver->getMetaColumns('test');
 		$this->assertArrayHasKey('id'  , $columns);
 		$this->assertArrayHasKey('name', $columns);
@@ -169,7 +187,8 @@ SQL
 	 */
 	public function testGetMetaTablesRaiseExceptionWhenMetaDataProcessorIsNotSet()
 	{
-		$driver = new PdoDriver($this->getPdo());
+		$driver = new PdoDriver();
+		$driver->connect($this->getPdo());
 		$driver->getMetaTables();
 	}
 
@@ -178,7 +197,8 @@ SQL
 	 */
 	public function testGetMetaColumnsRaiseExceptionWhenMetaDataProcessorIsNotSet()
 	{
-		$driver = new PdoDriver($this->getPdo());
+		$driver = new PdoDriver();
+		$driver->connect($this->getPdo());
 		$driver->getMetaColumns('test');
 	}
 

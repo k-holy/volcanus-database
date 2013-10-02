@@ -14,7 +14,7 @@ use Volcanus\Database\Table;
 use Volcanus\Database\Column;
 
 /**
- * PDOコネクション
+ * MySQL メタデータプロセッサ
  *
  * @author k_horii@rikcorp.jp
  */

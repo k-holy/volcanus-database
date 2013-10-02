@@ -11,7 +11,7 @@ namespace Volcanus\Database\QueryBuilder\Adapter\Mysql;
 use Volcanus\Database\QueryBuilder\ExpressionBuilderInterface;
 
 /**
- * MySQL フィールドビルダ
+ * MySQL Expressionビルダ
  *
  * @author k_horii@rikcorp.jp
  */
