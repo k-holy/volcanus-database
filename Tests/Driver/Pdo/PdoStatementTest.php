@@ -44,7 +44,7 @@ SQL
 		return static::$pdo;
 	}
 
-	public function testFetchAssoc()
+	public function testFetchAsAssoc()
 	{
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
 		$statement = new PdoStatement(
@@ -55,7 +55,7 @@ SQL
 		$this->assertEquals('1', $item['cnt']);
 	}
 
-	public function testFetchNum()
+	public function testFetchAsNum()
 	{
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
 		$statement = new PdoStatement(
@@ -66,19 +66,7 @@ SQL
 		$this->assertEquals('1', $item[0]);
 	}
 
-	public function testFetchObject()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT count(*) AS cnt FROM test")
-		);
-		$item = $statement->fetch(Statement::FETCH_OBJ);
-		$this->assertInstanceOf('\\stdClass', $item);
-		$this->assertObjectHasAttribute('cnt', $item);
-		$this->assertEquals('1', $item->cnt);
-	}
-
-	public function testFetchClass()
+	public function testFetchAsClassInstance()
 	{
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
 		$statement = new PdoStatement(
@@ -87,11 +75,25 @@ SQL
 		$statement->setFetchMode(Statement::FETCH_CLASS, __NAMESPACE__ . '\\Data');
 		$item = $statement->fetch(Statement::FETCH_CLASS);
 		$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $item);
-		$this->assertObjectHasAttribute('cnt', $item);
 		$this->assertEquals('1', $item->cnt);
 	}
 
-	public function testFetchFunction()
+	public function testFetchAsClassInstanceWithArguments()
+	{
+		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
+		$statement = new PdoStatement(
+			$this->getPdo()->query("SELECT count(*) AS cnt FROM test")
+		);
+		$statement->setFetchMode(Statement::FETCH_CLASS, __NAMESPACE__ . '\\Data', array('One', 'Two', 'Three'));
+		$item = $statement->fetch(Statement::FETCH_CLASS);
+		$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $item);
+		$this->assertEquals('1', $item->cnt);
+		$this->assertEquals('One', $item->one);
+		$this->assertEquals('Two', $item->two);
+		$this->assertEquals('Three', $item->three);
+	}
+
+	public function testFetchAsFunction()
 	{
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
 		$statement = new PdoStatement(
@@ -115,45 +117,60 @@ SQL
 		$this->assertEquals('Baz', $item->baz);
 	}
 
-	public function testFetchInto()
+	public function testFetchObject()
 	{
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
 		$statement = new PdoStatement(
 			$this->getPdo()->query("SELECT id, name FROM test WHERE id = 1")
 		);
-		$item = new Data();
-		$item = $statement->fetchInto($item);
+		$item = $statement->fetchObject(__NAMESPACE__ . '\\Data');
+		$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $item);
 		$this->assertEquals('1', $item->id);
 		$this->assertEquals('test', $item->name);
 	}
 
-	public function testFetchIntoIgnoredUndefinedProperty()
+	public function testFetchObjectWithArguments()
+	{
+		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
+		$statement = new PdoStatement(
+			$this->getPdo()->query("SELECT id, name FROM test WHERE id = 1")
+		);
+		$item = $statement->fetchObject(__NAMESPACE__ . '\\Data', array('One', 'Two', 'Three'));
+		$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $item);
+		$this->assertEquals('1', $item->id);
+		$this->assertEquals('test', $item->name);
+		$this->assertEquals('One', $item->one);
+		$this->assertEquals('Two', $item->two);
+		$this->assertEquals('Three', $item->three);
+	}
+
+	public function testFetchObjectIgnoredUndefinedProperty()
 	{
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
 		$statement = new PdoStatement(
 			$this->getPdo()->query("SELECT id, name, 'Foo' AS foo, 'Bar' AS bar, 'Baz' AS baz FROM test WHERE id = 1")
 		);
-		$item = new Data();
-		$item = $statement->fetchInto($item, true);
+		$item = $statement->fetchObject(__NAMESPACE__ . '\\Data', null, true);
+		$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $item);
 		$this->assertObjectNotHasAttribute('foo', $item);
 		$this->assertObjectNotHasAttribute('bar', $item);
 		$this->assertObjectNotHasAttribute('baz', $item);
 	}
 
-	public function testFetchIntoAcceptUndefinedProperty()
+	public function testFetchObjectAcceptUndefinedProperty()
 	{
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
 		$statement = new PdoStatement(
 			$this->getPdo()->query("SELECT id, name, 'Foo' AS foo, 'Bar' AS bar, 'Baz' AS baz FROM test WHERE id = 1")
 		);
-		$item = new Data();
-		$item = $statement->fetchInto($item, false);
+		$item = $statement->fetchObject(__NAMESPACE__ . '\\Data', null, false);
+		$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $item);
 		$this->assertEquals('Foo', $item->foo);
 		$this->assertEquals('Bar', $item->bar);
 		$this->assertEquals('Baz', $item->baz);
 	}
 
-	public function testFetchAllAsoc()
+	public function testFetchAllAsAsoc()
 	{
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
@@ -168,7 +185,7 @@ SQL
 		$this->assertEquals('test2', $items[1]['name']);
 	}
 
-	public function testFetchAllNum()
+	public function testFetchAllAsNum()
 	{
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
@@ -183,25 +200,7 @@ SQL
 		$this->assertEquals('test2', $items[1][1]);
 	}
 
-	public function testFetchAllObject()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$items = $statement->fetchAll(Statement::FETCH_OBJ);
-		$this->assertCount(2, $items);
-		$this->assertInstanceOf('\\stdClass', $items[0]);
-		$this->assertObjectHasAttribute('id', $items[0]);
-		$this->assertObjectHasAttribute('name', $items[0]);
-		$this->assertEquals('1'    , $items[0]->id);
-		$this->assertEquals('test1', $items[0]->name);
-		$this->assertEquals('2'    , $items[1]->id);
-		$this->assertEquals('test2', $items[1]->name);
-	}
-
-	public function testFetchAllClass()
+	public function testFetchAllAsClassInstance()
 	{
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
@@ -211,15 +210,35 @@ SQL
 		$items = $statement->fetchAll(Statement::FETCH_CLASS, __NAMESPACE__ . '\\Data');
 		$this->assertCount(2, $items);
 		$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $items[0]);
-		$this->assertObjectHasAttribute('id', $items[0]);
-		$this->assertObjectHasAttribute('name', $items[0]);
 		$this->assertEquals('1'    , $items[0]->id);
 		$this->assertEquals('test1', $items[0]->name);
 		$this->assertEquals('2'    , $items[1]->id);
 		$this->assertEquals('test2', $items[1]->name);
 	}
 
-	public function testFetchAllFunction()
+	public function testFetchAllAsClassInstanceWithArguments()
+	{
+		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
+		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
+		$statement = new PdoStatement(
+			$this->getPdo()->query("SELECT id, name FROM test")
+		);
+		$items = $statement->fetchAll(Statement::FETCH_CLASS, __NAMESPACE__ . '\\Data', array('One', 'Two', 'Three'));
+		$this->assertCount(2, $items);
+		$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $items[0]);
+		$this->assertEquals('1'    , $items[0]->id);
+		$this->assertEquals('test1', $items[0]->name);
+		$this->assertEquals('One'  , $items[0]->one);
+		$this->assertEquals('Two'  , $items[0]->two);
+		$this->assertEquals('Three', $items[0]->three);
+		$this->assertEquals('2'    , $items[1]->id);
+		$this->assertEquals('test2', $items[1]->name);
+		$this->assertEquals('One'  , $items[1]->one);
+		$this->assertEquals('Two'  , $items[1]->two);
+		$this->assertEquals('Three', $items[1]->three);
+	}
+
+	public function testFetchAllAsFunction()
 	{
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
@@ -237,8 +256,6 @@ SQL
 		});
 		$this->assertCount(2, $items);
 		$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $items[0]);
-		$this->assertObjectHasAttribute('id', $items[0]);
-		$this->assertObjectHasAttribute('name', $items[0]);
 		$this->assertEquals('1'    , $items[0]->id);
 		$this->assertEquals('test1', $items[0]->name);
 		$this->assertEquals('Foo'  , $items[0]->foo);
@@ -274,7 +291,7 @@ SQL
 		$this->assertEquals('test', $item['name']);
 	}
 
-	public function testTraversableAssoc()
+	public function testIteratorAsAssoc()
 	{
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
@@ -296,7 +313,7 @@ SQL
 		}
 	}
 
-	public function testTraversableNum()
+	public function testIteratorAsNum()
 	{
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
@@ -318,30 +335,7 @@ SQL
 		}
 	}
 
-	public function testTraversableObject()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$statement->setFetchMode(Statement::FETCH_OBJ);
-		foreach ($statement as $item) {
-			$this->assertInstanceOf('\\stdClass', $item);
-			$this->assertObjectHasAttribute('id', $item);
-			$this->assertObjectHasAttribute('name', $item);
-			switch ($item->id) {
-			case '1':
-				$this->assertEquals('test1', $item->name);
-				break;
-			case '2':
-				$this->assertEquals('test2', $item->name);
-				break;
-			}
-		}
-	}
-
-	public function testTraversableClass()
+	public function testIteratorAsClassInstance()
 	{
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
@@ -351,8 +345,6 @@ SQL
 		$statement->setFetchMode(Statement::FETCH_CLASS, __NAMESPACE__ . '\\Data');
 		foreach ($statement as $item) {
 			$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $item);
-			$this->assertObjectHasAttribute('id', $item);
-			$this->assertObjectHasAttribute('name', $item);
 			switch ($item->id) {
 			case '1':
 				$this->assertEquals('test1', $item->name);
@@ -364,7 +356,34 @@ SQL
 		}
 	}
 
-	public function testTraversableFunction()
+	public function testIteratorAsClassInstanceWithArguments()
+	{
+		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
+		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
+		$statement = new PdoStatement(
+			$this->getPdo()->query("SELECT id, name FROM test")
+		);
+		$statement->setFetchMode(Statement::FETCH_CLASS, __NAMESPACE__ . '\\Data', array('One', 'Two', 'Three'));
+		foreach ($statement as $item) {
+			$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $item);
+			switch ($item->id) {
+			case '1':
+				$this->assertEquals('test1', $item->name);
+				$this->assertEquals('One', $item->one);
+				$this->assertEquals('Two', $item->two);
+				$this->assertEquals('Three', $item->three);
+				break;
+			case '2':
+				$this->assertEquals('test2', $item->name);
+				$this->assertEquals('One', $item->one);
+				$this->assertEquals('Two', $item->two);
+				$this->assertEquals('Three', $item->three);
+				break;
+			}
+		}
+	}
+
+	public function testIteratorAsFunction()
 	{
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
@@ -403,11 +422,21 @@ class Data
 	public $id;
 	public $name;
 	public $cnt;
+	public $one;
+	public $two;
+	public $three;
 	private $attributes = array(
 		'foo' => null,
 		'bar' => null,
 		'baz' => null,
 	);
+
+	public function __construct($one = null, $two = null, $three = null)
+	{
+		$this->one = $one;
+		$this->two = $two;
+		$this->three = $three;
+	}
 
 	public function __set($name, $value)
 	{

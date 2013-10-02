@@ -28,8 +28,9 @@ interface StatementInterface
 	 *
 	 * @param int フェッチモード定数 (Statement::FETCH_**)
 	 * @param mixed フェッチモードのオプション引数
+	 * @param array Statement::FETCH_CLASS の場合のコンストラクタ引数
 	 */
-	public function setFetchMode($mode, $option = null);
+	public function setFetchMode($mode, $option = null, array $arguments = array());
 
 	/**
 	 * 結果セットから次の行を取得して返します。
@@ -40,23 +41,26 @@ interface StatementInterface
 	public function fetch($mode = null);
 
 	/**
-	 * 結果セットから次の行をオブジェクトのプロパティに取得して返します。
+	 * 指定したクラスのオブジェクトを生成して結果セットから次の行をプロパティに取得して返します。
 	 *
-	 * 第2引数が TRUE の場合は 結果セットの値をオブジェクトのプロパティにセットする前に、プロパティの存在を確認します。
+	 * 第3引数が TRUE の場合は 結果セットの値をオブジェクトのプロパティにセットする前に、プロパティの存在を確認します。
 	 * ※マジックメソッド __set() を利用する場合は FALSE に設定してください。
 	 *
-	 * @param object オブジェクト
+	 * @param string クラス名
+	 * @param array コンストラクタ引数
 	 * @param bool プロパティの存在をチェックするかどうか
 	 * @return mixed
 	 */
-	public function fetchInto($object, $checkPropertyExists = true);
+	public function fetchObject($className, array $arguments = null, $checkPropertyExists = true);
 
 	/**
 	 * 結果セットから全ての行を取得して配列で返します。
 	 *
-	 * @param callable コールバック関数
+	 * @param int フェッチモード定数 (Statement::FETCH_**)
+	 * @param mixed フェッチモードのオプション引数
+	 * @param array Statement::FETCH_CLASS の場合のコンストラクタ引数
 	 * @return array
 	 */
-	public function fetchAll($function = null);
+	public function fetchAll($mode = null, $option = null, array $arguments = array());
 
 }

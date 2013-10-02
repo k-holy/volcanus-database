@@ -88,8 +88,9 @@ class PdoStatement implements StatementInterface, \IteratorAggregate
 	 *
 	 * @param int フェッチモード定数 (Statement::FETCH_**)
 	 * @param mixed フェッチモードのオプション引数
+	 * @param array Statement::FETCH_CLASS の場合のコンストラクタ引数
 	 */
-	public function setFetchMode($mode, $option = null)
+	public function setFetchMode($mode, $option = null, array $arguments = array())
 	{
 		switch ($mode) {
 		case Statement::FETCH_ASSOC:
@@ -100,10 +101,6 @@ class PdoStatement implements StatementInterface, \IteratorAggregate
 			$this->fetchMode = $mode;
 			$this->statement->setFetchMode(\PDO::FETCH_NUM);
 			break;
-		case Statement::FETCH_OBJ:
-			$this->fetchMode = $mode;
-			$this->statement->setFetchMode(\PDO::FETCH_OBJ);
-			break;
 		case Statement::FETCH_CLASS:
 			$this->fetchMode = $mode;
 			if (!class_exists($option, true)) {
@@ -113,7 +110,7 @@ class PdoStatement implements StatementInterface, \IteratorAggregate
 					)
 				);
 			}
-			$this->statement->setFetchMode(\PDO::FETCH_CLASS, $option);
+			$this->statement->setFetchMode(\PDO::FETCH_CLASS, $option, $arguments);
 			break;
 		case Statement::FETCH_FUNC:
 			$this->fetchMode = $mode;
@@ -153,8 +150,6 @@ class PdoStatement implements StatementInterface, \IteratorAggregate
 			return $this->statement->fetch(\PDO::FETCH_ASSOC);
 		case Statement::FETCH_NUM:
 			return $this->statement->fetch(\PDO::FETCH_NUM);
-		case Statement::FETCH_OBJ:
-			return $this->statement->fetch(\PDO::FETCH_OBJ);
 		case Statement::FETCH_CLASS:
 			return $this->statement->fetch(\PDO::FETCH_CLASS);
 		case Statement::FETCH_FUNC:
@@ -169,18 +164,25 @@ class PdoStatement implements StatementInterface, \IteratorAggregate
 	}
 
 	/**
-	 * 結果セットから次の行をオブジェクトのプロパティに取得して返します。
+	 * 指定したクラスのオブジェクトを生成して結果セットから次の行をプロパティに取得して返します。
 	 *
-	 * 第2引数が TRUE の場合は 結果セットの値をオブジェクトのプロパティにセットする前に、プロパティの存在を確認します。
+	 * 第3引数が TRUE の場合は 結果セットの値をオブジェクトのプロパティにセットする前に、プロパティの存在を確認します。
 	 * ※マジックメソッド __set() を利用する場合は FALSE に設定してください。
 	 *
-	 * @param object オブジェクト
+	 * @param string クラス名
+	 * @param array コンストラクタ引数
 	 * @param bool プロパティの存在をチェックするかどうか
 	 * @return mixed
 	 */
-	public function fetchInto($object, $checkPropertyExists = true)
+	public function fetchObject($className, array $arguments = null, $checkPropertyExists = true)
 	{
-		$columns = $this->statement->fetch();
+		if (isset($arguments) && count($arguments) >= 1) {
+			$ref = new \ReflectionClass($className);
+			$object = $ref->newInstanceArgs($arguments);
+		} else {
+			$object = new $className();
+		}
+		$columns = $this->statement->fetch(\PDO::FETCH_ASSOC);
 		foreach ($columns as $name => $value) {
 			if (!$checkPropertyExists || property_exists($object, $name)) {
 				$object->$name = $value;
@@ -194,9 +196,10 @@ class PdoStatement implements StatementInterface, \IteratorAggregate
 	 *
 	 * @param int フェッチモード定数 (Statement::FETCH_**)
 	 * @param mixed フェッチモードのオプション引数
+	 * @param array Statement::FETCH_CLASS の場合のコンストラクタ引数
 	 * @return array
 	 */
-	public function fetchAll($mode = null, $option = null)
+	public function fetchAll($mode = null, $option = null, array $arguments = array())
 	{
 		if (is_null($mode)) {
 			$mode = $this->fetchMode;
@@ -206,8 +209,6 @@ class PdoStatement implements StatementInterface, \IteratorAggregate
 			return $this->statement->fetchAll(\PDO::FETCH_ASSOC);
 		case Statement::FETCH_NUM:
 			return $this->statement->fetchAll(\PDO::FETCH_NUM);
-		case Statement::FETCH_OBJ:
-			return $this->statement->fetchAll(\PDO::FETCH_OBJ);
 		case Statement::FETCH_CLASS:
 			if (!class_exists($option, true)) {
 				throw new \InvalidArgumentException(
@@ -216,7 +217,7 @@ class PdoStatement implements StatementInterface, \IteratorAggregate
 					)
 				);
 			}
-			return $this->statement->fetchAll(\PDO::FETCH_CLASS, $option);
+			return $this->statement->fetchAll(\PDO::FETCH_CLASS, $option, $arguments);
 		case Statement::FETCH_FUNC:
 			if (!is_callable($option)) {
 				throw new \InvalidArgumentException(
