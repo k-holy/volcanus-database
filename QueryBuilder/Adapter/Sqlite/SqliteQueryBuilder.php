@@ -63,7 +63,7 @@ class SqliteQueryBuilder extends AbstractQueryBuilder implements QueryBuilderInt
 	 * @param int 取得開始行index
 	 * @return string SQL
 	 */
-	public function selectLimit($sql, $limit = null, $offset = null)
+	public function limitOffset($sql, $limit = null, $offset = null)
 	{
 		$sql .= sprintf(' LIMIT %s',
 			(isset($limit) && (int)$limit >= 0)
@@ -84,9 +84,9 @@ class SqliteQueryBuilder extends AbstractQueryBuilder implements QueryBuilderInt
 	 * @param string SELECT文
 	 * @return string SQL
 	 */
-	public function selectCount($sql)
+	public function count($sql)
 	{
-		return sprintf("SELECT COUNT(*) FROM (%s) AS X", $sql);
+		return sprintf('SELECT COUNT(*) FROM (%s) AS __SUBQUERY', $sql);
 	}
 
 }

@@ -173,7 +173,7 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 		$builder->parameter('Foo', 'unsupported-type');
 	}
 
-	public function testSelectLimit()
+	public function testLimitOffset()
 	{
 		$builder = new MysqlQueryBuilder(
 			new MysqlExpressionBuilder(),
@@ -181,11 +181,11 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 		);
 		$this->assertEquals(
 			'SELECT * FROM test LIMIT 20,20',
-			$builder->selectLimit('SELECT * FROM test', 20, 20)
+			$builder->limitOffset('SELECT * FROM test', 20, 20)
 		);
 	}
 
-	public function testSelectLimitWithoutOffset()
+	public function testLimitOffsetWithoutOffset()
 	{
 		$builder = new MysqlQueryBuilder(
 			new MysqlExpressionBuilder(),
@@ -193,11 +193,11 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 		);
 		$this->assertEquals(
 			'SELECT * FROM test LIMIT 20',
-			$builder->selectLimit('SELECT * FROM test', 20)
+			$builder->limitOffset('SELECT * FROM test', 20)
 		);
 	}
 
-	public function testSelectLimitWithoutLimit()
+	public function testLimitOffsetWithoutLimit()
 	{
 		$builder = new MysqlQueryBuilder(
 			new MysqlExpressionBuilder(),
@@ -205,23 +205,23 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 		);
 		$this->assertEquals(
 			'SELECT * FROM test LIMIT 20,18446744073709551615',
-			$builder->selectLimit('SELECT * FROM test', null, 20)
+			$builder->limitOffset('SELECT * FROM test', null, 20)
 		);
 	}
 
-	public function testSelectCount()
+	public function testCount()
 	{
 		$builder = new MysqlQueryBuilder(
 			new MysqlExpressionBuilder(),
 			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
 		);
 		$this->assertEquals(
-			'SELECT COUNT(*) FROM (SELECT * FROM test) AS X',
-			$builder->selectCount('SELECT * FROM test')
+			'SELECT COUNT(*) FROM (SELECT * FROM test) AS __SUBQUERY',
+			$builder->count('SELECT * FROM test')
 		);
 	}
 
-	public function testSelectCountWithSqlCalcFoundRows()
+	public function testCountWithSqlCalcFoundRows()
 	{
 		$builder = new MysqlQueryBuilder(
 			new MysqlExpressionBuilder(),
@@ -229,7 +229,7 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 		);
 		$this->assertEquals(
 			'SELECT FOUND_ROWS()',
-			$builder->selectCount('SELECT SQL_CALC_FOUND_ROWS  * FROM test')
+			$builder->count('SELECT SQL_CALC_FOUND_ROWS  * FROM test')
 		);
 	}
 

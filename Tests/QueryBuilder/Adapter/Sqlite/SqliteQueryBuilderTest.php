@@ -185,7 +185,7 @@ class SqliteQueryBuilderTest extends \PHPUnit_Framework_TestCase
 		$builder->parameter('Foo', 'unsupported-type');
 	}
 
-	public function testSelectLimit()
+	public function testLimitOffset()
 	{
 		$builder = new SqliteQueryBuilder(
 			new SqliteExpressionBuilder(),
@@ -193,11 +193,11 @@ class SqliteQueryBuilderTest extends \PHPUnit_Framework_TestCase
 		);
 		$this->assertEquals(
 			'SELECT * FROM test LIMIT 20 OFFSET 20',
-			$builder->selectLimit('SELECT * FROM test', 20, 20)
+			$builder->limitOffset('SELECT * FROM test', 20, 20)
 		);
 	}
 
-	public function testSelectLimitWithoutOffset()
+	public function testLimitOffsetWithoutOffset()
 	{
 		$builder = new SqliteQueryBuilder(
 			new SqliteExpressionBuilder(),
@@ -205,11 +205,11 @@ class SqliteQueryBuilderTest extends \PHPUnit_Framework_TestCase
 		);
 		$this->assertEquals(
 			'SELECT * FROM test LIMIT 20',
-			$builder->selectLimit('SELECT * FROM test', 20)
+			$builder->limitOffset('SELECT * FROM test', 20)
 		);
 	}
 
-	public function testSelectLimitWithoutLimit()
+	public function testLimitOffsetWithoutLimit()
 	{
 		$builder = new SqliteQueryBuilder(
 			new SqliteExpressionBuilder(),
@@ -217,19 +217,19 @@ class SqliteQueryBuilderTest extends \PHPUnit_Framework_TestCase
 		);
 		$this->assertEquals(
 			'SELECT * FROM test LIMIT 18446744073709551615 OFFSET 20',
-			$builder->selectLimit('SELECT * FROM test', null, 20)
+			$builder->limitOffset('SELECT * FROM test', null, 20)
 		);
 	}
 
-	public function testSelectCount()
+	public function testCount()
 	{
 		$builder = new SqliteQueryBuilder(
 			new SqliteExpressionBuilder(),
 			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
 		);
 		$this->assertEquals(
-			'SELECT COUNT(*) FROM (SELECT * FROM test) AS X',
-			$builder->selectCount('SELECT * FROM test')
+			'SELECT COUNT(*) FROM (SELECT * FROM test) AS __SUBQUERY',
+			$builder->count('SELECT * FROM test')
 		);
 	}
 

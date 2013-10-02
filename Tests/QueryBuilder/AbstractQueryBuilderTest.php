@@ -155,7 +155,7 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 		$builder->parameter('Foo', 'unsupported-type');
 	}
 
-	public function testSelectLimit()
+	public function testLimitOffset()
 	{
 		$sql = 'SELECT * FROM test';
 		$builder = new QueryBuilder(
@@ -164,11 +164,11 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 		);
 		$this->assertEquals(
 			"SELECT * FROM test LIMIT 20 OFFSET 10",
-			$builder->selectLimit($sql, 20, 10)
+			$builder->limitOffset($sql, 20, 10)
 		);
 	}
 
-	public function testSelectCount()
+	public function testCount()
 	{
 		$sql = 'SELECT * FROM test';
 		$builder = new QueryBuilder(
@@ -177,7 +177,7 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 		);
 		$this->assertEquals(
 			"SELECT COUNT(*) FROM (SELECT * FROM test) AS X",
-			$builder->selectCount($sql)
+			$builder->count($sql)
 		);
 	}
 

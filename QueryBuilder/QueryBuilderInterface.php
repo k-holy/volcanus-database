@@ -35,7 +35,7 @@ interface QueryBuilderInterface
 	 * @param int 取得開始行index
 	 * @return string SQL
 	 */
-	public function selectLimit($sql, $limit = null, $offset = null);
+	public function limitOffset($sql, $limit = null, $offset = null);
 
 	/**
 	 * SELECT文を元に件数を返すクエリを生成して返します。
@@ -43,7 +43,7 @@ interface QueryBuilderInterface
 	 * @param string SELECT文
 	 * @return string SQL
 	 */
-	public function selectCount($sql);
+	public function count($sql);
 
 	/**
 	 * データ型に合わせて項目を別名で取得するSQL句を生成します。

@@ -298,8 +298,16 @@ SQL
 	public function testLimitOffset()
 	{
 		$facade = new Facade($this->getDriver(), $this->getBuilder());
-		$this->assertEquals("SELECT * FROM test LIMIT 10 OFFSET 10",
-			$facade->limitOffset("SELECT * FROM test", 10, 10)
+		$this->assertEquals("SELECT * FROM test LIMIT 10 OFFSET 1",
+			$facade->limitOffset("SELECT * FROM test", 10, 1)
+		);
+	}
+
+	public function testCount()
+	{
+		$facade = new Facade($this->getDriver(), $this->getBuilder());
+		$this->assertEquals("SELECT COUNT(*) FROM (SELECT * FROM test) AS __SUBQUERY",
+			$facade->count("SELECT * FROM test")
 		);
 	}
 

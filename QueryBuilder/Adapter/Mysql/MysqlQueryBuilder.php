@@ -63,7 +63,7 @@ class MysqlQueryBuilder extends AbstractQueryBuilder implements QueryBuilderInte
 	 * @param int 取得開始行index
 	 * @return string SQL
 	 */
-	public function selectLimit($sql, $limit = null, $offset = null)
+	public function limitOffset($sql, $limit = null, $offset = null)
 	{
 		return sprintf('%s LIMIT %s%s',
 			$sql,
@@ -78,12 +78,12 @@ class MysqlQueryBuilder extends AbstractQueryBuilder implements QueryBuilderInte
 	 * @param string SELECT文
 	 * @return string SQL
 	 */
-	public function selectCount($sql)
+	public function count($sql)
 	{
 		if (false !== strpos($sql, 'SQL_CALC_FOUND_ROWS')) {
 			return 'SELECT FOUND_ROWS()';
 		}
-		return sprintf("SELECT COUNT(*) FROM (%s) AS X", $sql);
+		return sprintf('SELECT COUNT(*) FROM (%s) AS __SUBQUERY', $sql);
 	}
 
 }

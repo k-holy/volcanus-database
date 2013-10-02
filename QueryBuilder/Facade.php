@@ -206,6 +206,17 @@ SQL;
 	}
 
 	/**
+	 * SELECT文を元に件数を返すクエリを生成して返します。
+	 *
+	 * @param string SELECT文
+	 * @return string SQL
+	 */
+	public function count($sql)
+	{
+		return $this->builder->count($sql);
+	}
+
+	/**
 	 * SELECT文にLIMIT値およびOFFSET値を付与して返します。
 	 *
 	 * @param string SELECT文
@@ -215,7 +226,7 @@ SQL;
 	 */
 	public function limitOffset($sql, $limit = null, $offset = null)
 	{
-		return $this->builder->selectLimit($sql, $limit, $offset);
+		return $this->builder->limitOffset($sql, $limit, $offset);
 	}
 
 	/**
