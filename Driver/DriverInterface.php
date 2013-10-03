@@ -39,6 +39,20 @@ interface DriverInterface
 	public function connected();
 
 	/**
+	 * ドライバ名を返します。
+	 *
+	 * @return string ドライバ名
+	 */
+	public function getDriverName();
+
+	/**
+	 * ドライバに合ったメタデータプロセッサを生成します。
+	 *
+	 * @return Volcanus\Database\MetaDataProcessorInterface
+	 */
+	public function createMetaDataProcessor();
+
+	/**
 	 * SQL実行準備を行い、ステートメントオブジェクトを返します。
 	 *
 	 * @string SQL
@@ -96,5 +110,13 @@ interface DriverInterface
 	 * @return array of Column
 	 */
 	public function getMetaColumns($table);
+
+	/**
+	 * 文字列を引用符で適切にクォートして返します。
+	 *
+	 * @param string クォートしたい値
+	 * @return string クォート結果の文字列
+	 */
+	public function quote($value);
 
 }

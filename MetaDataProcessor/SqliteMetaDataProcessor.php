@@ -9,12 +9,12 @@
 namespace Volcanus\Database\MetaDataProcessor;
 
 use Volcanus\Database\Driver\StatementInterface;
-use Volcanus\Database\Database;
+use Volcanus\Database\Statement;
 use Volcanus\Database\Table;
 use Volcanus\Database\Column;
 
 /**
- * PDOコネクション
+ * SQLite メタデータプロセッサ
  *
  * @author k_horii@rikcorp.jp
  */
@@ -39,7 +39,7 @@ class SqliteMetaDataProcessor implements MetaDataProcessorInterface
 	 */
 	public function getMetaTables(StatementInterface $statement)
 	{
-		$statement->setFetchMode(Database::FETCH_NUM);
+		$statement->setFetchMode(Statement::FETCH_NUM);
 		$tables = array();
 		foreach ($statement as $cols) {
 			$table = new Table();
@@ -68,7 +68,7 @@ class SqliteMetaDataProcessor implements MetaDataProcessorInterface
 	 */
 	public function getMetaColumns(StatementInterface $statement)
 	{
-		$statement->setFetchMode(Database::FETCH_NUM);
+		$statement->setFetchMode(Statement::FETCH_NUM);
 		$columns = array();
 		foreach ($statement as $cols) {
 			$column = new Column();

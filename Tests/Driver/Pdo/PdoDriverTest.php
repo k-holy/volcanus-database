@@ -20,7 +20,6 @@ class PdoDriverTest extends \PHPUnit_Framework_TestCase
 {
 
 	private static $pdo;
-	private static $metaDataProcessor;
 
 	public function tearDown()
 	{
@@ -41,14 +40,6 @@ SQL
 			);
 		}
 		return static::$pdo;
-	}
-
-	public function getMetaDataProcessor()
-	{
-		if (!isset(static::$metaDataProcessor)) {
-			static::$metaDataProcessor = new SqliteMetaDataProcessor();
-		}
-		return static::$metaDataProcessor;
 	}
 
 	public function testConnect()
@@ -74,6 +65,37 @@ SQL
 	{
 		$driver = new PdoDriver();
 		$driver->connect('foo');
+	}
+
+	public function testGetDriverName()
+	{
+		$driver = new PdoDriver($this->getPdo());
+		$this->assertEquals('sqlite', $driver->getDriverName());
+	}
+
+	public function testGetDriverNameReturnedNullAfterDisconnected()
+	{
+		$driver = new PdoDriver($this->getPdo());
+		$driver->disconnect();
+		$this->assertNull($driver->getDriverName());
+	}
+
+	public function testCreateMetaDataProcessor()
+	{
+		$driver = new PdoDriver($this->getPdo());
+		$this->assertInstanceOf('Volcanus\Database\MetaDataProcessor\SqliteMetaDataProcessor',
+			$driver->createMetaDataProcessor()
+		);
+	}
+
+	/**
+	 * @expectedException \RuntimeException
+	 */
+	public function testCreateMetaDataProcessorRaiseExceptionWhenAfterDisconnected()
+	{
+		$driver = new PdoDriver($this->getPdo());
+		$driver->disconnect();
+		$driver->createMetaDataProcessor();
 	}
 
 	public function testPrepareReturnedPdoStatement()
@@ -144,7 +166,7 @@ SQL
 
 	public function testGetMetaTables()
 	{
-		$driver = new PdoDriver($this->getPdo(), $this->getMetaDataProcessor());
+		$driver = new PdoDriver($this->getPdo());
 		$tables = $driver->getMetaTables();
 		$this->assertArrayHasKey('test', $tables);
 		$this->assertInstanceOf('\Volcanus\Database\Table', $tables['test']);
@@ -152,7 +174,7 @@ SQL
 
 	public function testGetMetaColumns()
 	{
-		$driver = new PdoDriver($this->getPdo(), $this->getMetaDataProcessor());
+		$driver = new PdoDriver($this->getPdo());
 		$columns = $driver->getMetaColumns('test');
 		$this->assertArrayHasKey('id'  , $columns);
 		$this->assertArrayHasKey('name', $columns);
@@ -165,7 +187,8 @@ SQL
 	 */
 	public function testGetMetaTablesRaiseExceptionWhenMetaDataProcessorIsNotSet()
 	{
-		$driver = new PdoDriver($this->getPdo());
+		$driver = new PdoDriver();
+		$driver->connect($this->getPdo());
 		$driver->getMetaTables();
 	}
 
@@ -174,8 +197,16 @@ SQL
 	 */
 	public function testGetMetaColumnsRaiseExceptionWhenMetaDataProcessorIsNotSet()
 	{
-		$driver = new PdoDriver($this->getPdo());
+		$driver = new PdoDriver();
+		$driver->connect($this->getPdo());
 		$driver->getMetaColumns('test');
+	}
+
+	public function testQuote()
+	{
+		$driver = new PdoDriver($this->getPdo());
+		$this->assertEquals("'Foo'", $driver->quote('Foo'));
+		$this->assertEquals("'''Foo'''", $driver->quote("'Foo'"));
 	}
 
 }

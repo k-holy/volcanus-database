@@ -8,8 +8,9 @@
 
 namespace Volcanus\Database\Driver\Pdo;
 
-use Volcanus\Database\Database;
+use Volcanus\Database\Statement;
 use Volcanus\Database\Driver\StatementInterface;
+use Volcanus\Database\CallbackIterator;
 
 /**
  * PDOステートメント
@@ -21,6 +22,7 @@ class PdoStatement implements StatementInterface, \IteratorAggregate
 
 	private $statement;
 	private $fetchMode;
+	private $function;
 
 	/**
 	 * コンストラクタ
@@ -30,7 +32,8 @@ class PdoStatement implements StatementInterface, \IteratorAggregate
 	public function __construct(\PDOStatement $statement)
 	{
 		$this->statement = $statement;
-		$this->setFetchMode(Database::FETCH_ASSOC);
+		$this->setFetchMode(Statement::FETCH_ASSOC);
+		$this->function = null;
 	}
 
 	/**
@@ -83,19 +86,49 @@ class PdoStatement implements StatementInterface, \IteratorAggregate
 	/**
 	 * このステートメントのデフォルトのフェッチモードを設定します。
 	 *
-	 * @param int フェッチモード定数 (Database::FETCH_**)
-	 * @param mix フェッチモードのオプション
+	 * @param int フェッチモード定数 (Statement::FETCH_**)
+	 * @param mixed フェッチモードのオプション引数
+	 * @param array Statement::FETCH_CLASS の場合のコンストラクタ引数
 	 */
-	public function setFetchMode($mode, $value = null)
+	public function setFetchMode($mode, $option = null, array $arguments = array())
 	{
 		switch ($mode) {
-		case Database::FETCH_ASSOC:
+		case Statement::FETCH_ASSOC:
 			$this->fetchMode = $mode;
 			$this->statement->setFetchMode(\PDO::FETCH_ASSOC);
 			break;
-		case Database::FETCH_NUM:
+		case Statement::FETCH_NUM:
 			$this->fetchMode = $mode;
 			$this->statement->setFetchMode(\PDO::FETCH_NUM);
+			break;
+		case Statement::FETCH_CLASS:
+			$this->fetchMode = $mode;
+			if (!class_exists($option, true)) {
+				throw new \InvalidArgumentException(
+					sprintf('Statement::FETCH_CLASS accepts only className, unknown className:%s',
+						$option
+					)
+				);
+			}
+			$this->statement->setFetchMode(\PDO::FETCH_CLASS, $option, $arguments);
+			break;
+		case Statement::FETCH_FUNC:
+			$this->fetchMode = $mode;
+			if (!is_callable($option)) {
+				throw new \InvalidArgumentException(
+					sprintf('Statement::FETCH_FUNC accepts only callable, invalid type:%s',
+						(is_object($option))
+							? get_class($option)
+							: gettype($option)
+					)
+				);
+			}
+			$this->function = $option;
+			break;
+		default:
+			throw new \InvalidArgumentException(
+				sprintf('Unsupported fetchMode:%s', $mode)
+			);
 			break;
 		}
 		return $this;
@@ -104,46 +137,106 @@ class PdoStatement implements StatementInterface, \IteratorAggregate
 	/**
 	 * 結果セットから次の行を取得して返します。
 	 *
+	 * @param int フェッチモード定数 (Statement::FETCH_**)
 	 * @return mixed
 	 */
-	public function fetch()
+	public function fetch($mode = null)
 	{
-		return $this->statement->fetch();
+		if (is_null($mode)) {
+			$mode = $this->fetchMode;
+		}
+		switch ($mode) {
+		case Statement::FETCH_ASSOC:
+			return $this->statement->fetch(\PDO::FETCH_ASSOC);
+		case Statement::FETCH_NUM:
+			return $this->statement->fetch(\PDO::FETCH_NUM);
+		case Statement::FETCH_CLASS:
+			return $this->statement->fetch(\PDO::FETCH_CLASS);
+		case Statement::FETCH_FUNC:
+			$result = $this->statement->fetch(\PDO::FETCH_NUM);
+			if (!is_array($result)) {
+				return false;
+			}
+			return call_user_func_array($this->function, $result);
+		}
+		throw new \InvalidArgumentException(
+			sprintf('Unsupported fetchMode:%s', $mode)
+		);
 	}
 
 	/**
-	 * 結果セットから次の行をオブジェクトで取得して返します。
+	 * 指定したクラスのインスタンスを生成して結果セットから次の行をプロパティに取得して返します。
+	 *
+	 * 第3引数に TRUE を指定した場合、オブジェクトに同名のプロパティが存在する時のみ結果セットの値を取得します。
+	 * マジックメソッド __set() を利用する場合は FALSE に設定してください。
 	 *
 	 * @param string クラス名
 	 * @param array コンストラクタ引数
+	 * @param bool プロパティの存在をチェックするかどうか
 	 * @return mixed
 	 */
-	public function fetchObject($class, $arguments = array())
+	public function fetchInstanceOf($className, array $arguments = null, $checkPropertyExists = true)
 	{
-		return $this->statement->fetchObject($class, $arguments);
+		if (isset($arguments) && count($arguments) >= 1) {
+			$ref = new \ReflectionClass($className);
+			$object = $ref->newInstanceArgs($arguments);
+		} else {
+			$object = new $className();
+		}
+		$columns = $this->statement->fetch(\PDO::FETCH_ASSOC);
+		if (!is_array($columns)) {
+			return false;
+		}
+		foreach ($columns as $name => $value) {
+			if (!$checkPropertyExists || property_exists($object, $name)) {
+				$object->$name = $value;
+			}
+		}
+		return $object;
 	}
 
 	/**
 	 * 結果セットから全ての行を取得して配列で返します。
 	 *
-	 * @param callable コールバック関数
+	 * @param int フェッチモード定数 (Statement::FETCH_**)
+	 * @param mixed フェッチモードのオプション引数
+	 * @param array Statement::FETCH_CLASS の場合のコンストラクタ引数
 	 * @return array
 	 */
-	public function fetchAll($function = null)
+	public function fetchAll($mode = null, $option = null, array $arguments = array())
 	{
-		if (isset($function)) {
-			if (!is_callable($function)) {
+		if (is_null($mode)) {
+			$mode = $this->fetchMode;
+		}
+		switch ($mode) {
+		case Statement::FETCH_ASSOC:
+			return $this->statement->fetchAll(\PDO::FETCH_ASSOC);
+		case Statement::FETCH_NUM:
+			return $this->statement->fetchAll(\PDO::FETCH_NUM);
+		case Statement::FETCH_CLASS:
+			if (!class_exists($option, true)) {
 				throw new \InvalidArgumentException(
-					sprintf('function accepts only callable, invalid type:%s',
-						(is_object($function))
-							? get_class($function)
-							: gettype($function)
+					sprintf('Statement::FETCH_CLASS accepts only className, unknown className:%s',
+						$option
 					)
 				);
 			}
-			return $this->statement->fetchAll(\PDO::FETCH_FUNC, $function);
+			return $this->statement->fetchAll(\PDO::FETCH_CLASS, $option, $arguments);
+		case Statement::FETCH_FUNC:
+			if (!is_callable($option)) {
+				throw new \InvalidArgumentException(
+					sprintf('Statement::FETCH_FUNC accepts only callable, invalid type:%s',
+						(is_object($option))
+							? get_class($option)
+							: gettype($option)
+					)
+				);
+			}
+			return $this->statement->fetchAll(\PDO::FETCH_FUNC, $option);
 		}
-		return $this->statement->fetchAll();
+		throw new \InvalidArgumentException(
+			sprintf('Unsupported fetchMode:%s', $mode)
+		);
 	}
 
 	/**
@@ -153,6 +246,9 @@ class PdoStatement implements StatementInterface, \IteratorAggregate
 	 */
 	public function getIterator()
 	{
+		if ($this->fetchMode === Statement::FETCH_FUNC) {
+			return new CallbackIterator($this->statement, $this->function);
+		}
 		return $this->statement;
 	}
 

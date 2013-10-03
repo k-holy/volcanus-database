@@ -46,6 +46,9 @@ class PdoDriver implements DriverInterface
 		$this->lastQuery = null;
 		if (isset($pdo)) {
 			$this->connect($pdo);
+			if (!isset($metaDataProcessor)) {
+				$metaDataProcessor = $this->createMetaDataProcessor();
+			}
 		}
 		if (isset($metaDataProcessor)) {
 			$this->setMetaDataProcessor($metaDataProcessor);
@@ -98,6 +101,36 @@ class PdoDriver implements DriverInterface
 	public function connected()
 	{
 		return isset($this->pdo);
+	}
+
+	/**
+	 * ドライバ名を返します。
+	 *
+	 * @return string ドライバ名
+	 */
+	public function getDriverName()
+	{
+		if (isset($this->pdo)) {
+			return $this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
+		}
+		return null;
+	}
+
+	/**
+	 * ドライバに合ったメタデータプロセッサを生成します。
+	 *
+	 * @return Volcanus\Database\MetaDataProcessorInterface
+	 */
+	public function createMetaDataProcessor()
+	{
+		$driverName = $this->getDriverName();
+		if (!isset($driverName)) {
+			throw new \RuntimeException('Could not create MetaDataProcessor disconnected.');
+		}
+		$className = sprintf('\\Volcanus\\Database\\MetaDataProcessor\\%sMetaDataProcessor',
+			ucfirst($driverName)
+		);
+		return new $className();
 	}
 
 	/**
@@ -204,6 +237,17 @@ class PdoDriver implements DriverInterface
 				$this->metaDataProcessor->metaColumnsQuery($table)
 			)
 		);
+	}
+
+	/**
+	 * 文字列を引用符で適切にクォートして返します。
+	 *
+	 * @param string クォートしたい値
+	 * @return string クォート結果の文字列
+	 */
+	public function quote($value)
+	{
+		return $this->pdo->quote($value, \PDO::PARAM_STR);
 	}
 
 }
