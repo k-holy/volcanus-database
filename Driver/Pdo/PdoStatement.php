@@ -153,10 +153,11 @@ class PdoStatement implements StatementInterface, \IteratorAggregate
 		case Statement::FETCH_CLASS:
 			return $this->statement->fetch(\PDO::FETCH_CLASS);
 		case Statement::FETCH_FUNC:
-			return call_user_func_array(
-				$this->function,
-				$this->statement->fetch(\PDO::FETCH_NUM)
-			);
+			$result = $this->statement->fetch(\PDO::FETCH_NUM);
+			if (!is_array($result)) {
+				return false;
+			}
+			return call_user_func_array($this->function, $result);
 		}
 		throw new \InvalidArgumentException(
 			sprintf('Unsupported fetchMode:%s', $mode)
@@ -164,17 +165,17 @@ class PdoStatement implements StatementInterface, \IteratorAggregate
 	}
 
 	/**
-	 * 指定したクラスのオブジェクトを生成して結果セットから次の行をプロパティに取得して返します。
+	 * 指定したクラスのインスタンスを生成して結果セットから次の行をプロパティに取得して返します。
 	 *
-	 * 第3引数が TRUE の場合は 結果セットの値をオブジェクトのプロパティにセットする前に、プロパティの存在を確認します。
-	 * ※マジックメソッド __set() を利用する場合は FALSE に設定してください。
+	 * 第3引数に TRUE を指定した場合、オブジェクトに同名のプロパティが存在する時のみ結果セットの値を取得します。
+	 * マジックメソッド __set() を利用する場合は FALSE に設定してください。
 	 *
 	 * @param string クラス名
 	 * @param array コンストラクタ引数
 	 * @param bool プロパティの存在をチェックするかどうか
 	 * @return mixed
 	 */
-	public function fetchObject($className, array $arguments = null, $checkPropertyExists = true)
+	public function fetchInstanceOf($className, array $arguments = null, $checkPropertyExists = true)
 	{
 		if (isset($arguments) && count($arguments) >= 1) {
 			$ref = new \ReflectionClass($className);
@@ -183,6 +184,9 @@ class PdoStatement implements StatementInterface, \IteratorAggregate
 			$object = new $className();
 		}
 		$columns = $this->statement->fetch(\PDO::FETCH_ASSOC);
+		if (!is_array($columns)) {
+			return false;
+		}
 		foreach ($columns as $name => $value) {
 			if (!$checkPropertyExists || property_exists($object, $name)) {
 				$object->$name = $value;
