@@ -114,4 +114,21 @@ abstract class AbstractQueryBuilder
 		return $this->expressionBuilder->resultColumn($expr, $alias);
 	}
 
+	/**
+	 * Like演算子のパターンとして使用する文字列をエスケープして返します。
+	 *
+	 * @param string 抽出対象項目名
+	 * @param string エスケープに使用する文字
+	 * @return string エスケープされた文字列
+	 */
+	public function escapeLikePattern($pattern, $escapeChar = '\\')
+	{
+		$transTable = array(
+			'_' => "{$escapeChar}_" ,
+			'%' => "{$escapeChar}%" ,
+			"{$escapeChar}" => "{$escapeChar}{$escapeChar}" ,
+		);
+		return strtr($pattern, $transTable);
+	}
+
 }
