@@ -36,6 +36,19 @@ class Facade
 	}
 
 	/**
+	 * データ型に合わせて項目を別名で取得するSQL句を生成します。
+	 *
+	 * @param string 項目名
+	 * @param string データ型
+	 * @param string 別名
+	 * @return string SQL句
+	 */
+	public function expression($expr, $type = null, $alias = null)
+	{
+		return $this->builder->expression($expr, $type, $alias);
+	}
+
+	/**
 	 * カラム定義に従い、SELECT句の配列を生成します。
 	 *
 	 * @param string テーブル名
@@ -52,13 +65,25 @@ class Facade
 			if (is_array($excludeKeys) && in_array($column->name, $excludeKeys)) {
 				continue;
 			}
-			$expressions[$column->name] = $this->builder->expression(
+			$expressions[$column->name] = $this->expression(
 				isset($tableAlias) ? $tableAlias . '.' . $column->name : $tableName . '.' . $column->name,
 				$column->type,
 				array_key_exists($column->name, $columnAliases) ? $columnAliases[$column->name] : $column->name
 			);
 		}
 		return $expressions;
+	}
+
+	/**
+	 * 値を指定した型に応じたSQLパラメータ値に変換します。
+	 *
+	 * @param string データ
+	 * @param string 型名 ($typesフィールド参照)
+	 * @return string 変換結果
+	 */
+	public function parameter($value, $type)
+	{
+		return $this->builder->parameter($value, $type);
 	}
 
 	/**
@@ -85,7 +110,7 @@ class Facade
 			}
 			$expressions[$columnName] = ($noConvert)
 				? $value
-				: $this->builder->parameter($value, $metaColumns[$columnName]['type']);
+				: $this->parameter($value, $metaColumns[$columnName]['type']);
 		}
 		return $expressions;
 	}
@@ -393,6 +418,18 @@ SQL;
 		$expressions = $this->groupByExpressions($tableName, $tableAlias, $excludeKeys, $appendKeys);
 		$groupBy = (is_array($expressions) && count($expressions) > 0) ? join(" ,\n", $expressions) : '';
 		return (strlen($groupBy) >= 1) ? "GROUP BY\n{$groupBy}" : '';
+	}
+
+	/**
+	 * Like演算子のパターンとして使用する文字列をエスケープして返します。
+	 *
+	 * @param string 抽出対象項目名
+	 * @param string エスケープに使用する文字
+	 * @return string エスケープされた文字列
+	 */
+	public function escapeLikePattern($pattern, $escapeChar = '\\')
+	{
+		return $this->builder->escapeLikePattern($pattern, $escapeChar);
 	}
 
 }

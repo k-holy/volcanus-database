@@ -305,4 +305,14 @@ class SqliteQueryBuilderTest extends \PHPUnit_Framework_TestCase
 		);
 	}
 
+	public function testEscapeLikePattern()
+	{
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
+		$this->assertEquals('\\%Foo\\%', $builder->escapeLikePattern('%Foo%'));
+		$this->assertEquals('\\_Foo\\_', $builder->escapeLikePattern('_Foo_'));
+	}
+
 }

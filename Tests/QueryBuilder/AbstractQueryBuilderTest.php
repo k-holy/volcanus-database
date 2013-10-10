@@ -261,5 +261,14 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 		);
 	}
 
+	public function testEscapeLikePattern()
+	{
+		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
+			new ParameterBuilder()
+		);
+		$this->assertEquals('\\%Foo\\%', $builder->escapeLikePattern('%Foo%'));
+		$this->assertEquals('\\_Foo\\_', $builder->escapeLikePattern('_Foo_'));
+	}
 
 }

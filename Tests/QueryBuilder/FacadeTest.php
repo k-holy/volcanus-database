@@ -60,6 +60,14 @@ SQL
 		);
 	}
 
+	public function testExpression()
+	{
+		$facade = new Facade($this->getDriver(), $this->getBuilder());
+		$this->assertEquals('test.id AS "id"', $facade->expression('test.id', 'int', "id"));
+		$this->assertEquals('test.name AS "name"', $facade->expression('test.name', 'text', "name"));
+		$this->assertEquals("strftime('%Y-%m-%d %H:%i:%s', test.updated_at) AS \"updated_at_formatted\"", $facade->expression('test.updated_at', 'datetime', "updated_at_formatted"));
+	}
+
 	public function testExpressions()
 	{
 		$facade = new Facade($this->getDriver(), $this->getBuilder());
@@ -94,6 +102,14 @@ SQL
 		$this->assertEquals('test.id AS "id"', $expressions['id']);
 		$this->assertEquals('test.name AS "name"', $expressions['name']);
 		$this->assertEquals("strftime('%Y-%m-%d %H:%i:%s', test.updated_at) AS \"updated_at_formatted\"", $expressions['updated_at']);
+	}
+
+	public function testParameter()
+	{
+		$facade = new Facade($this->getDriver(), $this->getBuilder());
+		$this->assertEquals('1', $facade->parameter(1, 'int'));
+		$this->assertEquals("'Foo'", $facade->parameter('Foo', 'text'));
+		$this->assertEquals("datetime('2013-10-01 00:00:00')", $facade->parameter(new \DateTime('2013-10-01 00:00:00'), 'datetime'));
 	}
 
 	public function testParameters()
@@ -449,6 +465,13 @@ SQL
 		);
 		$expressions = $facade->whereExpressions('test', 't01', $columns);
 		$this->assertEquals('t01.id = (SELECT id FROM test WHERE 1=1)', $expressions[0]);
+	}
+
+	public function testEscapeLikePattern()
+	{
+		$facade = new Facade($this->getDriver(), $this->getBuilder());
+		$this->assertEquals('\\%Foo\\%', $facade->escapeLikePattern('%Foo%'));
+		$this->assertEquals('\\_Foo\\_', $facade->escapeLikePattern('_Foo_'));
 	}
 
 }

@@ -305,4 +305,14 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 		);
 	}
 
+	public function testEscapeLikePattern()
+	{
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
+		$this->assertEquals('\\%Foo\\%', $builder->escapeLikePattern('%Foo%'));
+		$this->assertEquals('\\_Foo\\_', $builder->escapeLikePattern('_Foo_'));
+	}
+
 }
