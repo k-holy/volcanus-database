@@ -14,11 +14,11 @@ use Volcanus\Database\Table;
 use Volcanus\Database\Column;
 
 /**
- * SQLite メタデータプロセッサ
+ * PostgreSQL メタデータプロセッサ
  *
  * @author k_horii@rikcorp.jp
  */
-class SqliteMetaDataProcessor implements MetaDataProcessorInterface
+class PostgresqlMetaDataProcessor implements MetaDataProcessorInterface
 {
 
 	/**
@@ -84,7 +84,25 @@ class SqliteMetaDataProcessor implements MetaDataProcessorInterface
 	 */
 	private function metaTablesQuery()
 	{
-		return "SELECT name FROM sqlite_master WHERE type='table'";
+		return <<<SQL
+SELECT
+    tablename
+   ,'T'
+FROM
+    pg_tables
+WHERE
+    tablename NOT LIKE 'pg\_%'
+AND tablename NOT IN ('sql_features', 'sql_implementation_info', 'sql_languages', 'sql_packages', 'sql_sizing', 'sql_sizing_profiles')
+UNION
+SELECT
+    viewname
+   ,'V'
+FROM
+    pg_views
+WHERE
+    viewname NOT LIKE 'pg\_%'
+SQL
+		;
 	}
 
 	/**
@@ -95,7 +113,102 @@ class SqliteMetaDataProcessor implements MetaDataProcessorInterface
 	 */
 	private function metaColumnsQuery($table)
 	{
-		return sprintf('PRAGMA TABLE_INFO(%s);', $table);
+		return sprintf(<<<SQL
+SELECT
+    a.attname
+   ,t.typname
+   ,a.attlen
+   ,a.atttypmod
+   ,a.attnotnull
+   ,a.atthasdef
+   ,a.attnum
+   ,d.description
+FROM
+    pg_attribute a
+LEFT JOIN
+    pg_class c
+ON
+    a.attrelid = c.oid
+LEFT JOIN
+    pg_type t
+ON
+    a.atttypid = t.oid
+LEFT JOIN
+    pg_description d
+ON
+    a.attrelid = d.objoid
+AND a.attnum = d.objsubid
+WHERE
+    c.relkind IN ('r','v')
+AND (c.relname = '%s' OR c.relname = lower('%s'))
+AND a.attname NOT LIKE '....%%'
+AND a.attnum > 0
+ORDER BY
+    a.attnum
+SQL
+		, $table, $table);
+	}
+
+	/**
+	 * 指定テーブルのキー情報を取得するクエリを返します。
+	 *
+	 * @param string テーブル名
+	 * @return string SQL
+	 */
+	private function metaKeyQuery($table)
+	{
+		return sprintf(<<<SQL
+SELECT
+    ic.relname AS index_name
+   ,a.attname AS column_name
+   ,i.indisunique AS unique_key
+   ,i.indisprimary AS primary_key
+FROM
+    pg_class bc
+   ,pg_class ic
+   ,pg_index i
+   ,pg_attribute a
+WHERE
+    bc.oid = i.indrelid
+AND ic.oid = i.indexrelid
+AND (
+    i.indkey[0] = a.attnum
+ OR i.indkey[1] = a.attnum
+ OR i.indkey[2] = a.attnum
+ OR i.indkey[3] = a.attnum
+ OR i.indkey[4] = a.attnum
+ OR i.indkey[5] = a.attnum
+ OR i.indkey[6] = a.attnum
+ OR i.indkey[7] = a.attnum
+)
+AND a.attrelid = bc.oid
+AND bc.relname = '%s'
+SQL
+		, $table);
+	}
+
+	/**
+	 * 指定テーブルのデフォルト情報を取得するクエリを返します。
+	 *
+	 * @param string テーブル名
+	 * @return string SQL
+	 */
+	private function metaDefaultQuery($table)
+	{
+		return sprintf(<<<SQL
+SELECT
+    d.adnum AS num
+   ,d.adsrc AS def
+FROM
+    pg_attrdef d
+   ,pg_class c
+WHERE
+    d.adrelid=c.oid
+AND c.relname='%s'
+ORDER BY
+    d.adnum
+SQL
+		, $table);
 	}
 
 }

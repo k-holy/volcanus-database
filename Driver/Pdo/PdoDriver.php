@@ -212,11 +212,7 @@ class PdoDriver implements DriverInterface
 				'metaDataProcessor is not set'
 			);
 		}
-		return $this->metaDataProcessor->getMetaTables(
-			$this->query(
-				$this->metaDataProcessor->metaTablesQuery()
-			)
-		);
+		return $this->metaDataProcessor->getMetaTables($this);
 	}
 
 	/**
@@ -232,11 +228,7 @@ class PdoDriver implements DriverInterface
 				'metaDataProcessor is not set'
 			);
 		}
-		return $this->metaDataProcessor->getMetaColumns(
-			$this->query(
-				$this->metaDataProcessor->metaColumnsQuery($table)
-			)
-		);
+		return $this->metaDataProcessor->getMetaColumns($this, $table);
 	}
 
 	/**

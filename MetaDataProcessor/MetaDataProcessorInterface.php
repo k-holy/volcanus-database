@@ -8,7 +8,7 @@
 
 namespace Volcanus\Database\MetaDataProcessor;
 
-use Volcanus\Database\Driver\StatementInterface;
+use Volcanus\Database\Driver\DriverInterface;
 
 /**
  * メタデータプロセッサインタフェース
@@ -19,34 +19,20 @@ interface MetaDataProcessorInterface
 {
 
 	/**
-	 * テーブル情報を取得するクエリを返します。
-	 *
-	 * @return string SQL
-	 */
-	public function metaTablesQuery();
-
-	/**
 	 * テーブルオブジェクトを配列で返します。
 	 *
-	 * @param \Volcanus\Database\Driver\StatementInterface ステートメント
+	 * @param \Volcanus\Database\Driver\DriverInterface データベースドライバ
 	 * @return array of Table
 	 */
-	public function getMetaTables(StatementInterface $statement);
-
-	/**
-	 * 指定テーブルのカラム情報を取得するクエリを返します。
-	 *
-	 * @param string テーブル名
-	 * @return string SQL
-	 */
-	public function metaColumnsQuery($table);
+	public function getMetaTables(DriverInterface $driver);
 
 	/**
 	 * 指定テーブルのカラムオブジェクトを配列で返します。
 	 *
-	 * @param \Volcanus\Database\Driver\StatementInterface ステートメント
+	 * @param \Volcanus\Database\Driver\DriverInterface データベースドライバ
+	 * @param string テーブル名
 	 * @return array of Column
 	 */
-	public function getMetaColumns(StatementInterface $statement);
+	public function getMetaColumns(DriverInterface $driver, $table);
 
 }
