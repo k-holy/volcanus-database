@@ -8,7 +8,7 @@
 
 namespace Volcanus\Database\MetaDataProcessor;
 
-use Volcanus\Database\Driver\StatementInterface;
+use Volcanus\Database\Driver\DriverInterface;
 use Volcanus\Database\Statement;
 use Volcanus\Database\Table;
 use Volcanus\Database\Column;
@@ -22,23 +22,14 @@ class SqliteMetaDataProcessor implements MetaDataProcessorInterface
 {
 
 	/**
-	 * テーブル情報を取得するクエリを返します。
-	 *
-	 * @return string SQL
-	 */
-	public function metaTablesQuery()
-	{
-		return "SELECT name FROM sqlite_master WHERE type='table'";
-	}
-
-	/**
 	 * テーブルオブジェクトを配列で返します。
 	 *
-	 * @param \Volcanus\Database\Driver\StatementInterface ステートメント
+	 * @param \Volcanus\Database\Driver\DriverInterface データベースドライバ
 	 * @return array of Table
 	 */
-	public function getMetaTables(StatementInterface $statement)
+	public function getMetaTables(DriverInterface $driver)
 	{
+		$statement = $driver->query($this->metaTablesQuery());
 		$statement->setFetchMode(Statement::FETCH_NUM);
 		$tables = array();
 		foreach ($statement as $cols) {
@@ -50,24 +41,15 @@ class SqliteMetaDataProcessor implements MetaDataProcessorInterface
 	}
 
 	/**
-	 * 指定テーブルのカラム情報を取得するクエリを返します。
-	 *
-	 * @param string テーブル名
-	 * @return string SQL
-	 */
-	public function metaColumnsQuery($table)
-	{
-		return sprintf('PRAGMA TABLE_INFO(%s);', $table);
-	}
-
-	/**
 	 * 指定テーブルのカラムオブジェクトを配列で返します。
 	 *
-	 * @param \Volcanus\Database\Driver\StatementInterface ステートメント
+	 * @param \Volcanus\Database\Driver\DriverInterface データベースドライバ
+	 * @param string テーブル名
 	 * @return array of Column
 	 */
-	public function getMetaColumns(StatementInterface $statement)
+	public function getMetaColumns(DriverInterface $driver, $table)
 	{
+		$statement = $driver->query($this->metaColumnsQuery($table));
 		$statement->setFetchMode(Statement::FETCH_NUM);
 		$columns = array();
 		foreach ($statement as $cols) {
@@ -93,6 +75,27 @@ class SqliteMetaDataProcessor implements MetaDataProcessorInterface
 			$columns[$cols[1]] = $column;
 		}
 		return $columns;
+	}
+
+	/**
+	 * テーブル情報を取得するクエリを返します。
+	 *
+	 * @return string SQL
+	 */
+	private function metaTablesQuery()
+	{
+		return "SELECT name FROM sqlite_master WHERE type='table'";
+	}
+
+	/**
+	 * 指定テーブルのカラム情報を取得するクエリを返します。
+	 *
+	 * @param string テーブル名
+	 * @return string SQL
+	 */
+	private function metaColumnsQuery($table)
+	{
+		return sprintf('PRAGMA TABLE_INFO(%s);', $table);
 	}
 
 }
