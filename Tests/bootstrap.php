@@ -8,7 +8,7 @@
 spl_autoload_register(function($className) {
 	$namespace = 'Volcanus\Database';
 	if (0 === strpos(ltrim($className, DIRECTORY_SEPARATOR), $namespace)) {
-		$path = realpath(__DIR__ . '/../src') . substr(
+		$path = realpath(__DIR__ . '/..') . substr(
 			str_replace('\\', DIRECTORY_SEPARATOR, $className),
 			strlen($namespace)
 		).'.php';
