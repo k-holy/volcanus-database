@@ -12,7 +12,7 @@
         }
     ],
     "autoload": {
-        "psr-0": { "Volcanus\\Database": "" }
+        "psr-0": { "Volcanus\\Database": "." }
     },
     "target-dir": "Volcanus/Database",
     "require": {
