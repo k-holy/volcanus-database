@@ -16,7 +16,7 @@ use Volcanus\Database\QueryBuilder\Adapter\Sqlite\SqliteExpressionBuilder;
 use Volcanus\Database\QueryBuilder\Adapter\Sqlite\SqliteParameterBuilder;
 
 use Volcanus\Database\Driver\Pdo\PdoDriver;
-use Volcanus\Database\MetaDataProcessor\SqliteMetaDataProcessor;
+use Volcanus\Database\MetaData\SqliteMetaDataProcessor;
 
 /**
  * Test for Facade

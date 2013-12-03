@@ -11,7 +11,7 @@ namespace Volcanus\Database\Tests;
 use Volcanus\Database\Statement;
 use Volcanus\Database\Driver\Pdo\PdoDriver;
 use Volcanus\Database\Driver\Pdo\PdoStatement;
-use Volcanus\Database\MetaDataProcessor\SqliteMetaDataProcessor;
+use Volcanus\Database\MetaData\SqliteMetaDataProcessor;
 
 /**
  * Test for PdoStatement

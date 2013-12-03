@@ -6,8 +6,9 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database\MetaDataProcessor;
+namespace Volcanus\Database\MetaData;
 
+use Volcanus\Database\MetaData\Cache\CacheProcessorInterface;
 use Volcanus\Database\Driver\DriverInterface;
 
 /**
@@ -19,9 +20,16 @@ interface MetaDataProcessorInterface
 {
 
 	/**
+	 * キャッシュプロセッサをセットします。
+	 *
+	 * @param Volcanus\Database\MetaData\Cache\CacheProcessorInterface キャッシュプロセッサ
+	 */
+	public function setCacheProcessor(CacheProcessorInterface $cacheProcessor);
+
+	/**
 	 * テーブルオブジェクトを配列で返します。
 	 *
-	 * @param \Volcanus\Database\Driver\DriverInterface データベースドライバ
+	 * @param Volcanus\Database\Driver\DriverInterface データベースドライバ
 	 * @return array of Table
 	 */
 	public function getMetaTables(DriverInterface $driver);
@@ -29,7 +37,7 @@ interface MetaDataProcessorInterface
 	/**
 	 * 指定テーブルのカラムオブジェクトを配列で返します。
 	 *
-	 * @param \Volcanus\Database\Driver\DriverInterface データベースドライバ
+	 * @param Volcanus\Database\Driver\DriverInterface データベースドライバ
 	 * @param string テーブル名
 	 * @return array of Column
 	 */

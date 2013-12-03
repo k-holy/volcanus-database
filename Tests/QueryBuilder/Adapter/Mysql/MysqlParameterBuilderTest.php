@@ -12,7 +12,7 @@ use Volcanus\Database\QueryBuilder\QueryBuilder;
 use Volcanus\Database\QueryBuilder\Adapter\Mysql\MysqlParameterBuilder;
 
 use Volcanus\Database\Driver\Pdo\PdoDriver;
-use Volcanus\Database\MetaDataProcessor\MysqlMetaDataProcessor;
+use Volcanus\Database\MetaData\MysqlMetaDataProcessor;
 
 /**
  * Test for MysqlParameter

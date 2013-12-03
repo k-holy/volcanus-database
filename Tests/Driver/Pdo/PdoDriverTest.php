@@ -9,7 +9,7 @@
 namespace Volcanus\Database\Tests;
 
 use Volcanus\Database\Driver\Pdo\PdoDriver;
-use Volcanus\Database\MetaDataProcessor\SqliteMetaDataProcessor;
+use Volcanus\Database\MetaData\SqliteMetaDataProcessor;
 
 /**
  * Test for PdoDriver
@@ -83,7 +83,7 @@ SQL
 	public function testCreateMetaDataProcessor()
 	{
 		$driver = new PdoDriver($this->getPdo());
-		$this->assertInstanceOf('Volcanus\Database\MetaDataProcessor\SqliteMetaDataProcessor',
+		$this->assertInstanceOf('Volcanus\Database\MetaData\SqliteMetaDataProcessor',
 			$driver->createMetaDataProcessor()
 		);
 	}
