@@ -9,7 +9,7 @@
 namespace Volcanus\Database\Driver\Pdo;
 
 use Volcanus\Database\Driver\DriverInterface;
-use Volcanus\Database\MetaDataProcessor\MetaDataProcessorInterface;
+use Volcanus\Database\MetaData\MetaDataProcessorInterface;
 
 /**
  * PDOコネクション
@@ -30,7 +30,7 @@ class PdoDriver implements DriverInterface
 	private $lastQuery;
 
 	/**
-	 * @var Volcanus\Database\MetaDataProcessor\MetaDataProcessorInterface
+	 * @var Volcanus\Database\MetaData\MetaDataProcessorInterface
 	 */
 	private $metaDataProcessor;
 
@@ -38,7 +38,7 @@ class PdoDriver implements DriverInterface
 	 * コンストラクタ
 	 *
 	 * @param PDO
-	 * @param Volcanus\Database\MetaDataProcessor\MetaDataProcessorInterface
+	 * @param Volcanus\Database\MetaData\MetaDataProcessorInterface
 	 */
 	public function __construct(\PDO $pdo = null, MetaDataProcessorInterface $metaDataProcessor = null)
 	{
@@ -58,7 +58,7 @@ class PdoDriver implements DriverInterface
 	/**
 	 * メタデータプロセッサをセットします。
 	 *
-	 * @param Volcanus\Database\MetaDataProcessor\MetaDataProcessorInterface
+	 * @param Volcanus\Database\MetaData\MetaDataProcessorInterface
 	 */
 	public function setMetaDataProcessor(MetaDataProcessorInterface $metaDataProcessor)
 	{
@@ -119,7 +119,7 @@ class PdoDriver implements DriverInterface
 	/**
 	 * ドライバに合ったメタデータプロセッサを生成します。
 	 *
-	 * @return Volcanus\Database\MetaDataProcessor\MetaDataProcessorInterface
+	 * @return Volcanus\Database\MetaData\MetaDataProcessorInterface
 	 */
 	public function createMetaDataProcessor()
 	{
@@ -127,7 +127,7 @@ class PdoDriver implements DriverInterface
 		if (!isset($driverName)) {
 			throw new \RuntimeException('Could not create MetaDataProcessor disconnected.');
 		}
-		$className = sprintf('\\Volcanus\\Database\\MetaDataProcessor\\%sMetaDataProcessor',
+		$className = sprintf('\\Volcanus\\Database\\MetaData\\%sMetaDataProcessor',
 			ucfirst($driverName)
 		);
 		return new $className();

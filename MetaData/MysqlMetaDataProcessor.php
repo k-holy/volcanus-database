@@ -6,28 +6,29 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database\MetaDataProcessor;
+namespace Volcanus\Database\MetaData;
 
+use Volcanus\Database\MetaData\Cache\CacheProcessorInterface;
 use Volcanus\Database\Driver\DriverInterface;
 use Volcanus\Database\Statement;
 use Volcanus\Database\Table;
 use Volcanus\Database\Column;
 
 /**
- * SQLite メタデータプロセッサ
+ * MySQL メタデータプロセッサ
  *
  * @author k_horii@rikcorp.jp
  */
-class SqliteMetaDataProcessor implements MetaDataProcessorInterface
+class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
 {
 
 	/**
 	 * テーブルオブジェクトを配列で返します。
 	 *
-	 * @param \Volcanus\Database\Driver\DriverInterface データベースドライバ
+	 * @param Volcanus\Database\Driver\DriverInterface データベースドライバ
 	 * @return array of Table
 	 */
-	public function getMetaTables(DriverInterface $driver)
+	protected function doGetMetaTables(DriverInterface $driver)
 	{
 		$statement = $driver->query($this->metaTablesQuery());
 		$statement->setFetchMode(Statement::FETCH_NUM);
@@ -43,36 +44,42 @@ class SqliteMetaDataProcessor implements MetaDataProcessorInterface
 	/**
 	 * 指定テーブルのカラムオブジェクトを配列で返します。
 	 *
-	 * @param \Volcanus\Database\Driver\DriverInterface データベースドライバ
+	 * @param Volcanus\Database\Driver\DriverInterface データベースドライバ
 	 * @param string テーブル名
 	 * @return array of Column
 	 */
-	public function getMetaColumns(DriverInterface $driver, $table)
+	protected function doGetMetaColumns(DriverInterface $driver, $table)
 	{
 		$statement = $driver->query($this->metaColumnsQuery($table));
-		$statement->setFetchMode(Statement::FETCH_NUM);
+		$statement->setFetchMode(Statement::FETCH_ASSOC);
 		$columns = array();
 		foreach ($statement as $cols) {
 			$column = new Column();
-			$column->name = $cols[1];
-			if (preg_match("/^(.+)\((\d+),(\d+)/", $cols[2], $matches)) {
+			$column->name = $cols['Field'];
+			if (preg_match("/^(.+)\((\d+),(\d+)/", $cols['Type'], $matches)) {
 				$column->type = $matches[1];
 				$column->maxLength = is_numeric($matches[2]) ? $matches[2] : -1;
 				$column->scale = is_numeric($matches[3]) ? $matches[3] : -1;
-			} elseif (preg_match("/^(.+)\((\d+)/", $cols[2], $matches)) {
+			} elseif (preg_match("/^(.+)\((\d+)/", $cols['Type'], $matches)) {
 				$column->type = $matches[1];
 				$column->maxLength = is_numeric($matches[2]) ? $matches[2] : -1;
+			} elseif (preg_match("/^(enum)\((.*)\)$/i", $cols['Type'], $matches)) {
+				$column->type = $matches[1];
+				$zlen = max(array_map('strlen', explode(',', $matches[2]))) - 2;
+				$column->maxLength = ($zlen > 0) ? $zlen : 1;
 			} else {
-				$column->type = $cols[2];
+				$column->type = $cols['Type'];
 			}
-			$column->notNull = (bool)$cols[3];
-			$column->primaryKey = (bool)$cols[5];
-			$column->autoIncrement = ($column->primaryKey && strcasecmp($column->type, 'INTEGER') === 0);
-			$column->binary = (strcasecmp($column->type, 'BLOB') === 0);
-			if (!$column->binary && strcmp($cols[4], '') !== 0 && strcasecmp($cols[4], 'NULL') !== 0) {
-				$column->default = $cols[4];
+			$column->notNull = ($cols['Null'] !== 'YES');
+			$column->primaryKey = ($cols['Key'] === 'PRI');
+			$column->uniqueKey = ($cols['Key'] === 'UNI');
+			$column->autoIncrement  = (strpos($cols['Extra'], 'auto_increment') !== false);
+			$column->binary = (strpos($cols['Type'],'blob') !== false);
+			if (!$column->binary && strcmp($cols['Default'], '') !== 0 && strcasecmp($cols['Default'], 'NULL') !== 0) {
+				$column->default = $cols['Default'];
 			}
-			$columns[$cols[1]] = $column;
+			$column->comment = (isset($cols['Comment']) && strcmp($cols['Comment'], '') != 0) ? $cols['Comment'] : null;
+			$columns[$cols['Field']] = $column;
 		}
 		return $columns;
 	}
@@ -84,7 +91,7 @@ class SqliteMetaDataProcessor implements MetaDataProcessorInterface
 	 */
 	private function metaTablesQuery()
 	{
-		return "SELECT name FROM sqlite_master WHERE type='table'";
+		return 'SHOW TABLES;';
 	}
 
 	/**
@@ -95,7 +102,7 @@ class SqliteMetaDataProcessor implements MetaDataProcessorInterface
 	 */
 	private function metaColumnsQuery($table)
 	{
-		return sprintf('PRAGMA TABLE_INFO(%s);', $table);
+		return sprintf('SHOW FULL COLUMNS FROM %s', $table);
 	}
 
 }

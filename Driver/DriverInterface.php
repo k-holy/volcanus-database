@@ -48,7 +48,7 @@ interface DriverInterface
 	/**
 	 * ドライバに合ったメタデータプロセッサを生成します。
 	 *
-	 * @return Volcanus\Database\MetaDataProcessor\MetaDataProcessorInterface
+	 * @return Volcanus\Database\MetaData\MetaDataProcessorInterface
 	 */
 	public function createMetaDataProcessor();
 
