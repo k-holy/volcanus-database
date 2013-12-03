@@ -31,4 +31,16 @@ class Table extends AbstractPropertyAccessor
 	 */
 	protected $columns;
 
+	/**
+	 * コンストラクタ
+	 *
+	 * @param array | Traversable
+	 */
+	public function __construct($attributes = array())
+	{
+		if ($attributes !== null) {
+			$this->properties($attributes);
+		}
+	}
+
 }

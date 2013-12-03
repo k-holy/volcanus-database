@@ -19,7 +19,7 @@ interface StatementInterface
 	/**
 	 * プリペアドステートメントを実行します。
 	 *
-	 * @param array | \Traversable パラメータ
+	 * @param array | Traversable パラメータ
 	 */
 	public function execute($parameters = null);
 

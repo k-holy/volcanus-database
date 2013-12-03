@@ -75,13 +75,39 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
 	}
 
 	/**
+	 * 引数なしの場合は全てのプロパティを配列で返します。
+	 * 引数ありの場合は全てのプロパティを引数の配列からセットして$thisを返します。
+	 *
+	 * @param array プロパティの配列
+	 * @return mixed プロパティの配列 または $this
+	 */
+	public function properties()
+	{
+		switch (func_num_args()) {
+		case 0:
+			return get_object_vars($this);
+		case 1:
+			$properties = func_get_arg(0);
+			if (!is_array($properties) && !($properties instanceof \Traversable)) {
+				throw new \InvalidArgumentException(
+					'The properties is not Array and not Traversable.');
+			}
+			foreach ($properties as $name => $value) {
+				$this->offsetSet($name, $value);
+			}
+			return $this;
+		}
+		throw new \InvalidArgumentException('Invalid argument count.');
+	}
+
+	/**
 	 * IteratorAggregate::getIterator()
 	 *
 	 * @return \ArrayIterator
 	 */
 	public function getIterator()
 	{
-		return new \ArrayIterator($this->toArray());
+		return new \ArrayIterator($this->properties());
 	}
 
 	/**
@@ -91,7 +117,7 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
 	 */
 	public function toArray()
 	{
-		return get_object_vars($this);
+		return $this->properties();
 	}
 
 	/**
@@ -141,7 +167,7 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
 	 */
 	public function __toString()
 	{
-		return var_export($this->toArray(), true);
+		return var_export($this->properties(), true);
 	}
 
 }

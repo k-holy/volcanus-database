@@ -20,7 +20,7 @@ class PdoDriver implements DriverInterface
 {
 
 	/**
-	 * @var \PDO
+	 * @var PDO
 	 */
 	private $pdo;
 
@@ -30,15 +30,15 @@ class PdoDriver implements DriverInterface
 	private $lastQuery;
 
 	/**
-	 * @var \Volcanus\Database\MetaDataProcessorInterface
+	 * @var Volcanus\Database\MetaDataProcessor\MetaDataProcessorInterface
 	 */
 	private $metaDataProcessor;
 
 	/**
 	 * コンストラクタ
 	 *
-	 * @param \PDO
-	 * @param \Volcanus\Database\MetaDataProcessorInterface
+	 * @param PDO
+	 * @param Volcanus\Database\MetaDataProcessor\MetaDataProcessorInterface
 	 */
 	public function __construct(\PDO $pdo = null, MetaDataProcessorInterface $metaDataProcessor = null)
 	{
@@ -58,7 +58,7 @@ class PdoDriver implements DriverInterface
 	/**
 	 * メタデータプロセッサをセットします。
 	 *
-	 * @param \Volcanus\Database\MetaDataProcessorInterface
+	 * @param Volcanus\Database\MetaDataProcessor\MetaDataProcessorInterface
 	 */
 	public function setMetaDataProcessor(MetaDataProcessorInterface $metaDataProcessor)
 	{
@@ -68,7 +68,7 @@ class PdoDriver implements DriverInterface
 	/**
 	 * DBに接続します。
 	 *
-	 * @param \PDO
+	 * @param PDO
 	 * @return self
 	 */
 	public function connect($pdo)
@@ -119,7 +119,7 @@ class PdoDriver implements DriverInterface
 	/**
 	 * ドライバに合ったメタデータプロセッサを生成します。
 	 *
-	 * @return Volcanus\Database\MetaDataProcessorInterface
+	 * @return Volcanus\Database\MetaDataProcessor\MetaDataProcessorInterface
 	 */
 	public function createMetaDataProcessor()
 	{

@@ -19,14 +19,14 @@ class PdoTransaction implements TransactionInterface
 {
 
 	/**
-	 * @var \PDO
+	 * @var PDO
 	 */
 	private $pdo;
 
 	/**
 	 * コンストラクタ
 	 *
-	 * @param \PDO
+	 * @param PDO
 	 */
 	public function __construct(\PDO $pdo)
 	{

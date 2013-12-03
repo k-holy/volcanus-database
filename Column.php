@@ -71,4 +71,16 @@ class Column extends AbstractPropertyAccessor
 	 */
 	protected $comment;
 
+	/**
+	 * コンストラクタ
+	 *
+	 * @param array | Traversable
+	 */
+	public function __construct($attributes = null)
+	{
+		if ($attributes !== null) {
+			$this->properties($attributes);
+		}
+	}
+
 }
