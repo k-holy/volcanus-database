@@ -45,4 +45,50 @@ class DsnTest extends \PHPUnit_Framework_TestCase
 		);
 	}
 
+	public function testToPdoPgsql()
+	{
+		$dsn = new Dsn(array(
+			'driver'   => 'pgsql',
+			'hostname' => 'localhost',
+			'port'     => '5432',
+			'database' => 'test',
+			'username' => 'user',
+			'password' => 'pass',
+		));
+		$this->assertEquals(
+			'pgsql:host=localhost;port=5432;dbname=test;user=user;password=pass',
+			$dsn->toPdo()
+		);
+	}
+
+	/**
+	 * @expectedException \RuntimeException
+	 */
+	public function testToPdoRaiseExceptionWhenUnsupportedDriver()
+	{
+		$dsn = new Dsn(array(
+			'driver' => 'unsupported_driver',
+		));
+		$dsn->toPdo();
+	}
+
+	/**
+	 * @expectedException \RuntimeException
+	 */
+	public function testToPdoRaiseExceptionWhenUnsupportedOption()
+	{
+		$dsn = new Dsn(array(
+			'driver'   => 'mysql',
+			'hostname' => 'localhost',
+			'port'     => '3306',
+			'database' => 'test',
+			'options'  => array(
+				'unix_socket' => '/tmp/mysql.sock',
+				'charset'     => 'utf8',
+				'unsupported_option' => 'foo',
+			),
+		));
+		$dsn->toPdo();
+	}
+
 }

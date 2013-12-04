@@ -70,9 +70,12 @@ class Dsn extends AbstractPropertyAccessor
 	 */
 	public function toPdo()
 	{
+		$options = $this->options;
+
 		switch ($this->driver) {
 		case 'sqlite':
-			return sprintf('%s:%s', $this->driver, $this->database);
+			$dsn = sprintf('%s:%s', $this->driver, $this->database);
+			break;
 		case 'mysql':
 			$parameters = array();
 			if (isset($this->hostname)) {
@@ -86,15 +89,48 @@ class Dsn extends AbstractPropertyAccessor
 			}
 			if (isset($this->options['unix_socket'])) {
 				$parameters[] = sprintf('unix_socket=%s', $this->options['unix_socket']);
+				unset($options['unix_socket']);
 			}
 			if (isset($this->options['charset'])) {
 				$parameters[] = sprintf('charset=%s', $this->options['charset']);
+				unset($options['charset']);
 			}
-			return sprintf('%s:%s', $this->driver, implode(';', $parameters));
+			$dsn = sprintf('%s:%s', $this->driver, implode(';', $parameters));
+			break;
+		case 'pgsql':
+			$parameters = array();
+			if (isset($this->hostname)) {
+				$parameters[] = sprintf('host=%s', $this->hostname);
+			}
+			if (isset($this->port)) {
+				$parameters[] = sprintf('port=%s', $this->port);
+			}
+			if (isset($this->database)) {
+				$parameters[] = sprintf('dbname=%s', $this->database);
+			}
+			if (isset($this->username)) {
+				$parameters[] = sprintf('user=%s', $this->username);
+			}
+			if (isset($this->password)) {
+				$parameters[] = sprintf('password=%s', $this->password);
+			}
+			$dsn = sprintf('%s:%s', $this->driver, implode(';', $parameters));
+			break;
 		}
-		throw new \InvalidArgumentException(
-			sprintf('The driver "%s" is not supported.', $this->driver)
-		);
+
+		if (!empty($options)) {
+			throw new \RuntimeException(
+				sprintf('Not supported option [%s]', implode(',', array_keys($options)))
+			);
+		}
+
+		if (!isset($dsn)) {
+			throw new \RuntimeException(
+				sprintf('The driver "%s" is not supported.', $this->driver)
+			);
+		}
+
+		return $dsn;
 	}
 
 }
