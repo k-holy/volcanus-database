@@ -8,7 +8,6 @@
 
 namespace Volcanus\Database\Driver;
 
-use Volcanus\Database\Driver\DriverInterface;
 use Volcanus\Database\Dsn;
 use Volcanus\Database\MetaData\MetaDataProcessorInterface;
 
@@ -17,7 +16,7 @@ use Volcanus\Database\MetaData\MetaDataProcessorInterface;
  *
  * @author k.holy74@gmail.com
  */
-abstract class AbstractDriver implements DriverInterface
+abstract class AbstractDriver
 {
 
 	/**
@@ -148,57 +147,6 @@ abstract class AbstractDriver implements DriverInterface
 		}
 		return $this->metaDataProcessor->getMetaColumns($this, $table);
 	}
-
-	/**
-	 * DBに接続します。
-	 *
-	 * @param Volcanus\Database\Dsn DSNオブジェクト
-	 * @return self
-	 */
-	abstract public function connect(Dsn $dsn);
-
-	/**
-	 * DBとの接続を解放します。
-	 *
-	 * @return bool
-	 */
-	abstract public function disconnect();
-
-	/**
-	 * DBと接続中かどうかを返します。
-	 *
-	 * @return bool
-	 */
-	abstract public function connected();
-
-	/**
-	 * ドライバ名を返します。
-	 *
-	 * @return string ドライバ名
-	 */
-	abstract public function getDriverName();
-
-	/**
-	 * 最後に発生したエラーを返します。
-	 *
-	 * @return string
-	 */
-	abstract public function getLastError();
-
-	/**
-	 * 直近のinsert操作で生成されたIDを返します。
-	 *
-	 * @return mixed 実行結果
-	 */
-	abstract public function lastInsertId();
-
-	/**
-	 * 文字列を引用符で適切にクォートして返します。
-	 *
-	 * @param string クォートしたい値
-	 * @return string クォート結果の文字列
-	 */
-	abstract public function quote($value);
 
 	/**
 	 * SQL実行準備を行い、ステートメントオブジェクトを返します。
