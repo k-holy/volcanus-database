@@ -6,7 +6,9 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database;
+namespace Volcanus\Database\MetaData;
+
+use Volcanus\Database\AbstractPropertyAccessor;
 
 /**
  * カラムクラス

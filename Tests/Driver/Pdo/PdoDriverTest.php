@@ -83,7 +83,7 @@ SQL
 	public function testCreateMetaDataProcessor()
 	{
 		$driver = new PdoDriver($this->getPdo());
-		$this->assertInstanceOf('Volcanus\Database\MetaData\SqliteMetaDataProcessor',
+		$this->assertInstanceOf('\Volcanus\Database\MetaData\SqliteMetaDataProcessor',
 			$driver->createMetaDataProcessor()
 		);
 	}
@@ -169,7 +169,7 @@ SQL
 		$driver = new PdoDriver($this->getPdo());
 		$tables = $driver->getMetaTables();
 		$this->assertArrayHasKey('test', $tables);
-		$this->assertInstanceOf('\Volcanus\Database\Table', $tables['test']);
+		$this->assertInstanceOf('\Volcanus\Database\MetaData\Table', $tables['test']);
 	}
 
 	public function testGetMetaColumns()
@@ -178,8 +178,8 @@ SQL
 		$columns = $driver->getMetaColumns('test');
 		$this->assertArrayHasKey('id'  , $columns);
 		$this->assertArrayHasKey('name', $columns);
-		$this->assertInstanceOf('\Volcanus\Database\Column', $columns['id']);
-		$this->assertInstanceOf('\Volcanus\Database\Column', $columns['name']);
+		$this->assertInstanceOf('\Volcanus\Database\MetaData\Column', $columns['id']);
+		$this->assertInstanceOf('\Volcanus\Database\MetaData\Column', $columns['name']);
 	}
 
 	/**

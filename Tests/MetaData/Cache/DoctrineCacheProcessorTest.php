@@ -9,8 +9,8 @@
 namespace Volcanus\Database\Tests\Cache\Doctrine;
 
 use Volcanus\Database\MetaData\Cache\DoctrineCacheProcessor;
-use Volcanus\Database\Table;
-use Volcanus\Database\Column;
+use Volcanus\Database\MetaData\Table;
+use Volcanus\Database\MetaData\Column;
 
 /**
  * Test for DoctrineCacheProcessor
