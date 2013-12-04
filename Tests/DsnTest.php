@@ -1,0 +1,48 @@
+<?php
+/**
+ * Volcanus libraries for PHP
+ *
+ * @copyright 2011-2013 k-holy <k.holy74@gmail.com>
+ * @license The MIT License (MIT)
+ */
+
+namespace Volcanus\Database\Tests;
+
+use Volcanus\Database\Dsn;
+
+/**
+ * Test for Dsn
+ *
+ * @author k.holy74@gmail.com
+ */
+class DsnTest extends \PHPUnit_Framework_TestCase
+{
+
+	public function testToPdoSqlite()
+	{
+		$dsn = new Dsn(array(
+			'driver'   => 'sqlite',
+			'database' => '/full/path/to/file.sqlite',
+		));
+		$this->assertEquals('sqlite:/full/path/to/file.sqlite', $dsn->toPdo());
+	}
+
+	public function testToPdoMysql()
+	{
+		$dsn = new Dsn(array(
+			'driver'   => 'mysql',
+			'hostname' => 'localhost',
+			'port'     => '3306',
+			'database' => 'test',
+			'options'  => array(
+				'unix_socket' => '/tmp/mysql.sock',
+				'charset'     => 'utf8',
+			),
+		));
+		$this->assertEquals(
+			'mysql:host=localhost;port=3306;dbname=test;unix_socket=/tmp/mysql.sock;charset=utf8',
+			$dsn->toPdo()
+		);
+	}
+
+}
