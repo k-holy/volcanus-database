@@ -6,8 +6,9 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database\Tests;
+namespace Volcanus\Database\Tests\Driver\Pdo;
 
+use Volcanus\Database\Dsn;
 use Volcanus\Database\Driver\Pdo\PdoDriver;
 use Volcanus\Database\MetaData\SqliteMetaDataProcessor;
 
@@ -46,7 +47,10 @@ SQL
 	{
 		$driver = new PdoDriver();
 		$this->assertFalse($driver->connected());
-		$driver->connect($this->getPdo());
+		$driver->connect(new Dsn(array(
+			'driver'   => 'sqlite',
+			'database' => ':memory:',
+		)));
 		$this->assertTrue($driver->connected());
 	}
 
@@ -56,15 +60,6 @@ SQL
 		$this->assertTrue($driver->connected());
 		$driver->disconnect();
 		$this->assertFalse($driver->connected());
-	}
-
-	/**
-	 * @expectedException \InvalidArgumentException
-	 */
-	public function testConnectRaiseExceptionWhenInvalidResource()
-	{
-		$driver = new PdoDriver();
-		$driver->connect('foo');
 	}
 
 	public function testGetDriverName()
@@ -188,7 +183,6 @@ SQL
 	public function testGetMetaTablesRaiseExceptionWhenMetaDataProcessorIsNotSet()
 	{
 		$driver = new PdoDriver();
-		$driver->connect($this->getPdo());
 		$driver->getMetaTables();
 	}
 
@@ -198,7 +192,6 @@ SQL
 	public function testGetMetaColumnsRaiseExceptionWhenMetaDataProcessorIsNotSet()
 	{
 		$driver = new PdoDriver();
-		$driver->connect($this->getPdo());
 		$driver->getMetaColumns('test');
 	}
 

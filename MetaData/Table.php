@@ -38,7 +38,7 @@ class Table extends AbstractPropertyAccessor
 	 *
 	 * @param array | Traversable
 	 */
-	public function __construct($attributes = array())
+	public function __construct($attributes = null)
 	{
 		if ($attributes !== null) {
 			$this->properties($attributes);
