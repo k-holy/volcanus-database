@@ -6,7 +6,7 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database\Tests\QueryBuilder\ParameterBuilder;
+namespace Volcanus\Database\Tests\QueryBuilder;
 
 use Volcanus\Database\Tests\QueryBuilder\AbstractParameterBuilderTest\ParameterBuilder;
 
