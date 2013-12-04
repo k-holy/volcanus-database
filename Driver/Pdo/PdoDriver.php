@@ -8,6 +8,7 @@
 
 namespace Volcanus\Database\Driver\Pdo;
 
+use Volcanus\Database\Driver\DriverInterface;
 use Volcanus\Database\Driver\AbstractDriver;
 use Volcanus\Database\Driver\Pdo\PdoFactory;
 use Volcanus\Database\Dsn;
@@ -18,7 +19,7 @@ use Volcanus\Database\MetaData\MetaDataProcessorInterface;
  *
  * @author k_horii@rikcorp.jp
  */
-class PdoDriver extends AbstractDriver
+class PdoDriver extends AbstractDriver implements DriverInterface
 {
 
 	/**
