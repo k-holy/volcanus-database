@@ -170,4 +170,28 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
 		return var_export($this->properties(), true);
 	}
 
+	/**
+	 * __sleep
+	 *
+	 * @param void
+	 * @return void
+	 */
+	public function __sleep()
+	{
+		return array_keys($this->properties(), true);
+	}
+
+	/**
+	 * __set_state
+	 *
+	 * @param array
+	 * @return object
+	 */
+	public static function __set_state($attributes)
+	{
+		$instance = new static();
+		$instance->properties($attributes);
+		return $instance;
+	}
+
 }

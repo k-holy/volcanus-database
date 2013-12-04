@@ -8,7 +8,9 @@
 
 namespace Volcanus\Database\Driver\Pdo;
 
-use Volcanus\Database\Driver\DriverInterface;
+use Volcanus\Database\Driver\AbstractDriver;
+use Volcanus\Database\Driver\Pdo\PdoFactory;
+use Volcanus\Database\Dsn;
 use Volcanus\Database\MetaData\MetaDataProcessorInterface;
 
 /**
@@ -16,23 +18,13 @@ use Volcanus\Database\MetaData\MetaDataProcessorInterface;
  *
  * @author k_horii@rikcorp.jp
  */
-class PdoDriver implements DriverInterface
+class PdoDriver extends AbstractDriver
 {
 
 	/**
 	 * @var PDO
 	 */
 	private $pdo;
-
-	/**
-	 * @var string LastQuery
-	 */
-	private $lastQuery;
-
-	/**
-	 * @var Volcanus\Database\MetaData\MetaDataProcessorInterface
-	 */
-	private $metaDataProcessor;
 
 	/**
 	 * コンストラクタ
@@ -45,7 +37,7 @@ class PdoDriver implements DriverInterface
 		$this->pdo = null;
 		$this->lastQuery = null;
 		if (isset($pdo)) {
-			$this->connect($pdo);
+			$this->pdo = $pdo;
 			if (!isset($metaDataProcessor)) {
 				$metaDataProcessor = $this->createMetaDataProcessor();
 			}
@@ -56,29 +48,30 @@ class PdoDriver implements DriverInterface
 	}
 
 	/**
-	 * メタデータプロセッサをセットします。
+	 * DSNからインスタンスを生成します。
 	 *
-	 * @param Volcanus\Database\MetaData\MetaDataProcessorInterface
+	 * @param Volcanus\Database\Dsn
+	 * @return self
 	 */
-	public function setMetaDataProcessor(MetaDataProcessorInterface $metaDataProcessor)
+	public static function createFromDsn(Dsn $dsn)
 	{
-		$this->metaDataProcessor = $metaDataProcessor;
+		$driver = new static(PdoFactory::createFromDsn($dsn));
+		$driver->setDsn($dsn);
+		return $driver;
 	}
 
 	/**
 	 * DBに接続します。
 	 *
-	 * @param PDO
+	 * @param Volcanus\Database\Dsn DSNオブジェクト
 	 * @return self
 	 */
-	public function connect($pdo)
+	public function connect(Dsn $dsn = null)
 	{
-		if (!($pdo instanceof \PDO)) {
-			throw new \InvalidArgumentException(
-				sprintf('The argument is not PDO instance. type:%s', gettype($pdo))
-			);
+		if (isset($dsn)) {
+			$this->dsn = $dsn;
 		}
-		$this->pdo = $pdo;
+		$this->pdo = PdoFactory::createFromDsn($this->dsn);
 		return $this;
 	}
 
@@ -117,69 +110,6 @@ class PdoDriver implements DriverInterface
 	}
 
 	/**
-	 * ドライバに合ったメタデータプロセッサを生成します。
-	 *
-	 * @return Volcanus\Database\MetaData\MetaDataProcessorInterface
-	 */
-	public function createMetaDataProcessor()
-	{
-		$driverName = $this->getDriverName();
-		if (!isset($driverName)) {
-			throw new \RuntimeException('Could not create MetaDataProcessor disconnected.');
-		}
-		$className = sprintf('\\Volcanus\\Database\\MetaData\\%sMetaDataProcessor',
-			ucfirst($driverName)
-		);
-		return new $className();
-	}
-
-	/**
-	 * SQL実行準備を行い、ステートメントオブジェクトを返します。
-	 *
-	 * @param string SQL
-	 * @return PdoStatement
-	 */
-	public function prepare($query)
-	{
-		$this->lastQuery = $query;
-		return new PdoStatement($this->pdo->prepare($query));
-	}
-
-	/**
-	 * SQLを実行し、ステートメントオブジェクトを返します。
-	 *
-	 * @param string SQL
-	 * @return PdoStatement
-	 */
-	public function query($query)
-	{
-		$this->lastQuery = $query;
-		return new PdoStatement($this->pdo->query($query));
-	}
-
-	/**
-	 * SQLを実行します。
-	 *
-	 * @param string SQL
-	 * @retrun boolean
-	 */
-	public function execute($query)
-	{
-		$this->lastQuery = $query;
-		return $this->pdo->exec($query);
-	}
-
-	/**
-	 * 最後に発行(prepare/query/execute)したクエリを返します。
-	 *
-	 * @return string
-	 */
-	public function getLastQuery()
-	{
-		return $this->lastQuery;
-	}
-
-	/**
 	 * 最後に発生したエラーを返します。
 	 *
 	 * @return string
@@ -201,37 +131,6 @@ class PdoDriver implements DriverInterface
 	}
 
 	/**
-	 * テーブルオブジェクトを配列で返します。
-	 *
-	 * @return array of Table
-	 */
-	public function getMetaTables()
-	{
-		if (!isset($this->metaDataProcessor)) {
-			throw new \RuntimeException(
-				'metaDataProcessor is not set'
-			);
-		}
-		return $this->metaDataProcessor->getMetaTables($this);
-	}
-
-	/**
-	 * 指定テーブルのカラムオブジェクトを配列で返します。
-	 *
-	 * @param string テーブル名
-	 * @return array of Column
-	 */
-	public function getMetaColumns($table)
-	{
-		if (!isset($this->metaDataProcessor)) {
-			throw new \RuntimeException(
-				'metaDataProcessor is not set'
-			);
-		}
-		return $this->metaDataProcessor->getMetaColumns($this, $table);
-	}
-
-	/**
 	 * 文字列を引用符で適切にクォートして返します。
 	 *
 	 * @param string クォートしたい値
@@ -240,6 +139,39 @@ class PdoDriver implements DriverInterface
 	public function quote($value)
 	{
 		return $this->pdo->quote($value, \PDO::PARAM_STR);
+	}
+
+	/**
+	 * SQL実行準備を行い、ステートメントオブジェクトを返します。
+	 *
+	 * @param string SQL
+	 * @return PdoStatement
+	 */
+	protected function doPrepare($query)
+	{
+		return new PdoStatement($this->pdo->prepare($query));
+	}
+
+	/**
+	 * SQLを実行し、ステートメントオブジェクトを返します。
+	 *
+	 * @param string SQL
+	 * @return PdoStatement
+	 */
+	protected function doQuery($query)
+	{
+		return new PdoStatement($this->pdo->query($query));
+	}
+
+	/**
+	 * SQLを実行します。
+	 *
+	 * @param string SQL
+	 * @retrun boolean
+	 */
+	protected function doExecute($query)
+	{
+		return $this->pdo->exec($query);
 	}
 
 }

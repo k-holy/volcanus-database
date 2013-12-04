@@ -6,7 +6,7 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database;
+namespace Volcanus\Database\Driver\Pdo;
 
 use Volcanus\Database\Dsn;
 

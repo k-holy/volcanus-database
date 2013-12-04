@@ -6,9 +6,9 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database\Tests;
+namespace Volcanus\Database\Tests\Driver\Pdo;
 
-use Volcanus\Database\PdoFactory;
+use Volcanus\Database\Driver\Pdo\PdoFactory;
 use Volcanus\Database\Dsn;
 
 /**

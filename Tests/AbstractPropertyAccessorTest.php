@@ -157,6 +157,25 @@ class AbstractPropertyAccessorTest extends \PHPUnit_Framework_TestCase
 		}
 	}
 
+	public function testSerialize()
+	{
+		$test = new Test();
+		$test->string = 'Foo';
+		$test->null = null;
+		$test->boolean = true;
+		$this->assertEquals($test, unserialize(serialize($test)));
+	}
+
+	public function testVarExport()
+	{
+		$test = new Test();
+		$test->string = 'Foo';
+		$test->null = null;
+		$test->boolean = true;
+		eval('$exported = ' . var_export($test, true) . ';');
+		$this->assertEquals($test, $exported);
+	}
+
 }
 
 class Test extends AbstractPropertyAccessor
