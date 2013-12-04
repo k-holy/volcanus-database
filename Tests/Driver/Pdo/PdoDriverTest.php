@@ -43,6 +43,15 @@ SQL
 		return static::$pdo;
 	}
 
+	public function testCreateFromDsn()
+	{
+		$driver = PdoDriver::createFromDsn(new Dsn(array(
+			'driver'   => 'sqlite',
+			'database' => ':memory:',
+		)));
+		$this->assertInstanceOf('\Volcanus\Database\Driver\Pdo\PdoDriver', $driver);
+	}
+
 	public function testConnect()
 	{
 		$driver = new PdoDriver();
