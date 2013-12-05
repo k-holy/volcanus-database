@@ -18,11 +18,14 @@ use Volcanus\Database\AbstractPropertyAccessor;
 class AbstractPropertyAccessorTest extends \PHPUnit_Framework_TestCase
 {
 
-	public function testOffsetSet()
+	public function testOffsetExists()
 	{
 		$test = new Test();
-		$test->offsetSet('string', 'Foo');
-		$this->assertEquals('Foo', $test->string);
+		$test->string = 'Foo';
+		$test->null = null;
+		$this->assertTrue($test->offsetExists('string'));
+		$this->assertFalse($test->offsetExists('null'));
+		$this->assertFalse($test->offsetExists('not_defined_property'));
 	}
 
 	public function testOffsetGet()
@@ -35,19 +38,26 @@ class AbstractPropertyAccessorTest extends \PHPUnit_Framework_TestCase
 	/**
 	 * @expectedException \InvalidArgumentException
 	 */
-	public function testRaiseExceptionWhenSetUndefinedProperty()
+	public function testOffsetGetRaiseInvalidArgumentException()
 	{
 		$test = new Test();
-		$test->offsetSet('not_defined_attribute', 'Foo');
+		$test->offsetGet('not_defined_property');
+	}
+
+	public function testOffsetSet()
+	{
+		$test = new Test();
+		$test->offsetSet('string', 'Foo');
+		$this->assertEquals('Foo', $test->string);
 	}
 
 	/**
 	 * @expectedException \InvalidArgumentException
 	 */
-	public function testRaiseExceptionWhenGetUndefinedProperty()
+	public function testOffsetSetRaiseInvalidArgumentException()
 	{
 		$test = new Test();
-		$test->offsetGet('not_defined_attribute');
+		$test->offsetSet('not_defined_property', 'Foo');
 	}
 
 	public function testOffsetUnset()
@@ -59,25 +69,18 @@ class AbstractPropertyAccessorTest extends \PHPUnit_Framework_TestCase
 		$this->assertEmpty($test->string);
 	}
 
-	public function testOffsetExists()
-	{
-		$test = new Test();
-		$test->string = 'Foo';
-		$test->null = null;
-		$this->assertTrue($test->offsetExists('string'));
-		$this->assertFalse($test->offsetExists('null'));
-		$this->assertFalse($test->offsetExists('not_defined_attribute'));
-	}
-
 	public function testArrayAccess()
 	{
+		$now = new \DateTime();
 		$test = new Test();
 		$test['string' ] = 'Foo';
 		$test['null'   ] = null;
 		$test['boolean'] = true;
+		$test['datetime'] = $now;
 		$this->assertEquals('Foo', $test['string']);
 		$this->assertNull($test['null']);
 		$this->assertTrue($test['boolean']);
+		$this->assertSame($now, $test['datetime']);
 	}
 
 	public function testIssetArrayAccess()
@@ -87,7 +90,7 @@ class AbstractPropertyAccessorTest extends \PHPUnit_Framework_TestCase
 		$test->null = null;
 		$this->assertTrue(isset($test['string']));
 		$this->assertFalse(isset($test['null']));
-		$this->assertFalse(isset($test['not_defined_attribute']));
+		$this->assertFalse(isset($test['not_defined_property']));
 	}
 
 	public function testIssetPropertyAccess()
@@ -97,7 +100,7 @@ class AbstractPropertyAccessorTest extends \PHPUnit_Framework_TestCase
 		$test->null = null;
 		$this->assertTrue(isset($test->string));
 		$this->assertFalse(isset($test->null));
-		$this->assertFalse(isset($test->not_defined_attribute));
+		$this->assertFalse(isset($test->not_defined_property));
 	}
 
 	public function testUnsetArrayAccess()
@@ -138,10 +141,12 @@ class AbstractPropertyAccessorTest extends \PHPUnit_Framework_TestCase
 
 	public function testTraversable()
 	{
+		$now = new \DateTime();
 		$test = new Test();
 		$test->string = 'Foo';
 		$test->null = null;
 		$test->boolean = true;
+		$test->datetime = $now;
 		foreach ($test as $name => $value) {
 			switch ($name) {
 			case 'string':
@@ -153,6 +158,9 @@ class AbstractPropertyAccessorTest extends \PHPUnit_Framework_TestCase
 			case 'boolean':
 				$this->assertTrue($value);
 				break;
+			case 'datetime':
+				$this->assertSame($now, $value);
+				break;
 			}
 		}
 	}
@@ -163,7 +171,10 @@ class AbstractPropertyAccessorTest extends \PHPUnit_Framework_TestCase
 		$test->string = 'Foo';
 		$test->null = null;
 		$test->boolean = true;
-		$this->assertEquals($test, unserialize(serialize($test)));
+		$test->datetime = new \DateTime();
+		$serialized = serialize($test);
+		$this->assertEquals($test, unserialize($serialized));
+		$this->assertNotSame($test, unserialize($serialized));
 	}
 
 	public function testVarExport()
@@ -172,8 +183,22 @@ class AbstractPropertyAccessorTest extends \PHPUnit_Framework_TestCase
 		$test->string = 'Foo';
 		$test->null = null;
 		$test->boolean = true;
+		$test->datetime = new \DateTime();
 		eval('$exported = ' . var_export($test, true) . ';');
 		$this->assertEquals($test, $exported);
+		$this->assertNotSame($test, $exported);
+	}
+
+	public function testClone()
+	{
+		$test = new Test();
+		$test->string = 'Foo';
+		$test->null = null;
+		$test->boolean = true;
+		$test->datetime = new \DateTime();
+		$cloned = clone $test;
+		$this->assertEquals($test->datetime, $cloned->datetime);
+		$this->assertNotSame($test->datetime, $cloned->datetime);
 	}
 
 }
@@ -183,4 +208,5 @@ class Test extends AbstractPropertyAccessor
 	protected $string;
 	protected $null;
 	protected $boolean;
+	protected $datetime;
 }
