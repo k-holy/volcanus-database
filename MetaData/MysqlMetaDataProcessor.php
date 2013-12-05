@@ -23,6 +23,18 @@ class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
 {
 
 	/**
+	 * コンストラクタ
+	 *
+	 * @param array | Traversable
+	 */
+	public function __construct(CacheProcessorInterface $cacheProcessor = null)
+	{
+		if ($cacheProcessor !== null) {
+			$this->setCacheProcessor($cacheProcessor);
+		}
+	}
+
+	/**
 	 * テーブルオブジェクトを配列で返します。
 	 *
 	 * @param Volcanus\Database\Driver\DriverInterface データベースドライバ
@@ -30,10 +42,10 @@ class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
 	 */
 	protected function doGetMetaTables(DriverInterface $driver)
 	{
-		$statement = $driver->query($this->metaTablesQuery());
-		$statement->setFetchMode(Statement::FETCH_NUM);
+		$tableListStatement = $driver->query($this->tableList());
+		$tableListStatement->setFetchMode(Statement::FETCH_NUM);
 		$tables = array();
-		foreach ($statement as $cols) {
+		foreach ($tableListStatement as $cols) {
 			$table = new Table();
 			$table->name = $cols[0];
 			$tables[$cols[0]] = $table;
@@ -50,10 +62,10 @@ class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
 	 */
 	protected function doGetMetaColumns(DriverInterface $driver, $table)
 	{
-		$statement = $driver->query($this->metaColumnsQuery($table));
-		$statement->setFetchMode(Statement::FETCH_ASSOC);
+		$columnsStatement = $driver->query($this->showFullColumnsFrom($table));
+		$columnsStatement->setFetchMode(Statement::FETCH_ASSOC);
 		$columns = array();
-		foreach ($statement as $cols) {
+		foreach ($columnsStatement as $cols) {
 			$column = new Column();
 			$column->name = $cols['Field'];
 			if (preg_match("/^(.+)\((\d+),(\d+)/", $cols['Type'], $matches)) {
@@ -89,7 +101,7 @@ class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
 	 *
 	 * @return string SQL
 	 */
-	private function metaTablesQuery()
+	private function tableList()
 	{
 		return 'SHOW TABLES;';
 	}
@@ -100,7 +112,7 @@ class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
 	 * @param string テーブル名
 	 * @return string SQL
 	 */
-	private function metaColumnsQuery($table)
+	private function showFullColumnsFrom($table)
 	{
 		return sprintf('SHOW FULL COLUMNS FROM %s', $table);
 	}
