@@ -8,6 +8,8 @@
 
 namespace Volcanus\Database;
 
+use Volcanus\Database\DsnParser;
+
 /**
  * DSN
  *
@@ -61,6 +63,18 @@ class Dsn extends AbstractPropertyAccessor
 		if ($attributes !== null) {
 			$this->properties($attributes);
 		}
+	}
+
+	/**
+	 * DSN文字列からインスタンスを生成します。
+	 *
+	 * @param string
+	 * @return self
+	 */
+	public static function createFromString($dsn)
+	{
+		$parser = new DsnParser($dsn);
+		return new self($parser->getAttributes());
 	}
 
 	/**
