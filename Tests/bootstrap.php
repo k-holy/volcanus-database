@@ -18,3 +18,6 @@ spl_autoload_register(function($className) {
 	}
 	return false;
 }, true, true);
+
+// autload for vendor
+include realpath(__DIR__ . '/../vendor/autoload.php');

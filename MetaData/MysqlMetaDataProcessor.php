@@ -6,33 +6,46 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database\MetaDataProcessor;
+namespace Volcanus\Database\MetaData;
 
+use Volcanus\Database\MetaData\Cache\CacheProcessorInterface;
+use Volcanus\Database\MetaData\Table;
+use Volcanus\Database\MetaData\Column;
 use Volcanus\Database\Driver\DriverInterface;
 use Volcanus\Database\Statement;
-use Volcanus\Database\Table;
-use Volcanus\Database\Column;
 
 /**
  * MySQL メタデータプロセッサ
  *
  * @author k_horii@rikcorp.jp
  */
-class MysqlMetaDataProcessor implements MetaDataProcessorInterface
+class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
 {
+
+	/**
+	 * コンストラクタ
+	 *
+	 * @param array | Traversable
+	 */
+	public function __construct(CacheProcessorInterface $cacheProcessor = null)
+	{
+		if ($cacheProcessor !== null) {
+			$this->setCacheProcessor($cacheProcessor);
+		}
+	}
 
 	/**
 	 * テーブルオブジェクトを配列で返します。
 	 *
-	 * @param \Volcanus\Database\Driver\DriverInterface データベースドライバ
+	 * @param Volcanus\Database\Driver\DriverInterface データベースドライバ
 	 * @return array of Table
 	 */
-	public function getMetaTables(DriverInterface $driver)
+	protected function doGetMetaTables(DriverInterface $driver)
 	{
-		$statement = $driver->query($this->metaTablesQuery());
-		$statement->setFetchMode(Statement::FETCH_NUM);
+		$tableListStatement = $driver->query($this->tableList());
+		$tableListStatement->setFetchMode(Statement::FETCH_NUM);
 		$tables = array();
-		foreach ($statement as $cols) {
+		foreach ($tableListStatement as $cols) {
 			$table = new Table();
 			$table->name = $cols[0];
 			$tables[$cols[0]] = $table;
@@ -43,16 +56,16 @@ class MysqlMetaDataProcessor implements MetaDataProcessorInterface
 	/**
 	 * 指定テーブルのカラムオブジェクトを配列で返します。
 	 *
-	 * @param \Volcanus\Database\Driver\DriverInterface データベースドライバ
+	 * @param Volcanus\Database\Driver\DriverInterface データベースドライバ
 	 * @param string テーブル名
 	 * @return array of Column
 	 */
-	public function getMetaColumns(DriverInterface $driver, $table)
+	protected function doGetMetaColumns(DriverInterface $driver, $table)
 	{
-		$statement = $driver->query($this->metaColumnsQuery($table));
-		$statement->setFetchMode(Statement::FETCH_ASSOC);
+		$columnsStatement = $driver->query($this->showFullColumnsFrom($table));
+		$columnsStatement->setFetchMode(Statement::FETCH_ASSOC);
 		$columns = array();
-		foreach ($statement as $cols) {
+		foreach ($columnsStatement as $cols) {
 			$column = new Column();
 			$column->name = $cols['Field'];
 			if (preg_match("/^(.+)\((\d+),(\d+)/", $cols['Type'], $matches)) {
@@ -88,7 +101,7 @@ class MysqlMetaDataProcessor implements MetaDataProcessorInterface
 	 *
 	 * @return string SQL
 	 */
-	private function metaTablesQuery()
+	private function tableList()
 	{
 		return 'SHOW TABLES;';
 	}
@@ -99,7 +112,7 @@ class MysqlMetaDataProcessor implements MetaDataProcessorInterface
 	 * @param string テーブル名
 	 * @return string SQL
 	 */
-	private function metaColumnsQuery($table)
+	private function showFullColumnsFrom($table)
 	{
 		return sprintf('SHOW FULL COLUMNS FROM %s', $table);
 	}

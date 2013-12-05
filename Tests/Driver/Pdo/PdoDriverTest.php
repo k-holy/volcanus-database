@@ -6,10 +6,11 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database\Tests;
+namespace Volcanus\Database\Tests\Driver\Pdo;
 
+use Volcanus\Database\Dsn;
 use Volcanus\Database\Driver\Pdo\PdoDriver;
-use Volcanus\Database\MetaDataProcessor\SqliteMetaDataProcessor;
+use Volcanus\Database\MetaData\SqliteMetaDataProcessor;
 
 /**
  * Test for PdoDriver
@@ -42,11 +43,23 @@ SQL
 		return static::$pdo;
 	}
 
+	public function testCreateFromDsn()
+	{
+		$driver = PdoDriver::createFromDsn(new Dsn(array(
+			'driver'   => 'sqlite',
+			'database' => ':memory:',
+		)));
+		$this->assertInstanceOf('\Volcanus\Database\Driver\Pdo\PdoDriver', $driver);
+	}
+
 	public function testConnect()
 	{
 		$driver = new PdoDriver();
 		$this->assertFalse($driver->connected());
-		$driver->connect($this->getPdo());
+		$driver->connect(new Dsn(array(
+			'driver'   => 'sqlite',
+			'database' => ':memory:',
+		)));
 		$this->assertTrue($driver->connected());
 	}
 
@@ -56,15 +69,6 @@ SQL
 		$this->assertTrue($driver->connected());
 		$driver->disconnect();
 		$this->assertFalse($driver->connected());
-	}
-
-	/**
-	 * @expectedException \InvalidArgumentException
-	 */
-	public function testConnectRaiseExceptionWhenInvalidResource()
-	{
-		$driver = new PdoDriver();
-		$driver->connect('foo');
 	}
 
 	public function testGetDriverName()
@@ -83,7 +87,7 @@ SQL
 	public function testCreateMetaDataProcessor()
 	{
 		$driver = new PdoDriver($this->getPdo());
-		$this->assertInstanceOf('Volcanus\Database\MetaDataProcessor\SqliteMetaDataProcessor',
+		$this->assertInstanceOf('\Volcanus\Database\MetaData\SqliteMetaDataProcessor',
 			$driver->createMetaDataProcessor()
 		);
 	}
@@ -169,7 +173,7 @@ SQL
 		$driver = new PdoDriver($this->getPdo());
 		$tables = $driver->getMetaTables();
 		$this->assertArrayHasKey('test', $tables);
-		$this->assertInstanceOf('\Volcanus\Database\Table', $tables['test']);
+		$this->assertInstanceOf('\Volcanus\Database\MetaData\Table', $tables['test']);
 	}
 
 	public function testGetMetaColumns()
@@ -178,8 +182,8 @@ SQL
 		$columns = $driver->getMetaColumns('test');
 		$this->assertArrayHasKey('id'  , $columns);
 		$this->assertArrayHasKey('name', $columns);
-		$this->assertInstanceOf('\Volcanus\Database\Column', $columns['id']);
-		$this->assertInstanceOf('\Volcanus\Database\Column', $columns['name']);
+		$this->assertInstanceOf('\Volcanus\Database\MetaData\Column', $columns['id']);
+		$this->assertInstanceOf('\Volcanus\Database\MetaData\Column', $columns['name']);
 	}
 
 	/**
@@ -188,7 +192,6 @@ SQL
 	public function testGetMetaTablesRaiseExceptionWhenMetaDataProcessorIsNotSet()
 	{
 		$driver = new PdoDriver();
-		$driver->connect($this->getPdo());
 		$driver->getMetaTables();
 	}
 
@@ -198,7 +201,6 @@ SQL
 	public function testGetMetaColumnsRaiseExceptionWhenMetaDataProcessorIsNotSet()
 	{
 		$driver = new PdoDriver();
-		$driver->connect($this->getPdo());
 		$driver->getMetaColumns('test');
 	}
 

@@ -6,7 +6,9 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database;
+namespace Volcanus\Database\MetaData;
+
+use Volcanus\Database\AbstractPropertyAccessor;
 
 /**
  * カラムクラス
@@ -70,5 +72,17 @@ class Column extends AbstractPropertyAccessor
 	 * @var string コメント
 	 */
 	protected $comment;
+
+	/**
+	 * コンストラクタ
+	 *
+	 * @param array | Traversable
+	 */
+	public function __construct($attributes = null)
+	{
+		if ($attributes !== null) {
+			$this->properties($attributes);
+		}
+	}
 
 }

@@ -8,6 +8,9 @@
 
 namespace Volcanus\Database\Driver;
 
+use Volcanus\Database\Dsn;
+use Volcanus\Database\MetaData\MetaDataProcessorInterface;
+
 /**
  * ドライバインタフェース
  *
@@ -17,12 +20,26 @@ interface DriverInterface
 {
 
 	/**
+	 * DSNをセットします。
+	 *
+	 * @param Volcanus\Database\Dsn
+	 */
+	public function setDsn(Dsn $dsn);
+
+	/**
+	 * メタデータプロセッサをセットします。
+	 *
+	 * @param Volcanus\Database\MetaData\MetaDataProcessorInterface
+	 */
+	public function setMetaDataProcessor(MetaDataProcessorInterface $metaDataProcessor);
+
+	/**
 	 * DBに接続します。
 	 *
-	 * @param mixed DSN、コネクションリソース等 (Driverクラス依存)
+	 * @param Volcanus\Database\Dsn DSNオブジェクト
 	 * @return self
 	 */
-	public function connect($resource);
+	public function connect(Dsn $dsn);
 
 	/**
 	 * DBとの接続を解放します。
@@ -48,7 +65,7 @@ interface DriverInterface
 	/**
 	 * ドライバに合ったメタデータプロセッサを生成します。
 	 *
-	 * @return Volcanus\Database\MetaDataProcessorInterface
+	 * @return Volcanus\Database\MetaData\MetaDataProcessorInterface
 	 */
 	public function createMetaDataProcessor();
 

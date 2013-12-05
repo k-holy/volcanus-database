@@ -39,7 +39,7 @@ class PdoStatement implements StatementInterface, \IteratorAggregate
 	/**
 	 * プリペアドステートメントを実行します。
 	 *
-	 * @param array | \Traversable パラメータ
+	 * @param array | Traversable パラメータ
 	 * @return bool
 	 */
 	public function execute($parameters = null)
@@ -240,7 +240,7 @@ class PdoStatement implements StatementInterface, \IteratorAggregate
 	}
 
 	/**
-	 * \IteratorAggregate::getIterator()
+	 * IteratorAggregate::getIterator()
 	 *
 	 * @return \Traversable
 	 */
