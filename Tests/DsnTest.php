@@ -18,6 +18,12 @@ use Volcanus\Database\Dsn;
 class DsnTest extends \PHPUnit_Framework_TestCase
 {
 
+	public function testCreateFromString()
+	{
+		$dsn = Dsn::createFromString('sqlite::memory:');
+		$this->assertInstanceOf('\Volcanus\Database\Dsn', $dsn);
+	}
+
 	public function testToPdoSqlite()
 	{
 		$dsn = new Dsn(array(
