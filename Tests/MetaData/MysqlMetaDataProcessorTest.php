@@ -79,7 +79,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 	public function testGetMetaColumns()
 	{
 		$metaDataProcessor = new MysqlMetaDataProcessor();
-		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumns(), 'users');
+		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
 
 		$this->assertArrayHasKey('user_id', $metaColumns);
 		$column = $metaColumns['user_id'];
@@ -100,7 +100,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 	public function testGetMetaColumnsFromCache()
 	{
 		$metaDataProcessor = new MysqlMetaDataProcessor();
-		$metaColumnsCache = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumns(), 'users');
+		$metaColumnsCache = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
 
 		$cacheProcessorInterface = $this->getMock('\\Volcanus\Database\MetaData\Cache\CacheProcessorInterface');
 		$cacheProcessorInterface->expects($this->once())
@@ -112,13 +112,13 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 
 		$metaDataProcessor = new MysqlMetaDataProcessor($cacheProcessorInterface);
 
-		$this->assertEquals($metaColumnsCache, $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumns(), 'users'));
+		$this->assertEquals($metaColumnsCache, $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users'));
 	}
 
 	public function testGetMetaColumnsSaveToCache()
 	{
 		$metaDataProcessor = new MysqlMetaDataProcessor();
-		$metaColumnsCache  = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumns(), 'users');
+		$metaColumnsCache  = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
 
 		$cacheProcessorInterface = $this->getMock('\\Volcanus\Database\MetaData\Cache\CacheProcessorInterface');
 		$cacheProcessorInterface->expects($this->once())
@@ -132,13 +132,13 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 			);
 
 		$metaDataProcessor = new MysqlMetaDataProcessor($cacheProcessorInterface);
-		$metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumns(), 'users');
+		$metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
 	}
 
 	public function testGetColumnName()
 	{
 		$metaDataProcessor = new MysqlMetaDataProcessor();
-		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumns(), 'users');
+		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
 
 		$this->assertEquals('user_id'  , $metaColumns['user_id']->name);
 		$this->assertEquals('user_type', $metaColumns['user_type']->name);
@@ -150,7 +150,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 	public function testGetColumnType()
 	{
 		$metaDataProcessor = new MysqlMetaDataProcessor();
-		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumns(), 'users');
+		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
 
 		$this->assertEquals('int', $metaColumns['user_id']->type);
 		$this->assertEquals('int', $metaColumns['user_type']->type);
@@ -163,7 +163,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 	public function testGetColumnMaxLength()
 	{
 		$metaDataProcessor = new MysqlMetaDataProcessor();
-		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumns(), 'users');
+		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
 
 		$this->assertEquals('10', $metaColumns['user_id']->maxLength);
 		$this->assertEquals('11', $metaColumns['user_type']->maxLength);
@@ -176,7 +176,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 	public function testGetColumnScale()
 	{
 		$metaDataProcessor = new MysqlMetaDataProcessor();
-		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumns(), 'users');
+		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
 
 		$this->assertNull($metaColumns['user_id']->scale);
 		$this->assertNull($metaColumns['user_type']->scale);
@@ -189,7 +189,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 	public function testGetColumnIsBinary()
 	{
 		$metaDataProcessor = new MysqlMetaDataProcessor();
-		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumns(), 'users');
+		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
 
 		$this->assertFalse($metaColumns['user_id']->binary);
 		$this->assertFalse($metaColumns['user_type']->binary);
@@ -202,7 +202,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 	public function testGetColumnDefault()
 	{
 		$metaDataProcessor = new MysqlMetaDataProcessor();
-		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumns(), 'users');
+		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
 
 		$this->assertNull($metaColumns['user_id']->default);
 		$this->assertEquals('1', $metaColumns['user_type']->default);
@@ -215,7 +215,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 	public function testGetColumnIsNotNull()
 	{
 		$metaDataProcessor = new MysqlMetaDataProcessor();
-		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumns(), 'users');
+		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
 
 		$this->assertTrue($metaColumns['user_id']->notNull);
 		$this->assertTrue($metaColumns['user_type']->notNull);
@@ -228,7 +228,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 	public function testGetColumnIsPrimaryKey()
 	{
 		$metaDataProcessor = new MysqlMetaDataProcessor();
-		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumns(), 'users');
+		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
 
 		$this->assertTrue($metaColumns['user_id']->primaryKey);
 		$this->assertFalse($metaColumns['user_type']->primaryKey);
@@ -241,7 +241,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 	public function testGetColumnIsUniqueKey()
 	{
 		$metaDataProcessor = new MysqlMetaDataProcessor();
-		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumns(), 'users');
+		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
 
 		$this->assertFalse($metaColumns['user_id']->uniqueKey);
 		$this->assertFalse($metaColumns['user_type']->uniqueKey);
@@ -254,7 +254,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 	public function testGetColumnIsAutoIncrement()
 	{
 		$metaDataProcessor = new MysqlMetaDataProcessor();
-		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumns(), 'users');
+		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
 
 		$this->assertTrue($metaColumns['user_id']->autoIncrement);
 		$this->assertFalse($metaColumns['user_type']->autoIncrement);
@@ -267,7 +267,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 	public function testGetColumnComment()
 	{
 		$metaDataProcessor = new MysqlMetaDataProcessor();
-		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumns(), 'users');
+		$metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
 
 		$this->assertEquals('ユーザーID', $metaColumns['user_id']->comment);
 		$this->assertEquals('ユーザー種別', $metaColumns['user_type']->comment);
@@ -302,13 +302,13 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 		return $driverInterface;
 	}
 
-	private function getDriverForGetMetaColumns()
+	private function getDriverForGetMetaColumnsOfUsers()
 	{
-		$statementInterfaceForUsers = $this->getMock('\Volcanus\Database\Driver\StatementInterface');
-		$statementInterfaceForUsers->expects($this->any())
+		$statementInterface = $this->getMock('\Volcanus\Database\Driver\StatementInterface');
+		$statementInterface->expects($this->any())
 			->method('setFetchMode')
 			->will($this->returnValue(true));
-		$statementInterfaceForUsers->expects($this->any())
+		$statementInterface->expects($this->any())
 			->method('getIterator')
 			->will($this->returnValue(
 				new \ArrayIterator(
@@ -393,11 +393,21 @@ CREATE TABLE users(
 				)
 			));
 
-		$statementInterfaceForMessages = $this->getMock('\Volcanus\Database\Driver\StatementInterface');
-		$statementInterfaceForMessages->expects($this->any())
+		$driverInterface = $this->getMock('\Volcanus\Database\Driver\DriverInterface');
+		$driverInterface->expects($this->any())
+			->method('query')
+			->will($this->returnValue($statementInterface));
+
+		return $driverInterface;
+	}
+
+	private function getDriverForGetMetaColumnsOfMessages()
+	{
+		$statementInterface = $this->getMock('\Volcanus\Database\Driver\StatementInterface');
+		$statementInterface->expects($this->any())
 			->method('setFetchMode')
 			->will($this->returnValue(true));
-		$statementInterfaceForMessages->expects($this->any())
+		$statementInterface->expects($this->any())
 			->method('getIterator')
 			->will($this->returnValue(
 				new \ArrayIterator(
@@ -462,14 +472,7 @@ CREATE TABLE messages(
 		$driverInterface = $this->getMock('\Volcanus\Database\Driver\DriverInterface');
 		$driverInterface->expects($this->any())
 			->method('query')
-			->will($this->returnCallback(function($query) use ($statementInterfaceForUsers, $statementInterfaceForMessages) {
-				if ($this->stringEndsWith('users')) {
-					return $statementInterfaceForUsers;
-				}
-				if ($this->stringEndsWith('messages')) {
-					return $statementInterfaceForMessages;
-				}
-			}));
+			->will($this->returnValue($statementInterface));
 
 		return $driverInterface;
 	}
