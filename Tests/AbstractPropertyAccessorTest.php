@@ -18,160 +18,87 @@ use Volcanus\Database\AbstractPropertyAccessor;
 class AbstractPropertyAccessorTest extends \PHPUnit_Framework_TestCase
 {
 
-	public function testOffsetExists()
-	{
-		$test = new Test();
-		$test->string = 'Foo';
-		$test->null = null;
-		$this->assertTrue($test->offsetExists('string'));
-		$this->assertFalse($test->offsetExists('null'));
-		$this->assertFalse($test->offsetExists('not_defined_property'));
-	}
-
-	public function testOffsetGet()
-	{
-		$test = new Test();
-		$test->string = 'Foo';
-		$this->assertEquals('Foo', $test->offsetGet('string'));
-	}
-
-	/**
-	 * @expectedException \InvalidArgumentException
-	 */
-	public function testOffsetGetRaiseInvalidArgumentException()
-	{
-		$test = new Test();
-		$test->offsetGet('not_defined_property');
-	}
-
-	public function testOffsetSet()
-	{
-		$test = new Test();
-		$test->offsetSet('string', 'Foo');
-		$this->assertEquals('Foo', $test->string);
-	}
-
-	/**
-	 * @expectedException \InvalidArgumentException
-	 */
-	public function testOffsetSetRaiseInvalidArgumentException()
-	{
-		$test = new Test();
-		$test->offsetSet('not_defined_property', 'Foo');
-	}
-
-	public function testOffsetUnset()
-	{
-		$test = new Test();
-		$test->string = 'Foo';
-		$test->offsetUnset('string');
-		$this->assertNull($test->string);
-		$this->assertEmpty($test->string);
-	}
-
-	public function testArrayAccess()
+	public function testConstructorDefensiveCopy()
 	{
 		$now = new \DateTime();
-		$test = new Test();
-		$test['string' ] = 'Foo';
-		$test['null'   ] = null;
-		$test['boolean'] = true;
-		$test['datetime'] = $now;
-		$this->assertEquals('Foo', $test['string']);
-		$this->assertNull($test['null']);
-		$this->assertTrue($test['boolean']);
-		$this->assertSame($now, $test['datetime']);
+		$test = new Test(array(
+			'datetime' => $now,
+		));
+		$this->assertEquals($now, $test->datetime);
+		$this->assertNotSame($now, $test->datetime);
 	}
 
-	public function testIssetArrayAccess()
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testConstructorRaiseInvalidArgumentExceptionUndefinedProperty()
 	{
-		$test = new Test();
-		$test->string = 'Foo';
-		$test->null = null;
-		$this->assertTrue(isset($test['string']));
-		$this->assertFalse(isset($test['null']));
-		$this->assertFalse(isset($test['not_defined_property']));
+		$test = new Test(array(
+			'undefined_property' => 'Foo',
+		));
 	}
 
-	public function testIssetPropertyAccess()
+	public function testIsset()
 	{
-		$test = new Test();
-		$test->string = 'Foo';
-		$test->null = null;
+		$test = new Test(array(
+			'string' => 'Foo',
+			'null'   => null,
+		));
 		$this->assertTrue(isset($test->string));
 		$this->assertFalse(isset($test->null));
-		$this->assertFalse(isset($test->not_defined_property));
+		$this->assertFalse(isset($test->undefined_property));
 	}
 
-	public function testUnsetArrayAccess()
+	public function testGet()
 	{
-		$test = new Test();
-		$test->boolean = false;
-		$this->assertTrue(isset($test['boolean']));
-		unset($test['boolean']);
-		$this->assertFalse(isset($test['boolean']));
+		$test = new Test(array(
+			'string' => 'Foo',
+			'null'   => null,
+		));
+		$this->assertEquals('Foo', $test->string);
+		$this->assertNull($test->null);
 	}
 
-	public function testUnsetPropertyAccess()
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testGetRaiseInvalidArgumentExceptionUndefinedProperty()
 	{
 		$test = new Test();
-		$test->boolean = false;
-		$this->assertTrue(isset($test->boolean));
-		unset($test->boolean);
-		$this->assertFalse(isset($test->boolean));
+		$test->undefined_property;
 	}
 
-	public function testIsNullArrayAccess()
+	/**
+	 * @expectedException \LogicException
+	 */
+	public function testSetRaiseLogicException()
 	{
-		$test = new Test();
-		$test->string = 'Foo';
-		$test->null = null;
-		$this->assertFalse(is_null($test['string']));
-		$this->assertTrue(is_null($test['null']));
+		$test = new Test(array(
+			'string'  => 'Foo',
+			'boolean' => true,
+		));
+		$test->string = 'Bar';
 	}
 
-	public function testIsNullPropertyAccess()
+	/**
+	 * @expectedException \LogicException
+	 */
+	public function testUnsetRaiseLogicException()
 	{
-		$test = new Test();
-		$test->string = 'Foo';
-		$test->null = null;
-		$this->assertFalse(is_null($test->string));
-		$this->assertTrue(is_null($test->null));
+		$test = new Test(array(
+			'string' => 'Foo',
+		));
+		unset($test->string);
 	}
 
-	public function testTraversable()
+	public function testSerializable()
 	{
-		$now = new \DateTime();
-		$test = new Test();
-		$test->string = 'Foo';
-		$test->null = null;
-		$test->boolean = true;
-		$test->datetime = $now;
-		foreach ($test as $name => $value) {
-			switch ($name) {
-			case 'string':
-				$this->assertEquals('Foo', $value);
-				break;
-			case 'null':
-				$this->assertNull($value);
-				break;
-			case 'boolean':
-				$this->assertTrue($value);
-				break;
-			case 'datetime':
-				$this->assertSame($now, $value);
-				break;
-			}
-		}
-	}
-
-	public function testSerialize()
-	{
-		$test = new Test();
-		$test->string = 'Foo';
-		$test->null = null;
-		$test->boolean = true;
-		$test->datetime = new \DateTime();
+		$test = new Test(array(
+			'string'   => 'Foo',
+			'null'     => null,
+			'boolean'  => true,
+			'datetime' => new \DateTime(),
+		));
 		$serialized = serialize($test);
 		$this->assertEquals($test, unserialize($serialized));
 		$this->assertNotSame($test, unserialize($serialized));
@@ -179,11 +106,12 @@ class AbstractPropertyAccessorTest extends \PHPUnit_Framework_TestCase
 
 	public function testVarExport()
 	{
-		$test = new Test();
-		$test->string = 'Foo';
-		$test->null = null;
-		$test->boolean = true;
-		$test->datetime = new \DateTime();
+		$test = new Test(array(
+			'string'   => 'Foo',
+			'null'     => null,
+			'boolean'  => true,
+			'datetime' => new \DateTime(),
+		));
 		eval('$exported = ' . var_export($test, true) . ';');
 		$this->assertEquals($test, $exported);
 		$this->assertNotSame($test, $exported);
@@ -191,14 +119,91 @@ class AbstractPropertyAccessorTest extends \PHPUnit_Framework_TestCase
 
 	public function testClone()
 	{
-		$test = new Test();
-		$test->string = 'Foo';
-		$test->null = null;
-		$test->boolean = true;
-		$test->datetime = new \DateTime();
+		$test = new Test(array(
+			'string'   => 'Foo',
+			'null'     => null,
+			'boolean'  => true,
+			'datetime' => new \DateTime(),
+		));
 		$cloned = clone $test;
 		$this->assertEquals($test->datetime, $cloned->datetime);
 		$this->assertNotSame($test->datetime, $cloned->datetime);
+	}
+
+	public function testTraversable()
+	{
+		$properties = array(
+			'string'   => 'Foo',
+			'null'     => null,
+			'boolean'  => true,
+			'datetime' => new \DateTime(),
+		);
+		$test = new Test($properties);
+		foreach ($test as $name => $value) {
+			if (array_key_exists($name, $properties)) {
+				$this->assertEquals($properties[$name], $value);
+				if (is_object($value)) {
+					$this->assertNotSame($properties[$name], $value);
+				}
+			}
+		}
+	}
+
+	public function testToArray()
+	{
+		$properties = array(
+			'string'   => 'Foo',
+			'null'     => null,
+			'boolean'  => true,
+			'datetime' => new \DateTime(),
+		);
+		$test = new Test($properties);
+		$this->assertEquals($properties, $test->toArray());
+		$this->assertNotSame($properties, $test->toArray());
+	}
+
+	public function testIssetByArrayAccess()
+	{
+		$test = new Test(array(
+			'string' => 'Foo',
+			'null'   => null,
+		));
+		$this->assertTrue(isset($test['string']));
+		$this->assertFalse(isset($test['null']));
+		$this->assertFalse(isset($test['not_defined_property']));
+	}
+
+	public function testGetByArrayAccess()
+	{
+		$test = new Test(array(
+			'string' => 'Foo',
+			'null'   => null,
+		));
+		$this->assertEquals('Foo', $test['string']);
+		$this->assertNull($test['null']);
+	}
+
+	/**
+	 * @expectedException \LogicException
+	 */
+	public function testSetRaiseLogicExceptionByArrayAccess()
+	{
+		$test = new Test(array(
+			'string'  => 'Foo',
+			'boolean' => true,
+		));
+		$test['string'] = 'Bar';
+	}
+
+	/**
+	 * @expectedException \LogicException
+	 */
+	public function testUnsetRaiseLogicExceptionByArrayAccess()
+	{
+		$test = new Test(array(
+			'string' => 'Foo',
+		));
+		unset($test['string']);
 	}
 
 }
@@ -209,4 +214,10 @@ class Test extends AbstractPropertyAccessor
 	protected $null;
 	protected $boolean;
 	protected $datetime;
+
+	public function __construct(array $properties = array())
+	{
+		$this->initialize($properties);
+	}
+
 }

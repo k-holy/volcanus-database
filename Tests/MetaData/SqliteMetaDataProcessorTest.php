@@ -41,8 +41,8 @@ CREATE TABLE messages(
      message_id INTEGER      NOT NULL PRIMARY KEY
     ,title      VARCHAR(255) NOT NULL
     ,message    TEXT
-    ,posted_by  INTEGER      NOT NULL DEFAULT 0
-    ,FOREIGN KEY(posted_by) REFERENCES users(user_id) ON DELETE SET NULL
+    ,posted_by  INTEGER      NOT NULL
+    ,FOREIGN KEY(posted_by) REFERENCES users(user_id) ON DELETE CASCADE
 );
 SQL
 			);

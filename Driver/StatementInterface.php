@@ -13,7 +13,7 @@ namespace Volcanus\Database\Driver;
  *
  * @author k.holy74@gmail.com
  */
-interface StatementInterface
+interface StatementInterface extends \IteratorAggregate
 {
 
 	/**

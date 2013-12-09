@@ -162,7 +162,7 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException \RuntimeException
+	 * @expectedException \InvalidArgumentException
 	 */
 	public function testParameterRaiseExceptionWhenUnsupportedType()
 	{
@@ -303,6 +303,18 @@ class MysqlQueryBuilderTest extends \PHPUnit_Framework_TestCase
 			"DATE_FORMAT(birthday, '%Y-%m-%d %H:%i:%s') AS `birthday_formatted`",
 			$builder->expression('birthday', 'timestamp', 'birthday_formatted')
 		);
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testExpressionRaiseExceptionWhenUnsupportedType()
+	{
+		$builder = new MysqlQueryBuilder(
+			new MysqlExpressionBuilder(),
+			new MysqlParameterBuilder(new PdoDriver($this->getPdo(), new MysqlMetaDataProcessor()))
+		);
+		$builder->expression('name', 'unsupported-type');
 	}
 
 	public function testEscapeLikePattern()

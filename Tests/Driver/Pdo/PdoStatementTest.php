@@ -216,6 +216,29 @@ SQL
 		$this->assertFalse($statement->fetchInstanceOf(__NAMESPACE__ . '\\Data'));
 	}
 
+	public function testFetchByDefaultFetchMode()
+	{
+		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
+		$statement = new PdoStatement(
+			$this->getPdo()->query("SELECT count(*) AS cnt FROM test")
+		);
+		$statement->setFetchMode(Statement::FETCH_NUM);
+		$item = $statement->fetch();
+		$this->assertArrayHasKey(0, $item);
+		$this->assertEquals('1', $item[0]);
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testFetchRaiseInvalidArgumentExceptionWhenUnsupportedFetchMode()
+	{
+		$statement = new PdoStatement(
+			$this->getPdo()->query("SELECT count(*) AS cnt FROM test")
+		);
+		$item = $statement->fetch('Unsupported-FetchMode');
+	}
+
 	public function testFetchAllByFetchAssoc()
 	{
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
@@ -308,7 +331,18 @@ SQL
 		$this->assertEmpty($statement->fetchAll(Statement::FETCH_CLASS, __NAMESPACE__ . '\\Data'));
 	}
 
-	public function testFetchAllByFunction()
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testFetchAllByFetchClassRaiseInvalidArgumentExceptionWhenUndefinedClass()
+	{
+		$statement = new PdoStatement(
+			$this->getPdo()->query("SELECT id, name FROM test")
+		);
+		$items = $statement->fetchAll(Statement::FETCH_CLASS, 'UndefinedClass');
+	}
+
+	public function testFetchAllByFetchFunc()
 	{
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
@@ -351,6 +385,99 @@ SQL
 		}));
 	}
 
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testFetchAllByFetchFuncRaiseInvalidArgumentExceptionWhenInvalidType()
+	{
+		$statement = new PdoStatement(
+			$this->getPdo()->query("SELECT id, name FROM test")
+		);
+		$items = $statement->fetchAll(Statement::FETCH_FUNC, false);
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testFetchAllByFetchFuncRaiseInvalidArgumentExceptionWhenInvalidObject()
+	{
+		$statement = new PdoStatement(
+			$this->getPdo()->query("SELECT id, name FROM test")
+		);
+		$items = $statement->fetchAll(Statement::FETCH_FUNC, new \StdClass());
+	}
+
+	public function testFetchAllByDefaultFetchMode()
+	{
+		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
+		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
+		$statement = new PdoStatement(
+			$this->getPdo()->query("SELECT id, name FROM test")
+		);
+		$statement->setFetchMode(Statement::FETCH_ASSOC);
+		$items = $statement->fetchAll();
+		$this->assertCount(2, $items);
+		$this->assertEquals('1'    , $items[0]['id']);
+		$this->assertEquals('test1', $items[0]['name']);
+		$this->assertEquals('2'    , $items[1]['id']);
+		$this->assertEquals('test2', $items[1]['name']);
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testFetchAllRaiseInvalidArgumentExceptionWhenUnsupportedFetchMode()
+	{
+		$statement = new PdoStatement(
+			$this->getPdo()->query("SELECT id, name FROM test")
+		);
+		$items = $statement->fetchAll('Unsupported-FetchMode');
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testSetFetchModeToFetchClassRaiseInvalidArgumentExceptionWhenUndefinedClass()
+	{
+		$statement = new PdoStatement(
+			$this->getPdo()->query("SELECT id, name FROM test")
+		);
+		$item = $statement->setFetchMode(Statement::FETCH_CLASS, 'UndefinedClass');
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testSetFetchModeToFetchFuncRaiseInvalidArgumentExceptionWhenInvalidType()
+	{
+		$statement = new PdoStatement(
+			$this->getPdo()->query("SELECT id, name FROM test")
+		);
+		$item = $statement->setFetchMode(Statement::FETCH_FUNC, false);
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testSetFetchModeToFetchFuncRaiseInvalidArgumentExceptionWhenInvalidObject()
+	{
+		$statement = new PdoStatement(
+			$this->getPdo()->query("SELECT id, name FROM test")
+		);
+		$item = $statement->setFetchMode(Statement::FETCH_FUNC, new \StdClass());
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testSetFetchModeRaiseInvalidArgumentExceptionWhenUnsupportedFetchMode()
+	{
+		$statement = new PdoStatement(
+			$this->getPdo()->query("SELECT count(*) AS cnt FROM test")
+		);
+		$item = $statement->setFetchMode('Unsupported-FetchMode');
+	}
+
 	public function testExecutePreparedStatement()
 	{
 		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
@@ -372,6 +499,52 @@ SQL
 		$this->assertArrayHasKey('name', $item);
 		$this->assertEquals('1', $item['id']);
 		$this->assertEquals('test', $item['name']);
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testExecuteRaiseInvalidArgumentExceptionWhenInvalidType()
+	{
+		$statement = new PdoStatement(
+			$this->getPdo()->prepare("SELECT id, name FROM test WHERE id = :id")
+		);
+		$statement->execute(false);
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testExecuteRaiseInvalidArgumentExceptionWhenInvalidObject()
+	{
+		$statement = new PdoStatement(
+			$this->getPdo()->prepare("SELECT id, name FROM test WHERE id = :id")
+		);
+		$statement->execute(new \StdClass());
+	}
+
+	public function testExecuteRaiseRuntimeExceptionWhenCatchPDOExceptionAndExceptionMessageContainsDebugDumpParams()
+	{
+		$pdoStatement = $this->getMock('\\PDOStatement');
+		$pdoStatement->expects($this->once())
+			->method('setFetchMode')
+			->will($this->returnValue(true));
+		$pdoStatement->expects($this->once())
+			->method('debugDumpParams')
+			->will($this->returnCallback(function() {
+				echo 'DEBUG_DUMP_PARAMS';
+				return null;
+			}));
+		$pdoStatement->expects($this->once())
+			->method('execute')
+			->will($this->throwException(new \PDOException()));
+
+		try {
+			$statement = new PdoStatement($pdoStatement);
+			$statement->execute(array('id' => 1));
+		} catch (\RuntimeException $e) {
+			$this->assertContains('DEBUG_DUMP_PARAMS', $e->getMessage());
+		}
 	}
 
 	public function testIterationByFetchAssoc()

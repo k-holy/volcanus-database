@@ -21,17 +21,17 @@ class SqliteExpressionBuilder implements ExpressionBuilderInterface
 	/**
 	 * @var string 日付区切符（年月日）
 	 */
-	protected static $dateDelimiter = '-';
+	private static $dateDelimiter = '-';
 
 	/**
 	 * @var string 日付区切符（時分秒）
 	 */
-	protected static $timeDelimiter = ':';
+	private static $timeDelimiter = ':';
 
 	/**
 	 * @var string 日付区切符（年月日と時分秒）
 	 */
-	protected static $dateTimeDelimiter = ' ';
+	private static $dateTimeDelimiter = ' ';
 
 	/**
 	 * 項目名/式により値を取得するSQL句を生成します。
@@ -43,24 +43,6 @@ class SqliteExpressionBuilder implements ExpressionBuilderInterface
 	public function resultColumn($expr, $alias = null)
 	{
 		return (isset($alias)) ? $expr . ' AS "' . $alias . '"' : $expr;
-	}
-
-	/**
-	 * コンストラクタ
-	 *
-	 * @param array 設定
-	 */
-	public function __construct(array $options = array())
-	{
-		if (isset($options['dateDelimiter'])) {
-			static::$dateDelimiter = $options['dateDelimiter'];
-		}
-		if (isset($options['timeDelimiter'])) {
-			static::$timeDelimiter = $options['timeDelimiter'];
-		}
-		if (isset($options['dateTimeDelimiter'])) {
-			static::$dateTimeDelimiter = $options['dateTimeDelimiter'];
-		}
 	}
 
 	/**

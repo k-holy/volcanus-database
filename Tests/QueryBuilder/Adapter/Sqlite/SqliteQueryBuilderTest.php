@@ -174,7 +174,7 @@ class SqliteQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException \RuntimeException
+	 * @expectedException \InvalidArgumentException
 	 */
 	public function testParameterRaiseExceptionWhenUnsupportedType()
 	{
@@ -303,6 +303,18 @@ class SqliteQueryBuilderTest extends \PHPUnit_Framework_TestCase
 			"strftime('%Y-%m-%d %H:%i:%s', birthday) AS \"birthday_formatted\"",
 			$builder->expression('birthday', 'timestamp', 'birthday_formatted')
 		);
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testExpressionRaiseExceptionWhenUnsupportedType()
+	{
+		$builder = new SqliteQueryBuilder(
+			new SqliteExpressionBuilder(),
+			new SqliteParameterBuilder(new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor()))
+		);
+		$builder->expression('name', 'unsupported-type');
 	}
 
 	public function testEscapeLikePattern()

@@ -56,13 +56,11 @@ class Dsn extends AbstractPropertyAccessor
 	/**
 	 * コンストラクタ
 	 *
-	 * @param mixed string | array | Traversable
+	 * @param array
 	 */
-	public function __construct($attributes = null)
+	public function __construct(array $properties = array())
 	{
-		if ($attributes !== null) {
-			$this->properties($attributes);
-		}
+		$this->initialize($properties);
 	}
 
 	/**

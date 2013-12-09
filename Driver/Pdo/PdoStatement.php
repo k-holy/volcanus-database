@@ -17,7 +17,7 @@ use Volcanus\Database\CallbackIterator;
  *
  * @author k.holy74@gmail.com
  */
-class PdoStatement implements StatementInterface, \IteratorAggregate
+class PdoStatement implements StatementInterface
 {
 
 	private $statement;
@@ -77,7 +77,7 @@ class PdoStatement implements StatementInterface, \IteratorAggregate
 			$this->statement->debugDumpParams();
 			$debug = ob_get_contents();
 			ob_end_clean();
-			throw new \InvalidArgumentException(
+			throw new \RuntimeException(
 				sprintf('execute prepared statement failed. "%s"', $debug)
 			);
 		}

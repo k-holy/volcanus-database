@@ -25,17 +25,17 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 	/**
 	 * @var string 日付区切符（年月日）
 	 */
-	protected static $dateDelimiter = '-';
+	private static $dateDelimiter = '-';
 
 	/**
 	 * @var string 日付区切符（時分秒）
 	 */
-	protected static $timeDelimiter = ':';
+	private static $timeDelimiter = ':';
 
 	/**
 	 * @var string 日付区切符（年月日と時分秒）
 	 */
-	protected static $dateTimeDelimiter = ' ';
+	private static $dateTimeDelimiter = ' ';
 
 	/**
 	 * @var \Volcanus\Database\Driver\DriverInterface
@@ -48,18 +48,9 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 	 * @param \Volcanus\Database\Driver\DriverInterface
 	 * @param array 設定
 	 */
-	public function __construct(DriverInterface $driver, array $options = array())
+	public function __construct(DriverInterface $driver)
 	{
 		$this->driver = $driver;
-		if (isset($options['dateDelimiter'])) {
-			static::$dateDelimiter = $options['dateDelimiter'];
-		}
-		if (isset($options['timeDelimiter'])) {
-			static::$timeDelimiter = $options['timeDelimiter'];
-		}
-		if (isset($options['dateTimeDelimiter'])) {
-			static::$dateTimeDelimiter = $options['dateTimeDelimiter'];
-		}
 	}
 
 	/**
@@ -121,10 +112,10 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 			if (strlen($value) === 0) {
 				return 'NULL';
 			}
-			if ($value == QueryBuilder::MIN) {
+			if ($value === QueryBuilder::MIN) {
 				return "'-3.402823466E+38'";
 			}
-			if ($value == QueryBuilder::MAX) {
+			if ($value === QueryBuilder::MAX) {
 				return "'3.402823466E+38'";
 			}
 			return $value;
@@ -169,8 +160,8 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 			return 'NULL';
 		}
 
-		$format = '%Y' . static::$dateDelimiter
-				. '%m' . static::$dateDelimiter
+		$format = '%Y' . self::$dateDelimiter
+				. '%m' . self::$dateDelimiter
 				. '%d';
 
 		// Unix Timestamp
@@ -183,8 +174,8 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 		if ($value instanceof \DateTime) {
 			return sprintf("STR_TO_DATE('%s', '%s')",
 				$value->format(sprintf('Y%sm%sd',
-					static::$dateDelimiter,
-					static::$dateDelimiter
+					self::$dateDelimiter,
+					self::$dateDelimiter
 				)),
 				$format
 			);
@@ -195,25 +186,25 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 			if (strlen($value) === 0) {
 				return 'NULL';
 			}
-			if ($value == QueryBuilder::NOW) {
+			if ($value === QueryBuilder::NOW) {
 				return 'CURDATE()';
 			}
-			if ($value == QueryBuilder::MIN) {
+			if ($value === QueryBuilder::MIN) {
 				return sprintf("STR_TO_DATE('%04d%s%02d%s%02d', '%s')",
 					1000,
-					static::$dateDelimiter,
+					self::$dateDelimiter,
 					1,
-					static::$dateDelimiter,
+					self::$dateDelimiter,
 					1,
 					$format
 				);
 			}
-			if ($value == QueryBuilder::MAX) {
+			if ($value === QueryBuilder::MAX) {
 				return sprintf("STR_TO_DATE('%04d%s%02d%s%02d', '%s')",
 					9999,
-					static::$dateDelimiter,
+					self::$dateDelimiter,
 					12,
-					static::$dateDelimiter,
+					self::$dateDelimiter,
 					31,
 					$format
 				);
@@ -228,9 +219,9 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 			}
 			return sprintf("STR_TO_DATE('%04d%s%02d%s%02d', '%s')",
 				(int)$value[0],
-				static::$dateDelimiter,
+				self::$dateDelimiter,
 				(isset($value[1]) && $value[1] !== '') ? (int)$value[1] : 1,
-				static::$dateDelimiter,
+				self::$dateDelimiter,
 				(isset($value[2]) && $value[2] !== '') ? (int)$value[2] : 1,
 				$format
 			);
@@ -255,11 +246,11 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 			return 'NULL';
 		}
 
-		$format = '%Y' . static::$dateDelimiter
-				. '%m' . static::$dateDelimiter
-				. '%d' . static::$dateTimeDelimiter
-				. '%H' . static::$timeDelimiter
-				. '%i' . static::$timeDelimiter
+		$format = '%Y' . self::$dateDelimiter
+				. '%m' . self::$dateDelimiter
+				. '%d' . self::$dateTimeDelimiter
+				. '%H' . self::$timeDelimiter
+				. '%i' . self::$timeDelimiter
 				. '%s';
 
 		// Unix Timestamp
@@ -271,11 +262,11 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 		if ($value instanceof \DateTime) {
 			return sprintf("STR_TO_DATE('%s', '%s')",
 				$value->format(sprintf('Y%sm%sd%sH%si%ss',
-					static::$dateDelimiter,
-					static::$dateDelimiter,
-					static::$dateTimeDelimiter,
-					static::$timeDelimiter,
-					static::$timeDelimiter
+					self::$dateDelimiter,
+					self::$dateDelimiter,
+					self::$dateTimeDelimiter,
+					self::$timeDelimiter,
+					self::$timeDelimiter
 				)),
 				$format
 			);
@@ -285,37 +276,37 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 			if (strlen($value) === 0) {
 				return 'NULL';
 			}
-			if ($value == QueryBuilder::NOW) {
+			if ($value === QueryBuilder::NOW) {
 				return 'NOW()';
 			}
-			if ($value == QueryBuilder::MIN) {
+			if ($value === QueryBuilder::MIN) {
 				return sprintf("STR_TO_DATE('%04d%s%02d%s%02d%s%02d%s%02d%s%02d', '%s')",
 					1000,
-					static::$dateDelimiter,
+					self::$dateDelimiter,
 					1,
-					static::$dateDelimiter,
+					self::$dateDelimiter,
 					1,
-					static::$dateTimeDelimiter,
+					self::$dateTimeDelimiter,
 					0,
-					static::$timeDelimiter,
+					self::$timeDelimiter,
 					0,
-					static::$timeDelimiter,
+					self::$timeDelimiter,
 					0,
 					$format
 				);
 			}
-			if ($value == QueryBuilder::MAX) {
+			if ($value === QueryBuilder::MAX) {
 				return sprintf("STR_TO_DATE('%04d%s%02d%s%02d%s%02d%s%02d%s%02d', '%s')",
 					9999,
-					static::$dateDelimiter,
+					self::$dateDelimiter,
 					12,
-					static::$dateDelimiter,
+					self::$dateDelimiter,
 					31,
-					static::$dateTimeDelimiter,
+					self::$dateTimeDelimiter,
 					23,
-					static::$timeDelimiter,
+					self::$timeDelimiter,
 					59,
-					static::$timeDelimiter,
+					self::$timeDelimiter,
 					59,
 					$format
 				);
@@ -330,15 +321,15 @@ class MysqlParameterBuilder extends AbstractParameterBuilder implements Paramete
 			}
 			return sprintf("STR_TO_DATE('%04d%s%02d%s%02d%s%02d%s%02d%s%02d', '%s')",
 				(int)$value[0],
-				static::$dateDelimiter,
+				self::$dateDelimiter,
 				(isset($value[1]) && $value[1] !== '') ? (int)$value[1] : 1,
-				static::$dateDelimiter,
+				self::$dateDelimiter,
 				(isset($value[2]) && $value[2] !== '') ? (int)$value[2] : 1,
-				static::$dateTimeDelimiter,
+				self::$dateTimeDelimiter,
 				(isset($value[3]) && $value[3] !== '') ? (int)$value[3] : 0,
-				static::$timeDelimiter,
+				self::$timeDelimiter,
 				(isset($value[4]) && $value[4] !== '') ? (int)$value[4] : 0,
-				static::$timeDelimiter,
+				self::$timeDelimiter,
 				(isset($value[5]) && $value[5] !== '') ? (int)$value[5] : 0,
 				$format
 			);
