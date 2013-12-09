@@ -45,10 +45,10 @@ class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
 		$tableListStatement = $driver->query($this->tableList());
 		$tableListStatement->setFetchMode(Statement::FETCH_NUM);
 		$tables = array();
-		foreach ($tableListStatement as $cols) {
-			$table = new Table();
-			$table->name = $cols[0];
-			$tables[$cols[0]] = $table;
+		foreach ($tableListStatement->getIterator() as $cols) {
+			$tables[$cols[0]] = new Table(array(
+				'name' => $cols[0],
+			));
 		}
 		return $tables;
 	}
@@ -65,34 +65,48 @@ class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
 		$columnsStatement = $driver->query($this->showFullColumnsFrom($table));
 		$columnsStatement->setFetchMode(Statement::FETCH_ASSOC);
 		$columns = array();
-		foreach ($columnsStatement as $cols) {
-			$column = new Column();
-			$column->name = $cols['Field'];
-			if (preg_match("/^(.+)\((\d+),(\d+)/", $cols['Type'], $matches)) {
-				$column->type = $matches[1];
-				$column->maxLength = is_numeric($matches[2]) ? $matches[2] : -1;
-				$column->scale = is_numeric($matches[3]) ? $matches[3] : -1;
-			} elseif (preg_match("/^(.+)\((\d+)/", $cols['Type'], $matches)) {
-				$column->type = $matches[1];
-				$column->maxLength = is_numeric($matches[2]) ? $matches[2] : -1;
-			} elseif (preg_match("/^(enum)\((.*)\)$/i", $cols['Type'], $matches)) {
-				$column->type = $matches[1];
+		foreach ($columnsStatement->getIterator() as $cols) {
+			$name = $cols['Field'];
+			$type = $cols['Type'];
+			$maxLength = null;
+			$scale = null;
+			if (preg_match('/^(.+)\((\d+),(\d+)/', $type, $matches)) {
+				$type = $matches[1];
+				$maxLength = ctype_digit($matches[2]) ? $matches[2] : -1;
+				$scale = ctype_digit($matches[3]) ? $matches[3] : -1;
+			} elseif (preg_match('/^(.+)\((\d+)/', $type, $matches)) {
+				$type = $matches[1];
+				$maxLength = ctype_digit($matches[2]) ? $matches[2] : -1;
+			} elseif (preg_match('/^(enum)\((.*)\)$/i', $type, $matches)) {
+				$type = $matches[1];
 				$zlen = max(array_map('strlen', explode(',', $matches[2]))) - 2;
-				$column->maxLength = ($zlen > 0) ? $zlen : 1;
-			} else {
-				$column->type = $cols['Type'];
+				$maxLength = ($zlen > 0) ? $zlen : 1;
 			}
-			$column->notNull = ($cols['Null'] !== 'YES');
-			$column->primaryKey = ($cols['Key'] === 'PRI');
-			$column->uniqueKey = ($cols['Key'] === 'UNI');
-			$column->autoIncrement  = (strpos($cols['Extra'], 'auto_increment') !== false);
-			$column->binary = (strpos($cols['Type'],'blob') !== false);
-			if (!$column->binary && strcmp($cols['Default'], '') !== 0 && strcasecmp($cols['Default'], 'NULL') !== 0) {
-				$column->default = $cols['Default'];
+			$notNull = ($cols['Null'] !== 'YES');
+			$primaryKey = ($cols['Key'] === 'PRI');
+			$uniqueKey = ($cols['Key'] === 'UNI');
+			$autoIncrement  = (strpos($cols['Extra'], 'auto_increment') !== false);
+			$binary = (strpos($type,'blob') !== false);
+			$default = null;
+			if (!$binary && isset($cols['Default']) && strcasecmp($cols['Default'], 'NULL') !== 0) {
+				$default = $cols['Default'];
 			}
-			$column->comment = (isset($cols['Comment']) && strcmp($cols['Comment'], '') != 0) ? $cols['Comment'] : null;
-			$columns[$cols['Field']] = $column;
+			$comment = (isset($cols['Comment']) && strcmp($cols['Comment'], '') != 0) ? $cols['Comment'] : null;
+			$columns[$name] = new Column(array(
+				'name'          => $name,
+				'type'          => $type,
+				'maxLength'     => $maxLength,
+				'scale'         => $scale,
+				'binary'        => $binary,
+				'default'       => $default,
+				'notNull'       => $notNull,
+				'primaryKey'    => $primaryKey,
+				'uniqueKey'     => $uniqueKey,
+				'autoIncrement' => $autoIncrement,
+				'comment'       => $comment,
+			));
 		}
+
 		return $columns;
 	}
 

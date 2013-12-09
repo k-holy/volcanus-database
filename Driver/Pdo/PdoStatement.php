@@ -17,7 +17,7 @@ use Volcanus\Database\CallbackIterator;
  *
  * @author k.holy74@gmail.com
  */
-class PdoStatement implements StatementInterface, \IteratorAggregate
+class PdoStatement implements StatementInterface
 {
 
 	private $statement;

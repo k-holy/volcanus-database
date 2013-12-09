@@ -46,9 +46,9 @@ class SqliteMetaDataProcessor extends AbstractMetaDataProcessor
 		$tableListStatement->setFetchMode(Statement::FETCH_NUM);
 		$tables = array();
 		foreach ($tableListStatement as $cols) {
-			$table = new Table();
-			$table->name = $cols[0];
-			$tables[$cols[0]] = $table;
+			$tables[$cols[0]] = new Table(array(
+				'name' => $cols[0],
+			));
 		}
 		return $tables;
 	}
@@ -75,28 +75,39 @@ class SqliteMetaDataProcessor extends AbstractMetaDataProcessor
 		$tableInfoStatement->setFetchMode(Statement::FETCH_ASSOC);
 		$columns = array();
 		foreach ($tableInfoStatement as $cols) {
-			$column = new Column();
-			$column->name = $cols['name'];
-			if (preg_match("/^(.+)\((\d+),(\d+)/", $cols['type'], $matches)) {
-				$column->type = $matches[1];
-				$column->maxLength = is_numeric($matches[2]) ? $matches[2] : -1;
-				$column->scale = is_numeric($matches[3]) ? $matches[3] : -1;
-			} elseif (preg_match("/^(.+)\((\d+)/", $cols['type'], $matches)) {
-				$column->type = $matches[1];
-				$column->maxLength = is_numeric($matches[2]) ? $matches[2] : -1;
-			} else {
-				$column->type = $cols['type'];
+			$name = $cols['name'];
+			$type = $cols['type'];
+			$maxLength = null;
+			$scale = null;
+			if (preg_match('/^(.+)\((\d+),(\d+)/', $type, $matches)) {
+				$type = $matches[1];
+				$maxLength = is_numeric($matches[2]) ? $matches[2] : -1;
+				$scale = is_numeric($matches[3]) ? $matches[3] : -1;
+			} elseif (preg_match('/^(.+)\((\d+)/', $type, $matches)) {
+				$type = $matches[1];
+				$maxLength = is_numeric($matches[2]) ? $matches[2] : -1;
 			}
-			$column->notNull = (bool)$cols['notnull'];
-			$column->primaryKey = (bool)$cols['pk'];
-			$column->uniqueKey = (array_key_exists($cols['name'], $indexes) && $indexes[$cols['name']]['unique'] === '1');
-			$column->autoIncrement = ($column->primaryKey && strcasecmp($column->type, 'INTEGER') === 0);
-			$column->binary = (strcasecmp($column->type, 'BLOB') === 0);
-			if (!$column->binary && strcmp($cols['dflt_value'], '') !== 0 && strcasecmp($cols['dflt_value'], 'NULL') !== 0) {
-				$column->default = $cols['dflt_value'];
+			$notNull = (bool)$cols['notnull'];
+			$primaryKey = (bool)$cols['pk'];
+			$uniqueKey = (array_key_exists($name, $indexes) && $indexes[$name]['unique'] === '1');
+			$autoIncrement = ($primaryKey && strcasecmp($type, 'INTEGER') === 0);
+			$binary = (strcasecmp($type, 'BLOB') === 0);
+			$default = null;
+			if (!$binary && isset($cols['dflt_value']) && strcasecmp($cols['dflt_value'], 'NULL') !== 0) {
+				$default = $cols['dflt_value'];
 			}
-			$column->comment = null;
-			$columns[$cols['name']] = $column;
+			$columns[$name] = new Column(array(
+				'name'          => $name,
+				'type'          => $type,
+				'maxLength'     => $maxLength,
+				'scale'         =>  $scale,
+				'binary'        => $binary,
+				'default'       => $default,
+				'notNull'       => $notNull,
+				'primaryKey'    => $primaryKey,
+				'uniqueKey'     => $uniqueKey,
+				'autoIncrement' => $autoIncrement,
+			));
 		}
 
 		return $columns;

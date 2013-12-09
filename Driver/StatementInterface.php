@@ -13,7 +13,7 @@ namespace Volcanus\Database\Driver;
  *
  * @author k.holy74@gmail.com
  */
-interface StatementInterface
+interface StatementInterface extends \IteratorAggregate
 {
 
 	/**
@@ -62,5 +62,12 @@ interface StatementInterface
 	 * @return array
 	 */
 	public function fetchAll($mode = null, $option = null, array $arguments = array());
+
+	/**
+	 * IteratorAggregate::getIterator()
+	 *
+	 * @return \Traversable
+	 */
+	public function getIterator();
 
 }
