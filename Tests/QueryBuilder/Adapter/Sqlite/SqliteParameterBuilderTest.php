@@ -252,6 +252,14 @@ class SqliteParameterBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals("date('2013-01-02')", $builder->ToDate(array(2013, 1, 2)));
 	}
 
+	public function testToDateEmptyArray()
+	{
+		$builder = new SqliteParameterBuilder(
+			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
+		);
+		$this->assertEquals('NULL', $builder->ToDate(array()));
+	}
+
 	public function testToDateForDateTime()
 	{
 		$builder = new SqliteParameterBuilder(
@@ -342,6 +350,14 @@ class SqliteParameterBuilderTest extends \PHPUnit_Framework_TestCase
 			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
 		);
 		$this->assertEquals("datetime('2013-01-02 03:04:05')", $builder->toTimestamp(array(2013, 1, 2, 3, 4, 5)));
+	}
+
+	public function testToTimestampEmptyArray()
+	{
+		$builder = new SqliteParameterBuilder(
+			new PdoDriver($this->getPdo(), new SqliteMetaDataProcessor())
+		);
+		$this->assertEquals('NULL', $builder->toTimestamp(array()));
 	}
 
 	public function testToTimestampForDateTime()

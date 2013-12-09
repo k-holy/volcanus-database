@@ -288,4 +288,12 @@ class DsnParserTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($attributes['options']['opt3:/@'], 'val3:/@');
 	}
 
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testParseRaiseInvalidArgumentExceptionWhenDriverNotFound()
+	{
+		$parser = new DsnParser('username:password@hostname:port/database?option=value');
+	}
+
 }

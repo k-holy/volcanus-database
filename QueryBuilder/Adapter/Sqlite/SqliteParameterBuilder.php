@@ -23,43 +23,18 @@ class SqliteParameterBuilder extends AbstractParameterBuilder implements Paramet
 {
 
 	/**
-	 * @var string 日付区切符（年月日）
-	 */
-	protected static $dateDelimiter = '-';
-
-	/**
-	 * @var string 日付区切符（時分秒）
-	 */
-	protected static $timeDelimiter = ':';
-
-	/**
-	 * @var string 日付区切符（年月日と時分秒）
-	 */
-	protected static $dateTimeDelimiter = ' ';
-
-	/**
 	 * @var \Volcanus\Database\Driver\DriverInterface
 	 */
-	protected $driver;
+	private $driver;
 
 	/**
 	 * コンストラクタ
 	 *
 	 * @param \Volcanus\Database\Driver\DriverInterface
-	 * @param array 設定
 	 */
-	public function __construct(DriverInterface $driver, array $options = array())
+	public function __construct(DriverInterface $driver)
 	{
 		$this->driver = $driver;
-		if (isset($options['dateDelimiter'])) {
-			static::$dateDelimiter = $options['dateDelimiter'];
-		}
-		if (isset($options['timeDelimiter'])) {
-			static::$timeDelimiter = $options['timeDelimiter'];
-		}
-		if (isset($options['dateTimeDelimiter'])) {
-			static::$dateTimeDelimiter = $options['dateTimeDelimiter'];
-		}
 	}
 
 	/**
@@ -117,10 +92,10 @@ class SqliteParameterBuilder extends AbstractParameterBuilder implements Paramet
 			if (strlen($value) === 0) {
 				return 'NULL';
 			}
-			if ($value == QueryBuilder::MIN) {
+			if ($value === QueryBuilder::MIN) {
 					return '-9223372036854775808';
 			}
-			if ($value == QueryBuilder::MAX) {
+			if ($value === QueryBuilder::MAX) {
 					return '9223372036854775807';
 			}
 			return $value;
@@ -172,38 +147,31 @@ class SqliteParameterBuilder extends AbstractParameterBuilder implements Paramet
 		}
 
 		// DateTime
+		// SQLiteの日付関数は固定書式
 		if ($value instanceof \DateTime) {
-			return sprintf("date('%s')",
-				$value->format(sprintf('Y%sm%sd',
-					static::$dateDelimiter,
-					static::$dateDelimiter
-				))
-			);
+			return sprintf("date('%s')", $value->format('Y-m-d'));
 		}
 
 		// String of a date
+		// SQLiteの日付関数は固定書式
 		if (is_string($value)) {
 			if (strlen($value) === 0) {
 				return 'NULL';
 			}
-			if ($value == QueryBuilder::NOW) {
+			if ($value === QueryBuilder::NOW) {
 				return "date('now')";
 			}
-			if ($value == QueryBuilder::MIN) {
-				return sprintf("date('%04d%s%02d%s%02d')",
+			if ($value === QueryBuilder::MIN) {
+				return sprintf("date('%04d-%02d-%02d')",
 					0,
-					static::$dateDelimiter,
 					1,
-					static::$dateDelimiter,
 					1
 				);
 			}
-			if ($value == QueryBuilder::MAX) {
-				return sprintf("date('%04d%s%02d%s%02d')",
+			if ($value === QueryBuilder::MAX) {
+				return sprintf("date('%04d-%02d-%02d')",
 					9999,
-					static::$dateDelimiter,
 					12,
-					static::$dateDelimiter,
 					31
 				);
 			}
@@ -211,15 +179,14 @@ class SqliteParameterBuilder extends AbstractParameterBuilder implements Paramet
 		}
 
 		// array
+		// SQLiteの日付関数は固定書式
 		if (is_array($value)) {
 			if (!isset($value[0])) {
 				return 'NULL';
 			}
-			return sprintf("date('%04d%s%02d%s%02d')",
+			return sprintf("date('%04d-%02d-%02d')",
 				(int)$value[0],
-				static::$dateDelimiter,
 				(isset($value[1]) && $value[1] !== '') ? (int)$value[1] : 1,
-				static::$dateDelimiter,
 				(isset($value[2]) && $value[2] !== '') ? (int)$value[2] : 1
 			);
 		}
@@ -250,75 +217,41 @@ class SqliteParameterBuilder extends AbstractParameterBuilder implements Paramet
 		}
 
 		// DateTime
+		// SQLiteの日付関数は固定書式
 		if ($value instanceof \DateTime) {
-			return sprintf("datetime('%s')",
-				$value->format(sprintf('Y%sm%sd%sH%si%ss',
-					static::$dateDelimiter,
-					static::$dateDelimiter,
-					static::$dateTimeDelimiter,
-					static::$timeDelimiter,
-					static::$timeDelimiter
-				))
-			);
+			return sprintf("datetime('%s')", $value->format('Y-m-d H:i:s'));
 		}
 
 		// Datetime string
+		// SQLiteの日付関数は固定書式
 		if (is_string($value)) {
 			if (strlen($value) === 0) {
 				return 'NULL';
 			}
-			if ($value == QueryBuilder::NOW) {
+			if ($value === QueryBuilder::NOW) {
 				return "datetime('now')";
 			}
-			if ($value == QueryBuilder::MIN) {
-				return sprintf("datetime('%04d%s%02d%s%02d%s%02d%s%02d%s%02d')",
-					0,
-					static::$dateDelimiter,
-					1,
-					static::$dateDelimiter,
-					1,
-					static::$dateTimeDelimiter,
-					0,
-					static::$timeDelimiter,
-					0,
-					static::$timeDelimiter,
-					0
-				);
+			if ($value === QueryBuilder::MIN) {
+				return "datetime('0000-01-01 00:00:00')";
 			}
-			if ($value == QueryBuilder::MAX) {
-				return sprintf("datetime('%04d%s%02d%s%02d%s%02d%s%02d%s%02d')",
-					9999,
-					static::$dateDelimiter,
-					12,
-					static::$dateDelimiter,
-					31,
-					static::$dateTimeDelimiter,
-					23,
-					static::$timeDelimiter,
-					59,
-					static::$timeDelimiter,
-					59
-				);
+			if ($value === QueryBuilder::MAX) {
+				return "datetime('9999-12-31 23:59:59')";
 			}
 			return "datetime('{$value}')";
 		}
 
 		// array
+		// SQLiteの日付関数は固定書式
 		if (is_array($value)) {
 			if (!isset($value[0])) {
 				return 'NULL';
 			}
-			return sprintf("datetime('%04d%s%02d%s%02d%s%02d%s%02d%s%02d')",
+			return sprintf("datetime('%04d-%02d-%02d %02d:%02d:%02d')",
 				(int)$value[0],
-				static::$dateDelimiter,
 				(isset($value[1]) && $value[1] !== '') ? (int)$value[1] : 1,
-				static::$dateDelimiter,
 				(isset($value[2]) && $value[2] !== '') ? (int)$value[2] : 1,
-				static::$dateTimeDelimiter,
 				(isset($value[3]) && $value[3] !== '') ? (int)$value[3] : 0,
-				static::$timeDelimiter,
 				(isset($value[4]) && $value[4] !== '') ? (int)$value[4] : 0,
-				static::$timeDelimiter,
 				(isset($value[5]) && $value[5] !== '') ? (int)$value[5] : 0
 			);
 		}
