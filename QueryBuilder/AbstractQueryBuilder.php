@@ -73,13 +73,13 @@ abstract class AbstractQueryBuilder
 	{
 		$sqlType = $this->parameterType($type);
 		if (!$sqlType) {
-			throw new \RuntimeException(
+			throw new \InvalidArgumentException(
 				sprintf('Unsupported type:"%s"', $type)
 			);
 		}
 		$methodName = 'to' . ucfirst($sqlType);
 		if (!method_exists($this->parameterBuilder, $methodName)) {
-			throw new \RuntimeException(
+			throw new \InvalidArgumentException(
 				sprintf('Method not exists, Unsupported type:"%s"', $type)
 			);
 		}
@@ -99,7 +99,7 @@ abstract class AbstractQueryBuilder
 		if (isset($type)) {
 			$sqlType = $this->parameterType($type);
 			if (!$sqlType) {
-				throw new \RuntimeException(
+				throw new \InvalidArgumentException(
 					sprintf('Unsupported type:"%s"', $type)
 				);
 			}

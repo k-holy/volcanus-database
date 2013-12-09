@@ -77,7 +77,7 @@ class PdoStatement implements StatementInterface
 			$this->statement->debugDumpParams();
 			$debug = ob_get_contents();
 			ob_end_clean();
-			throw new \InvalidArgumentException(
+			throw new \RuntimeException(
 				sprintf('execute prepared statement failed. "%s"', $debug)
 			);
 		}

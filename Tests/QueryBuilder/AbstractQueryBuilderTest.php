@@ -144,7 +144,7 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException \RuntimeException
+	 * @expectedException \InvalidArgumentException
 	 */
 	public function testParameterRaiseExceptionWhenUnsupportedType()
 	{
@@ -259,6 +259,18 @@ class AbstractQueryBuilderTest extends \PHPUnit_Framework_TestCase
 			"TO_CHAR(birthday, 'YYYY-MM-DD HH24:MI:SS') AS \"birthday_formatted\"",
 			$builder->expression('birthday', 'datetime', 'birthday_formatted')
 		);
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testExpressionRaiseExceptionWhenUnsupportedType()
+	{
+		$builder = new QueryBuilder(
+			new ExpressionBuilder(),
+			new ParameterBuilder()
+		);
+		$builder->expression('name', 'unsupported-type');
 	}
 
 	public function testEscapeLikePattern()

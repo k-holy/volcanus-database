@@ -334,7 +334,7 @@ SQL
 	/**
 	 * @expectedException \InvalidArgumentException
 	 */
-	public function testFetchAllByFetchClassRaiseInvalidArgumentException()
+	public function testFetchAllByFetchClassRaiseInvalidArgumentExceptionWhenUndefinedClass()
 	{
 		$statement = new PdoStatement(
 			$this->getPdo()->query("SELECT id, name FROM test")
@@ -437,6 +437,17 @@ SQL
 	/**
 	 * @expectedException \InvalidArgumentException
 	 */
+	public function testSetFetchModeToFetchClassRaiseInvalidArgumentExceptionWhenUndefinedClass()
+	{
+		$statement = new PdoStatement(
+			$this->getPdo()->query("SELECT id, name FROM test")
+		);
+		$item = $statement->setFetchMode(Statement::FETCH_CLASS, 'UndefinedClass');
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
 	public function testSetFetchModeToFetchFuncRaiseInvalidArgumentExceptionWhenInvalidType()
 	{
 		$statement = new PdoStatement(
@@ -510,6 +521,30 @@ SQL
 			$this->getPdo()->prepare("SELECT id, name FROM test WHERE id = :id")
 		);
 		$statement->execute(new \StdClass());
+	}
+
+	public function testExecuteRaiseRuntimeExceptionWhenCatchPDOExceptionAndExceptionMessageContainsDebugDumpParams()
+	{
+		$pdoStatement = $this->getMock('\\PDOStatement');
+		$pdoStatement->expects($this->once())
+			->method('setFetchMode')
+			->will($this->returnValue(true));
+		$pdoStatement->expects($this->once())
+			->method('debugDumpParams')
+			->will($this->returnCallback(function() {
+				echo 'DEBUG_DUMP_PARAMS';
+				return null;
+			}));
+		$pdoStatement->expects($this->once())
+			->method('execute')
+			->will($this->throwException(new \PDOException()));
+
+		try {
+			$statement = new PdoStatement($pdoStatement);
+			$statement->execute(array('id' => 1));
+		} catch (\RuntimeException $e) {
+			$this->assertContains('DEBUG_DUMP_PARAMS', $e->getMessage());
+		}
 	}
 
 	public function testIterationByFetchAssoc()
