@@ -63,11 +63,4 @@ interface StatementInterface extends \IteratorAggregate
 	 */
 	public function fetchAll($mode = null, $option = null, array $arguments = array());
 
-	/**
-	 * IteratorAggregate::getIterator()
-	 *
-	 * @return \Traversable
-	 */
-	public function getIterator();
-
 }
