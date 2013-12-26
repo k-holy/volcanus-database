@@ -20,9 +20,20 @@ use Volcanus\Database\CallbackIterator;
 class PdoStatement implements StatementInterface
 {
 
+	/**
+	 * @var PDOStatement
+	 */
 	private $statement;
+
+	/**
+	 * @var int フェッチモード
+	 */
 	private $fetchMode;
-	private $function;
+
+	/**
+	 * @param callable フェッチ後に実行するコールバック
+	 */
+	private $callback;
 
 	/**
 	 * コンストラクタ
@@ -33,7 +44,26 @@ class PdoStatement implements StatementInterface
 	{
 		$this->statement = $statement;
 		$this->setFetchMode(Statement::FETCH_ASSOC);
-		$this->function = null;
+		$this->callback = null;
+	}
+
+	/**
+	 * フェッチ後に実行するコールバックをセットします。
+	 *
+	 * @param callable コールバック
+	 */
+	public function setFetchCallback($callback)
+	{
+		if (!is_callable($callback)) {
+			throw new \InvalidArgumentException(
+				sprintf('CallbackIterator accepts only callable, invalid type:%s',
+					(is_object($callback))
+						? get_class($callback)
+						: gettype($callback)
+				)
+			);
+		}
+		$this->callback = $callback;
 	}
 
 	/**
@@ -41,6 +71,8 @@ class PdoStatement implements StatementInterface
 	 *
 	 * @param array | Traversable パラメータ
 	 * @return bool
+	 * @throws \InvalidArgumentException
+	 * @throws \RuntimeException
 	 */
 	public function execute($parameters = null)
 	{
@@ -63,11 +95,7 @@ class PdoStatement implements StatementInterface
 				} elseif (is_null($value)) {
 					$type = \PDO::PARAM_NULL;
 				}
-				$this->statement->bindValue(
-					(strncmp(':', $name, 1) !== 0) ? sprintf(':%s', $name) : $name,
-					$value,
-					$type
-				);
+				$this->statement->bindValue($name, $value, $type);
 			}
 		}
 		try {
@@ -90,45 +118,19 @@ class PdoStatement implements StatementInterface
 	 * @param mixed フェッチモードのオプション引数
 	 * @param array Statement::FETCH_CLASS の場合のコンストラクタ引数
 	 */
-	public function setFetchMode($mode, $option = null, array $arguments = array())
+	public function setFetchMode($mode, $option = null, array $arguments = null)
 	{
-		switch ($mode) {
-		case Statement::FETCH_ASSOC:
-			$this->fetchMode = $mode;
-			$this->statement->setFetchMode(\PDO::FETCH_ASSOC);
+		$this->fetchMode = $mode;
+		$fetchMode = $this->convertFetchMode($mode);
+		switch (func_num_args()) {
+		case 3:
+			$this->statement->setFetchMode($fetchMode, $option, $arguments);
 			break;
-		case Statement::FETCH_NUM:
-			$this->fetchMode = $mode;
-			$this->statement->setFetchMode(\PDO::FETCH_NUM);
+		case 2:
+			$this->statement->setFetchMode($fetchMode, $option);
 			break;
-		case Statement::FETCH_CLASS:
-			$this->fetchMode = $mode;
-			if (!class_exists($option, true)) {
-				throw new \InvalidArgumentException(
-					sprintf('Statement::FETCH_CLASS accepts only className, unknown className:%s',
-						$option
-					)
-				);
-			}
-			$this->statement->setFetchMode(\PDO::FETCH_CLASS, $option, $arguments);
-			break;
-		case Statement::FETCH_FUNC:
-			$this->fetchMode = $mode;
-			if (!is_callable($option)) {
-				throw new \InvalidArgumentException(
-					sprintf('Statement::FETCH_FUNC accepts only callable, invalid type:%s',
-						(is_object($option))
-							? get_class($option)
-							: gettype($option)
-					)
-				);
-			}
-			$this->function = $option;
-			break;
-		default:
-			throw new \InvalidArgumentException(
-				sprintf('Unsupported fetchMode:%s', $mode)
-			);
+		case 1:
+			$this->statement->setFetchMode($fetchMode);
 			break;
 		}
 		return $this;
@@ -142,57 +144,11 @@ class PdoStatement implements StatementInterface
 	 */
 	public function fetch($mode = null)
 	{
-		if (is_null($mode)) {
-			$mode = $this->fetchMode;
+		$result = $this->statement->fetch($this->convertFetchMode($mode));
+		if (!isset($this->callback) || $result === false) {
+			return $result;
 		}
-		switch ($mode) {
-		case Statement::FETCH_ASSOC:
-			return $this->statement->fetch(\PDO::FETCH_ASSOC);
-		case Statement::FETCH_NUM:
-			return $this->statement->fetch(\PDO::FETCH_NUM);
-		case Statement::FETCH_CLASS:
-			return $this->statement->fetch(\PDO::FETCH_CLASS);
-		case Statement::FETCH_FUNC:
-			$result = $this->statement->fetch(\PDO::FETCH_NUM);
-			if (!is_array($result)) {
-				return false;
-			}
-			return call_user_func_array($this->function, $result);
-		}
-		throw new \InvalidArgumentException(
-			sprintf('Unsupported fetchMode:%s', $mode)
-		);
-	}
-
-	/**
-	 * 指定したクラスのインスタンスを生成して結果セットから次の行をプロパティに取得して返します。
-	 *
-	 * 第3引数に TRUE を指定した場合、オブジェクトに同名のプロパティが存在する時のみ結果セットの値を取得します。
-	 * マジックメソッド __set() を利用する場合は FALSE に設定してください。
-	 *
-	 * @param string クラス名
-	 * @param array コンストラクタ引数
-	 * @param bool プロパティの存在をチェックするかどうか
-	 * @return mixed
-	 */
-	public function fetchInstanceOf($className, array $arguments = null, $checkPropertyExists = true)
-	{
-		if (isset($arguments) && count($arguments) >= 1) {
-			$ref = new \ReflectionClass($className);
-			$object = $ref->newInstanceArgs($arguments);
-		} else {
-			$object = new $className();
-		}
-		$columns = $this->statement->fetch(\PDO::FETCH_ASSOC);
-		if (!is_array($columns)) {
-			return false;
-		}
-		foreach ($columns as $name => $value) {
-			if (!$checkPropertyExists || property_exists($object, $name)) {
-				$object->$name = $value;
-			}
-		}
-		return $object;
+		return call_user_func($this->callback, $result);
 	}
 
 	/**
@@ -203,40 +159,26 @@ class PdoStatement implements StatementInterface
 	 * @param array Statement::FETCH_CLASS の場合のコンストラクタ引数
 	 * @return array
 	 */
-	public function fetchAll($mode = null, $option = null, array $arguments = array())
+	public function fetchAll($mode = null, $option = null, array $arguments = null)
 	{
-		if (is_null($mode)) {
-			$mode = $this->fetchMode;
+		switch (func_num_args()) {
+		case 3:
+			return $this->statement->fetchAll(
+				$this->convertFetchMode($mode),
+				$option,
+				$arguments
+			);
+		case 2:
+			return $this->statement->fetchAll(
+				$this->convertFetchMode($mode),
+				$option
+			);
+		case 1:
+			return $this->statement->fetchAll(
+				$this->convertFetchMode($mode)
+			);
 		}
-		switch ($mode) {
-		case Statement::FETCH_ASSOC:
-			return $this->statement->fetchAll(\PDO::FETCH_ASSOC);
-		case Statement::FETCH_NUM:
-			return $this->statement->fetchAll(\PDO::FETCH_NUM);
-		case Statement::FETCH_CLASS:
-			if (!class_exists($option, true)) {
-				throw new \InvalidArgumentException(
-					sprintf('Statement::FETCH_CLASS accepts only className, unknown className:%s',
-						$option
-					)
-				);
-			}
-			return $this->statement->fetchAll(\PDO::FETCH_CLASS, $option, $arguments);
-		case Statement::FETCH_FUNC:
-			if (!is_callable($option)) {
-				throw new \InvalidArgumentException(
-					sprintf('Statement::FETCH_FUNC accepts only callable, invalid type:%s',
-						(is_object($option))
-							? get_class($option)
-							: gettype($option)
-					)
-				);
-			}
-			return $this->statement->fetchAll(\PDO::FETCH_FUNC, $option);
-		}
-		throw new \InvalidArgumentException(
-			sprintf('Unsupported fetchMode:%s', $mode)
-		);
+		return $this->statement->fetchAll();
 	}
 
 	/**
@@ -246,10 +188,27 @@ class PdoStatement implements StatementInterface
 	 */
 	public function getIterator()
 	{
-		if ($this->fetchMode === Statement::FETCH_FUNC) {
-			return new CallbackIterator($this->statement, $this->function);
+		return (isset($this->callback))
+			? new CallbackIterator($this->statement, $this->callback)
+			: new \IteratorIterator($this->statement);
+	}
+
+	private function convertFetchMode($mode)
+	{
+		if ($mode === null) {
+			$mode = $this->fetchMode;
 		}
-		return $this->statement;
+		switch ($mode) {
+		case Statement::FETCH_ASSOC:
+			return \PDO::FETCH_ASSOC;
+		case Statement::FETCH_NUM:
+			return \PDO::FETCH_NUM;
+		case Statement::FETCH_CLASS:
+			return \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE;
+		}
+		throw new \InvalidArgumentException(
+			sprintf('Unsupported fetchMode:%s', $mode)
+		);
 	}
 
 }
