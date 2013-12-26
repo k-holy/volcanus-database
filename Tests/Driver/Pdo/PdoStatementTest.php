@@ -9,9 +9,7 @@
 namespace Volcanus\Database\Tests\Driver\Pdo;
 
 use Volcanus\Database\Statement;
-use Volcanus\Database\Driver\Pdo\PdoDriver;
 use Volcanus\Database\Driver\Pdo\PdoStatement;
-use Volcanus\Database\MetaData\SqliteMetaDataProcessor;
 
 /**
  * Test for PdoStatement
@@ -25,18 +23,23 @@ class PdoStatementTest extends \PHPUnit_Framework_TestCase
 
 	public function tearDown()
 	{
-		$this->getPdo()->exec("DELETE FROM test");
-		$this->getPdo()->exec("UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'test'");
+		$this->getPdo()->exec("DELETE FROM users");
+		$this->getPdo()->exec("UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'users'");
 	}
 
 	private function getPdo()
 	{
 		if (!isset(static::$pdo)) {
-			static::$pdo = new \PDO('sqlite::memory:');
-			static::$pdo->exec(<<<SQL
-CREATE TABLE test(
-     id         INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-    ,name       TEXT
+			static::$pdo = new \PDO('sqlite::memory:', null, null, array(
+				\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+			));
+			static::$pdo->exec('DROP TABLE IF EXISTS users;');
+			static::$pdo->exec(<<<'SQL'
+CREATE TABLE users(
+  user_id    INTEGER     NOT NULL PRIMARY KEY AUTOINCREMENT 
+, user_name  TEXT
+, birthday   VARCHAR(10)
+, created_at INTEGER     NOT NULL
 );
 SQL
 			);
@@ -44,427 +47,118 @@ SQL
 		return static::$pdo;
 	}
 
-	public function testFetchByFetchAssoc()
+	private function insertUser($parameters)
 	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT count(*) AS cnt FROM test")
-		);
-		$item = $statement->fetch(Statement::FETCH_ASSOC);
-		$this->assertArrayHasKey('cnt', $item);
-		$this->assertEquals('1', $item['cnt']);
+		$pdo = $this->getPdo();
+		$pdo->beginTransaction();
+		$statement = new PdoStatement($pdo->prepare(<<<'SQL'
+INSERT INTO users (
+  user_name
+, birthday
+, created_at
+) VALUES (
+  :user_name
+, :birthday
+, :created_at
+)
+SQL
+		));
+		$statement->execute($parameters);
+		$pdo->commit();
 	}
 
-	public function testFetchByFetchAssocReturnFalseWhenCannotContinue()
+	public function testExecuteParamInt()
 	{
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$this->assertFalse($statement->fetch(Statement::FETCH_ASSOC));
+		$pdo = $this->getPdo();
+
+		$now = \DateTime::createFromFormat('Y-m-d H:i:s', '2013-12-20 00:00:00');
+
+		$this->insertUser(array(
+			'user_name'  => null,
+			'birthday'   => null,
+			'created_at' => $now->getTimestamp(),
+		));
+
+		$statement = new PdoStatement($pdo->prepare("SELECT * FROM users WHERE created_at = :created_at"));
+		$statement->execute(array('created_at' => $now->getTimestamp()));
+		$user = $statement->fetch(Statement::FETCH_ASSOC);
+
+		$this->assertEquals('1', $user['user_id']);
+		$this->assertEquals($now->getTimestamp(), $user['created_at']);
 	}
 
-	public function testFetchByFetchNum()
+	public function testExecuteParamStr()
 	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT count(*) AS cnt FROM test")
-		);
-		$item = $statement->fetch(Statement::FETCH_NUM);
-		$this->assertArrayHasKey(0, $item);
-		$this->assertEquals('1', $item[0]);
+		$pdo = $this->getPdo();
+
+		$now = \DateTime::createFromFormat('Y-m-d H:i:s', '2013-12-20 00:00:00');
+
+		$this->insertUser(array(
+			'user_name'  => 'test1',
+			'birthday'   => null,
+			'created_at' => $now->getTimestamp(),
+		));
+
+		$statement = new PdoStatement($pdo->prepare("SELECT * FROM users WHERE user_name = :user_name"));
+		$statement->execute(array('user_name' => 'test1'));
+		$user = $statement->fetch(Statement::FETCH_ASSOC);
+
+		$this->assertEquals('1', $user['user_id']);
+		$this->assertEquals('test1', $user['user_name']);
 	}
 
-	public function testFetchByFetchNumReturnFalseWhenCannotContinue()
+	public function testExecuteParamNull()
 	{
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$this->assertFalse($statement->fetch(Statement::FETCH_NUM));
-	}
+		$pdo = $this->getPdo();
 
-	public function testFetchByFetchClass()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT count(*) AS cnt FROM test")
-		);
-		$statement->setFetchMode(Statement::FETCH_CLASS, __NAMESPACE__ . '\\Data');
-		$item = $statement->fetch(Statement::FETCH_CLASS);
-		$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $item);
-		$this->assertEquals('1', $item->cnt);
-	}
+		$now = \DateTime::createFromFormat('Y-m-d H:i:s', '2013-12-20 00:00:00');
 
-	public function testFetchByFetchClassWithArguments()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT count(*) AS cnt FROM test")
-		);
-		$statement->setFetchMode(Statement::FETCH_CLASS, __NAMESPACE__ . '\\Data', array('One', 'Two', 'Three'));
-		$item = $statement->fetch(Statement::FETCH_CLASS);
-		$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $item);
-		$this->assertEquals('1', $item->cnt);
-		$this->assertEquals('One', $item->one);
-		$this->assertEquals('Two', $item->two);
-		$this->assertEquals('Three', $item->three);
-	}
+		$this->insertUser(array(
+			'user_name'  => null,
+			'birthday'   => null,
+			'created_at' => $now->getTimestamp(),
+		));
+		$statement = new PdoStatement($pdo->prepare("SELECT * FROM users WHERE user_id = 1"));
+		$statement->execute();
+		$user = $statement->fetch(Statement::FETCH_ASSOC);
 
-	public function testFetchByFetchClassReturnFalseWhenCannotContinue()
-	{
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$statement->setFetchMode(Statement::FETCH_CLASS, __NAMESPACE__ . '\\Data');
-		$this->assertFalse($statement->fetch(Statement::FETCH_CLASS));
-	}
-
-	public function testFetchByFetchFunc()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name, 'Foo' AS foo, 'Bar' AS bar, 'Baz' AS baz FROM test WHERE id = 1")
-		);
-		$statement->setFetchMode(Statement::FETCH_FUNC, function($id, $name, $foo, $bar, $baz) {
-			$item = new Data();
-			$item->id = $id;
-			$item->name = $name;
-			$item->foo = $foo;
-			$item->bar = $bar;
-			$item->baz = $baz;
-			return $item;
-		});
-		$item = $statement->fetch(Statement::FETCH_FUNC);
-		$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $item);
-		$this->assertEquals('1', $item->id);
-		$this->assertEquals('test', $item->name);
-		$this->assertEquals('Foo', $item->foo);
-		$this->assertEquals('Bar', $item->bar);
-		$this->assertEquals('Baz', $item->baz);
-	}
-
-	public function testFetchByFetchFuncReturnFalseWhenCannotContinue()
-	{
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$statement->setFetchMode(Statement::FETCH_FUNC, function($cnt) {
-			$item = new Data();
-			$item->cnt = $cnt;
-			return $item;
-		});
-		$this->assertFalse($statement->fetch(Statement::FETCH_FUNC));
-	}
-
-	public function testFetchInstanceOf()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test WHERE id = 1")
-		);
-		$item = $statement->fetchInstanceOf(__NAMESPACE__ . '\\Data');
-		$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $item);
-		$this->assertEquals('1', $item->id);
-		$this->assertEquals('test', $item->name);
-	}
-
-	public function testFetchInstanceOfWithArguments()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test WHERE id = 1")
-		);
-		$item = $statement->fetchInstanceOf(__NAMESPACE__ . '\\Data', array('One', 'Two', 'Three'));
-		$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $item);
-		$this->assertEquals('1', $item->id);
-		$this->assertEquals('test', $item->name);
-		$this->assertEquals('One', $item->one);
-		$this->assertEquals('Two', $item->two);
-		$this->assertEquals('Three', $item->three);
-	}
-
-	public function testFetchInstanceOfIgnoredUndefinedProperty()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name, 'Foo' AS foo, 'Bar' AS bar, 'Baz' AS baz FROM test WHERE id = 1")
-		);
-		$item = $statement->fetchInstanceOf(__NAMESPACE__ . '\\Data', null, true);
-		$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $item);
-		$this->assertObjectNotHasAttribute('foo', $item);
-		$this->assertObjectNotHasAttribute('bar', $item);
-		$this->assertObjectNotHasAttribute('baz', $item);
-	}
-
-	public function testFetchInstanceOfAcceptUndefinedProperty()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name, 'Foo' AS foo, 'Bar' AS bar, 'Baz' AS baz FROM test WHERE id = 1")
-		);
-		$item = $statement->fetchInstanceOf(__NAMESPACE__ . '\\Data', null, false);
-		$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $item);
-		$this->assertEquals('Foo', $item->foo);
-		$this->assertEquals('Bar', $item->bar);
-		$this->assertEquals('Baz', $item->baz);
-	}
-
-	public function testFetchInstanceOfReturnFalseWhenCannotContinue()
-	{
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$this->assertFalse($statement->fetchInstanceOf(__NAMESPACE__ . '\\Data'));
-	}
-
-	public function testFetchByDefaultFetchMode()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT count(*) AS cnt FROM test")
-		);
-		$statement->setFetchMode(Statement::FETCH_NUM);
-		$item = $statement->fetch();
-		$this->assertArrayHasKey(0, $item);
-		$this->assertEquals('1', $item[0]);
+		$this->assertNull($user['user_name']);
+		$this->assertNull($user['birthday']);
 	}
 
 	/**
 	 * @expectedException \InvalidArgumentException
 	 */
-	public function testFetchRaiseInvalidArgumentExceptionWhenUnsupportedFetchMode()
+	public function testExecuteRaiseExceptionWhenParameterIsInvalidType()
 	{
 		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT count(*) AS cnt FROM test")
+			$this->getPdo()->prepare("SELECT * FROM users WHERE user_id = :user_id")
 		);
-		$item = $statement->fetch('Unsupported-FetchMode');
-	}
-
-	public function testFetchAllByFetchAssoc()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$items = $statement->fetchAll(Statement::FETCH_ASSOC);
-		$this->assertCount(2, $items);
-		$this->assertEquals('1'    , $items[0]['id']);
-		$this->assertEquals('test1', $items[0]['name']);
-		$this->assertEquals('2'    , $items[1]['id']);
-		$this->assertEquals('test2', $items[1]['name']);
-	}
-
-	public function testFetchAllByFetchAssocReturnEmptyArray()
-	{
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$this->assertEmpty($statement->fetchAll(Statement::FETCH_ASSOC));
-	}
-
-	public function testFetchAllByFetchNum()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$items = $statement->fetchAll(Statement::FETCH_NUM);
-		$this->assertCount(2, $items);
-		$this->assertEquals('1'    , $items[0][0]);
-		$this->assertEquals('test1', $items[0][1]);
-		$this->assertEquals('2'    , $items[1][0]);
-		$this->assertEquals('test2', $items[1][1]);
-	}
-
-	public function testFetchAllByFetchNumReturnEmptyArray()
-	{
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$this->assertEmpty($statement->fetchAll(Statement::FETCH_NUM));
-	}
-
-	public function testFetchAllByFetchClass()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$items = $statement->fetchAll(Statement::FETCH_CLASS, __NAMESPACE__ . '\\Data');
-		$this->assertCount(2, $items);
-		$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $items[0]);
-		$this->assertEquals('1'    , $items[0]->id);
-		$this->assertEquals('test1', $items[0]->name);
-		$this->assertEquals('2'    , $items[1]->id);
-		$this->assertEquals('test2', $items[1]->name);
-	}
-
-	public function testFetchAllByFetchClassWithArguments()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$items = $statement->fetchAll(Statement::FETCH_CLASS, __NAMESPACE__ . '\\Data', array('One', 'Two', 'Three'));
-		$this->assertCount(2, $items);
-		$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $items[0]);
-		$this->assertEquals('1'    , $items[0]->id);
-		$this->assertEquals('test1', $items[0]->name);
-		$this->assertEquals('One'  , $items[0]->one);
-		$this->assertEquals('Two'  , $items[0]->two);
-		$this->assertEquals('Three', $items[0]->three);
-		$this->assertEquals('2'    , $items[1]->id);
-		$this->assertEquals('test2', $items[1]->name);
-		$this->assertEquals('One'  , $items[1]->one);
-		$this->assertEquals('Two'  , $items[1]->two);
-		$this->assertEquals('Three', $items[1]->three);
-	}
-
-	public function testFetchAllByFetchClassReturnEmptyArray()
-	{
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$this->assertEmpty($statement->fetchAll(Statement::FETCH_CLASS, __NAMESPACE__ . '\\Data'));
+		$statement->execute(false);
 	}
 
 	/**
 	 * @expectedException \InvalidArgumentException
 	 */
-	public function testFetchAllByFetchClassRaiseInvalidArgumentExceptionWhenUndefinedClass()
+	public function testExecuteRaiseExceptionWhenParameterIsInvalidIbject()
 	{
 		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
+			$this->getPdo()->prepare("SELECT * FROM users WHERE user_id = :user_id")
 		);
-		$items = $statement->fetchAll(Statement::FETCH_CLASS, 'UndefinedClass');
-	}
-
-	public function testFetchAllByFetchFunc()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name, 'Foo' AS foo, 'Bar' AS bar, 'Baz' AS baz FROM test")
-		);
-		$items = $statement->fetchAll(Statement::FETCH_FUNC, function($id, $name, $foo, $bar, $baz) {
-			$item = new Data();
-			$item->id = $id;
-			$item->name = $name;
-			$item->foo = $foo;
-			$item->bar = $bar;
-			$item->baz = $baz;
-			return $item;
-		});
-		$this->assertCount(2, $items);
-		$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $items[0]);
-		$this->assertEquals('1'    , $items[0]->id);
-		$this->assertEquals('test1', $items[0]->name);
-		$this->assertEquals('Foo'  , $items[0]->foo);
-		$this->assertEquals('Bar'  , $items[0]->bar);
-		$this->assertEquals('Baz'  , $items[0]->baz);
-		$this->assertEquals('2'    , $items[1]->id);
-		$this->assertEquals('test2', $items[1]->name);
-		$this->assertEquals('Foo'  , $items[1]->foo);
-		$this->assertEquals('Bar'  , $items[1]->bar);
-		$this->assertEquals('Baz'  , $items[1]->baz);
-	}
-
-	public function testFetchAllByFetchFuncReturnEmptyArray()
-	{
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$this->assertEmpty($statement->fetchAll(Statement::FETCH_FUNC, function($id, $name) {
-			$item = new Data();
-			$item->id = $id;
-			$item->name = $name;
-			return $item;
-		}));
+		$statement->execute(new \StdClass());
 	}
 
 	/**
-	 * @expectedException \InvalidArgumentException
+	 * @expectedException \RuntimeException
 	 */
-	public function testFetchAllByFetchFuncRaiseInvalidArgumentExceptionWhenInvalidType()
+	public function testExecuteRaiseExceptionWhenPDOExceptionIsThrown()
 	{
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
+		$statement = new PDOStatement(
+			$this->getPdo()->prepare("SELECT * FROM users WHERE user_id = :user_id")
 		);
-		$items = $statement->fetchAll(Statement::FETCH_FUNC, false);
-	}
-
-	/**
-	 * @expectedException \InvalidArgumentException
-	 */
-	public function testFetchAllByFetchFuncRaiseInvalidArgumentExceptionWhenInvalidObject()
-	{
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$items = $statement->fetchAll(Statement::FETCH_FUNC, new \StdClass());
-	}
-
-	public function testFetchAllByDefaultFetchMode()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$statement->setFetchMode(Statement::FETCH_ASSOC);
-		$items = $statement->fetchAll();
-		$this->assertCount(2, $items);
-		$this->assertEquals('1'    , $items[0]['id']);
-		$this->assertEquals('test1', $items[0]['name']);
-		$this->assertEquals('2'    , $items[1]['id']);
-		$this->assertEquals('test2', $items[1]['name']);
-	}
-
-	/**
-	 * @expectedException \InvalidArgumentException
-	 */
-	public function testFetchAllRaiseInvalidArgumentExceptionWhenUnsupportedFetchMode()
-	{
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$items = $statement->fetchAll('Unsupported-FetchMode');
-	}
-
-	/**
-	 * @expectedException \InvalidArgumentException
-	 */
-	public function testSetFetchModeToFetchClassRaiseInvalidArgumentExceptionWhenUndefinedClass()
-	{
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$item = $statement->setFetchMode(Statement::FETCH_CLASS, 'UndefinedClass');
-	}
-
-	/**
-	 * @expectedException \InvalidArgumentException
-	 */
-	public function testSetFetchModeToFetchFuncRaiseInvalidArgumentExceptionWhenInvalidType()
-	{
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$item = $statement->setFetchMode(Statement::FETCH_FUNC, false);
-	}
-
-	/**
-	 * @expectedException \InvalidArgumentException
-	 */
-	public function testSetFetchModeToFetchFuncRaiseInvalidArgumentExceptionWhenInvalidObject()
-	{
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$item = $statement->setFetchMode(Statement::FETCH_FUNC, new \StdClass());
+		$statement->execute(array(
+			'user_name' => 'test1',
+		));
 	}
 
 	/**
@@ -473,251 +167,425 @@ SQL
 	public function testSetFetchModeRaiseInvalidArgumentExceptionWhenUnsupportedFetchMode()
 	{
 		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT count(*) AS cnt FROM test")
+			$this->getPdo()->query("SELECT count(*) AS cnt FROM users")
 		);
-		$item = $statement->setFetchMode('Unsupported-FetchMode');
+		$statement->setFetchMode('Unsupported-FetchMode');
 	}
 
-	public function testExecutePreparedStatement()
+	public function testFetchAssoc()
 	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
-		$statement = new PdoStatement(
-			$this->getPdo()->prepare("SELECT id, name FROM test WHERE id = :id")
-		);
-		$this->assertTrue($statement->execute(array('id' => 1)));
+		$pdo = $this->getPdo();
+
+		$now = \DateTime::createFromFormat('Y-m-d H:i:s', '2013-12-20 00:00:00');
+
+		$this->insertUser(array(
+			'user_name'  => 'test1',
+			'birthday'   => '1980-12-20',
+			'created_at' => $now->getTimestamp(),
+		));
+
+		$statement = new PdoStatement($pdo->prepare(<<<'SQL'
+SELECT
+  user_id
+, user_name
+, birthday
+, created_at
+FROM
+  users
+WHERE
+  user_id = :user_id
+SQL
+		));
+		$statement->execute(array('user_id' => 1));
+		$user = $statement->fetch(Statement::FETCH_ASSOC);
+
+		$this->assertEquals('1', $user['user_id']);
+		$this->assertEquals('test1', $user['user_name']);
+		$this->assertEquals('1980-12-20', $user['birthday']);
+		$this->assertEquals($now->getTimestamp(), $user['created_at']);
 	}
 
-	public function testExcutePreparedStatementThenFetch()
+	public function testFetchNum()
 	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test')");
-		$statement = new PdoStatement(
-			$this->getPdo()->prepare("SELECT id, name FROM test WHERE id = :id")
-		);
-		$statement->execute(array('id' => 1));
-		$item = $statement->fetch(Statement::FETCH_ASSOC);
-		$this->assertArrayHasKey('id', $item);
-		$this->assertArrayHasKey('name', $item);
-		$this->assertEquals('1', $item['id']);
-		$this->assertEquals('test', $item['name']);
+		$pdo = $this->getPdo();
+
+		$now = \DateTime::createFromFormat('Y-m-d H:i:s', '2013-12-20 00:00:00');
+
+		$this->insertUser(array(
+			'user_name'  => 'test1',
+			'birthday'   => '1980-12-20',
+			'created_at' => $now->getTimestamp(),
+		));
+
+		$statement = new PdoStatement($pdo->prepare(<<<'SQL'
+SELECT
+  user_id
+, user_name
+, birthday
+, created_at
+FROM
+  users
+WHERE
+  user_id = :user_id
+SQL
+		));
+		$statement->execute(array('user_id' => 1));
+		$user = $statement->fetch(Statement::FETCH_NUM);
+
+		$this->assertEquals('1', $user[0]);
+		$this->assertEquals('test1', $user[1]);
+		$this->assertEquals('1980-12-20', $user[2]);
+		$this->assertEquals($now->getTimestamp(), $user[3]);
 	}
 
-	/**
-	 * @expectedException \InvalidArgumentException
-	 */
-	public function testExecuteRaiseInvalidArgumentExceptionWhenInvalidType()
+	public function testFetchClass()
 	{
-		$statement = new PdoStatement(
-			$this->getPdo()->prepare("SELECT id, name FROM test WHERE id = :id")
+		$pdo = $this->getPdo();
+
+		$now = \DateTime::createFromFormat('Y-m-d H:i:s', '2013-12-20 00:00:00');
+
+		$this->insertUser(array(
+			'user_name'  => 'test1',
+			'birthday'   => '1980-12-20',
+			'created_at' => $now->getTimestamp(),
+		));
+
+		$statement = new PdoStatement($pdo->prepare(<<<'SQL'
+SELECT
+  user_id AS userId
+, user_name AS userName
+, birthday AS birthday
+, created_at AS createdAt
+FROM
+  users
+WHERE
+  user_id = :userId
+SQL
+		));
+		$statement->execute(array('userId' => 1));
+		$statement->setFetchMode(Statement::FETCH_CLASS,
+			'\Volcanus\Database\Tests\Driver\Pdo\PdoStatementTestData',
+			array(
+				array(
+					'now' => $now,
+				)
+			)
 		);
-		$statement->execute(false);
+		$user = $statement->fetch();
+
+		$this->assertInstanceOf('\Volcanus\Database\Tests\Driver\Pdo\PdoStatementTestData', $user);
+		$this->assertEquals('1', $user->userId);
+		$this->assertEquals('test1', $user->userName);
+		$this->assertEquals('1980-12-20', $user->birthday);
+		$this->assertEquals($now->getTimestamp(), $user->createdAt);
+		$this->assertEquals(33, $user->age);
 	}
 
-	/**
-	 * @expectedException \InvalidArgumentException
-	 */
-	public function testExecuteRaiseInvalidArgumentExceptionWhenInvalidObject()
+	public function testFetchReturnFalseWhenCannotContinue()
 	{
-		$statement = new PdoStatement(
-			$this->getPdo()->prepare("SELECT id, name FROM test WHERE id = :id")
-		);
-		$statement->execute(new \StdClass());
+		$pdo = $this->getPdo();
+
+		$now = \DateTime::createFromFormat('Y-m-d H:i:s', '2013-12-20 00:00:00');
+
+		$this->insertUser(array(
+			'user_name'  => 'test1',
+			'birthday'   => '1980-12-20',
+			'created_at' => $now->getTimestamp(),
+		));
+
+		$statement = new PdoStatement($pdo->prepare(<<<'SQL'
+SELECT
+  user_id
+, user_name
+, birthday
+, created_at
+FROM
+  users
+WHERE
+  user_id = :user_id
+SQL
+		));
+		$statement->execute(array('user_id' => 1));
+		$user = $statement->fetch();
+
+		$this->assertFalse($statement->fetch());
 	}
 
-	public function testExecuteRaiseRuntimeExceptionWhenCatchPDOExceptionAndExceptionMessageContainsDebugDumpParams()
+	public function testFetchCallback()
 	{
-		$pdoStatement = $this->getMock('\\PDOStatement');
-		$pdoStatement->expects($this->once())
-			->method('setFetchMode')
-			->will($this->returnValue(true));
-		$pdoStatement->expects($this->once())
-			->method('debugDumpParams')
-			->will($this->returnCallback(function() {
-				echo 'DEBUG_DUMP_PARAMS';
-				return null;
-			}));
-		$pdoStatement->expects($this->once())
-			->method('execute')
-			->will($this->throwException(new \PDOException()));
+		$pdo = $this->getPdo();
 
-		try {
-			$statement = new PdoStatement($pdoStatement);
-			$statement->execute(array('id' => 1));
-		} catch (\RuntimeException $e) {
-			$this->assertContains('DEBUG_DUMP_PARAMS', $e->getMessage());
-		}
-	}
+		$now = \DateTime::createFromFormat('Y-m-d H:i:s', '2013-12-20 00:00:00');
 
-	public function testIterationByFetchAssoc()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
+		$this->insertUser(array(
+			'user_name'  => 'test1',
+			'birthday'   => '1980-12-20',
+			'created_at' => $now->getTimestamp(),
+		));
+
+		$statement = new PdoStatement($pdo->prepare("SELECT * FROM users WHERE user_id = :userId"));
+		$statement->execute(array('userId' => 1));
 		$statement->setFetchMode(Statement::FETCH_ASSOC);
-		foreach ($statement as $item) {
-			$this->assertArrayHasKey('id', $item);
-			$this->assertArrayHasKey('name', $item);
-			switch ($item['id']) {
-			case '1':
-				$this->assertEquals('test1', $item['name']);
-				break;
-			case '2':
-				$this->assertEquals('test2', $item['name']);
-				break;
-			}
-		}
-	}
-
-	public function testIterationByFetchNum()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$statement->setFetchMode(Statement::FETCH_NUM);
-		foreach ($statement as $item) {
-			$this->assertArrayHasKey(0, $item);
-			$this->assertArrayHasKey(1, $item);
-			switch ($item[0]) {
-			case '1':
-				$this->assertEquals('test1', $item[1]);
-				break;
-			case '2':
-				$this->assertEquals('test2', $item[1]);
-				break;
-			}
-		}
-	}
-
-	public function testIterationByFetchClass()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$statement->setFetchMode(Statement::FETCH_CLASS, __NAMESPACE__ . '\\Data');
-		foreach ($statement as $item) {
-			$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $item);
-			switch ($item->id) {
-			case '1':
-				$this->assertEquals('test1', $item->name);
-				break;
-			case '2':
-				$this->assertEquals('test2', $item->name);
-				break;
-			}
-		}
-	}
-
-	public function testIterationByFetchClassWithArguments()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name FROM test")
-		);
-		$statement->setFetchMode(Statement::FETCH_CLASS, __NAMESPACE__ . '\\Data', array('One', 'Two', 'Three'));
-		foreach ($statement as $item) {
-			$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $item);
-			switch ($item->id) {
-			case '1':
-				$this->assertEquals('test1', $item->name);
-				$this->assertEquals('One', $item->one);
-				$this->assertEquals('Two', $item->two);
-				$this->assertEquals('Three', $item->three);
-				break;
-			case '2':
-				$this->assertEquals('test2', $item->name);
-				$this->assertEquals('One', $item->one);
-				$this->assertEquals('Two', $item->two);
-				$this->assertEquals('Three', $item->three);
-				break;
-			}
-		}
-	}
-
-	public function testIterationByFetchFunc()
-	{
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test1')");
-		$this->getPdo()->exec("INSERT INTO test (name) VALUES ('test2')");
-		$statement = new PdoStatement(
-			$this->getPdo()->query("SELECT id, name, 'Foo' AS foo, 'Bar' AS bar, 'Baz' AS baz FROM test")
-		);
-		$statement->setFetchMode(Statement::FETCH_FUNC, function($id, $name, $foo, $bar, $baz) {
-			$item = new Data();
-			$item->id = $id;
-			$item->name = $name;
-			$item->foo = $foo;
-			$item->bar = $bar;
-			$item->baz = $baz;
-			return $item;
+		$statement->setFetchCallback(function($cols) use ($now) {
+			return new PdoStatementTestData([
+				'userId'     => (int)$cols['user_id'],
+				'userName'   => $cols['user_name'],
+				'birthday'   => $cols['birthday'],
+				'createdAt'  => $cols['created_at'],
+				'now'        => $now,
+			]);
 		});
-		foreach ($statement as $item) {
-			$this->assertInstanceOf(__NAMESPACE__ . '\\Data', $item);
-			switch ($item->id) {
-			case '1':
-				$this->assertEquals('test1', $item->name);
+		$user = $statement->fetch();
+
+		$this->assertInstanceOf('\Volcanus\Database\Tests\Driver\Pdo\PdoStatementTestData', $user);
+		$this->assertEquals(1, $user->userId);
+		$this->assertEquals('test1', $user->userName);
+		$this->assertEquals('1980-12-20', $user->birthday);
+		$this->assertEquals($now->getTimestamp(), $user->createdAt);
+		$this->assertEquals(33, $user->age);
+	}
+
+	public function testFetchCallbackReturnedFalseWhenFetchReturnedFalse()
+	{
+		$pdo = $this->getPdo();
+
+		$now = \DateTime::createFromFormat('Y-m-d H:i:s', '2013-12-20 00:00:00');
+
+		$this->insertUser(array(
+			'user_name'  => 'test1',
+			'birthday'   => '1980-12-20',
+			'created_at' => $now->getTimestamp(),
+		));
+
+		$statement = new PdoStatement($pdo->prepare("SELECT * FROM users WHERE user_id = :userId"));
+		$statement->execute(array('userId' => 1000));
+		$statement->setFetchMode(Statement::FETCH_ASSOC);
+		$statement->setFetchCallback(function($cols) use ($now) {
+			return true;
+		});
+		$this->assertFalse($statement->fetch());
+	}
+
+	public function testFetchCallbackInIteration()
+	{
+		$pdo = $this->getPdo();
+
+		$now = \DateTime::createFromFormat('Y-m-d H:i:s', '2013-12-20 00:00:00');
+
+		$this->insertUser(array(
+			'user_name'  => 'test1',
+			'birthday'   => '1980-12-20',
+			'created_at' => $now->getTimestamp(),
+		));
+
+		$this->insertUser(array(
+			'user_name'  => 'test2',
+			'birthday'   => '1996-01-01',
+			'created_at' => $now->getTimestamp(),
+		));
+
+		$statement = new PdoStatement($pdo->prepare("SELECT * FROM users WHERE user_id = :userId"));
+		$statement->execute(array('userId' => 1));
+		$statement->setFetchMode(Statement::FETCH_ASSOC);
+		$statement->setFetchCallback(function($cols) use ($now) {
+			return new PdoStatementTestData([
+				'userId'     => (int)$cols['user_id'],
+				'userName'   => $cols['user_name'],
+				'birthday'   => $cols['birthday'],
+				'createdAt'  => $cols['created_at'],
+				'now'        => $now,
+			]);
+		});
+
+		foreach ($statement as $user) {
+			$this->assertInstanceOf('\Volcanus\Database\Tests\Driver\Pdo\PdoStatementTestData', $user);
+			$this->assertEquals($now->getTimestamp(), $user->createdAt);
+			switch ($user->userId) {
+			case 1:
+				$this->assertEquals('test1', $user->userName);
+				$this->assertEquals('1980-12-20', $user->birthday);
+				$this->assertEquals(33, $user->age);
 				break;
-			case '2':
-				$this->assertEquals('test2', $item->name);
+			case 2:
+				$this->assertEquals('test2', $user->userName);
+				$this->assertEquals('1996-01-01', $user->birthday);
+				$this->assertEquals(17, $user->age);
 				break;
 			}
-			$this->assertEquals('Foo', $item->foo);
-			$this->assertEquals('Bar', $item->bar);
-			$this->assertEquals('Baz', $item->baz);
 		}
 	}
 
-}
-
-class Data
-{
-	public $id;
-	public $name;
-	public $cnt;
-	public $one;
-	public $two;
-	public $three;
-	private $attributes = array(
-		'foo' => null,
-		'bar' => null,
-		'baz' => null,
-	);
-
-	public function __construct($one = null, $two = null, $three = null)
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testFetchRaiseInvalidArgumentExceptionWhenUnsupportedFetchMode()
 	{
-		$this->one = $one;
-		$this->two = $two;
-		$this->three = $three;
+		$statement = new PdoStatement(
+			$this->getPdo()->query("SELECT count(*) AS cnt FROM users")
+		);
+		$item = $statement->fetch('Unsupported-FetchMode');
 	}
 
-	public function __set($name, $value)
+	public function testFetchAllByFetchAssoc()
 	{
-		if (array_key_exists($name, $this->attributes)) {
-			$this->attributes[$name] = $value;
-		}
+		$pdo = $this->getPdo();
+
+		$now = \DateTime::createFromFormat('Y-m-d H:i:s', '2013-12-20 00:00:00');
+
+		$this->insertUser(array(
+			'user_name'  => 'test1',
+			'birthday'   => '1980-12-20',
+			'created_at' => $now->getTimestamp(),
+		));
+
+		$this->insertUser(array(
+			'user_name'  => 'test2',
+			'birthday'   => '1996-01-01',
+			'created_at' => $now->getTimestamp(),
+		));
+
+		$statement = new PdoStatement($pdo->prepare(<<<'SQL'
+SELECT
+  user_id
+, user_name
+, birthday
+, created_at
+FROM
+  users
+ORDER BY
+  user_id
+SQL
+		));
+		$statement->execute();
+		$users = $statement->fetchAll(Statement::FETCH_ASSOC);
+
+		$this->assertCount(2, $users);
+
+		$this->assertEquals('1', $users[0]['user_id']);
+		$this->assertEquals('test1', $users[0]['user_name']);
+		$this->assertEquals('1980-12-20', $users[0]['birthday']);
+		$this->assertEquals($now->getTimestamp(), $users[0]['created_at']);
+
+		$this->assertEquals('2', $users[1]['user_id']);
+		$this->assertEquals('test2', $users[1]['user_name']);
+		$this->assertEquals('1996-01-01', $users[1]['birthday']);
+		$this->assertEquals($now->getTimestamp(), $users[1]['created_at']);
 	}
 
-	public function __get($name)
+	public function testFetchAllByFetchNum()
 	{
-		if (array_key_exists($name, $this->attributes)) {
-			return $this->attributes[$name];
-		}
+		$pdo = $this->getPdo();
+
+		$now = \DateTime::createFromFormat('Y-m-d H:i:s', '2013-12-20 00:00:00');
+
+		$this->insertUser(array(
+			'user_name'  => 'test1',
+			'birthday'   => '1980-12-20',
+			'created_at' => $now->getTimestamp(),
+		));
+
+		$this->insertUser(array(
+			'user_name'  => 'test2',
+			'birthday'   => '1996-01-01',
+			'created_at' => $now->getTimestamp(),
+		));
+
+		$statement = new PdoStatement($pdo->prepare(<<<'SQL'
+SELECT
+  user_id
+, user_name
+, birthday
+, created_at
+FROM
+  users
+ORDER BY
+  user_id
+SQL
+		));
+		$statement->execute();
+		$users = $statement->fetchAll(Statement::FETCH_NUM);
+
+		$this->assertCount(2, $users);
+
+		$this->assertEquals('1', $users[0][0]);
+		$this->assertEquals('test1', $users[0][1]);
+		$this->assertEquals('1980-12-20', $users[0][2]);
+		$this->assertEquals($now->getTimestamp(), $users[0][3]);
+
+		$this->assertEquals('2', $users[1][0]);
+		$this->assertEquals('test2', $users[1][1]);
+		$this->assertEquals('1996-01-01', $users[1][2]);
+		$this->assertEquals($now->getTimestamp(), $users[1][3]);
 	}
 
-	public function __isset($name)
+	public function testFetchAllByFetchClass()
 	{
-		return (array_key_exists($name, $this->attributes) && isset($this->attributes[$name]));
+		$pdo = $this->getPdo();
+
+		$now = \DateTime::createFromFormat('Y-m-d H:i:s', '2013-12-20 00:00:00');
+
+		$this->insertUser(array(
+			'user_name'  => 'test1',
+			'birthday'   => '1980-12-20',
+			'created_at' => $now->getTimestamp(),
+		));
+
+		$this->insertUser(array(
+			'user_name'  => 'test2',
+			'birthday'   => '1996-01-01',
+			'created_at' => $now->getTimestamp(),
+		));
+
+		$statement = new PdoStatement($pdo->prepare(<<<'SQL'
+SELECT
+  user_id AS userId
+, user_name AS userName
+, birthday AS birthday
+, created_at AS createdAt
+FROM
+  users
+ORDER BY
+  user_id
+SQL
+		));
+		$statement->execute();
+		$statement->setFetchMode(Statement::FETCH_CLASS,
+			'\Volcanus\Database\Tests\Driver\Pdo\PdoStatementTestData',
+			array(
+				array(
+					'now' => $now,
+				)
+			)
+		);
+		$users = $statement->fetchAll();
+
+		$this->assertCount(2, $users);
+
+		$this->assertInstanceOf('\Volcanus\Database\Tests\Driver\Pdo\PdoStatementTestData', $users[0]);
+		$this->assertEquals('1', $users[0]->userId);
+		$this->assertEquals('test1', $users[0]->userName);
+		$this->assertEquals('1980-12-20', $users[0]->birthday);
+		$this->assertEquals($now->getTimestamp(), $users[0]->createdAt);
+		$this->assertEquals(33, $users[0]->age);
+
+		$this->assertInstanceOf('\Volcanus\Database\Tests\Driver\Pdo\PdoStatementTestData', $users[1]);
+		$this->assertEquals('2', $users[1]->userId);
+		$this->assertEquals('test2', $users[1]->userName);
+		$this->assertEquals('1996-01-01', $users[1]->birthday);
+		$this->assertEquals($now->getTimestamp(), $users[1]->createdAt);
+		$this->assertEquals(17, $users[1]->age);
+
 	}
 
-	public function __unset($name)
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testFetchAllRaiseInvalidArgumentExceptionWhenUnsupportedFetchMode()
 	{
-		if (array_key_exists($name, $this->attributes)) {
-			$this->attributes[$name] = null;
-		}
+		$statement = new PdoStatement(
+			$this->getPdo()->query("SELECT count(*) AS cnt FROM users")
+		);
+		$items = $statement->fetchAll('Unsupported-FetchMode');
 	}
 
 }

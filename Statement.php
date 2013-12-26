@@ -19,6 +19,5 @@ class Statement
 	const FETCH_ASSOC = 'assoc';
 	const FETCH_NUM   = 'num';
 	const FETCH_CLASS = 'class';
-	const FETCH_FUNC  = 'function';
 
 }
