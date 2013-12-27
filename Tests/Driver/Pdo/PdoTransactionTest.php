@@ -47,17 +47,13 @@ SQL
 	{
 		$pdo = $this->getPdo();
 		$transaction = new PdoTransaction($pdo);
-		$driver = new PdoDriver($pdo);
-
 		$transaction->begin();
-		$driver->execute("INSERT INTO test (name) VALUES ('test')");
-		$count = $driver->query("SELECT count(*) FROM test")->fetch(Statement::FETCH_NUM);
-
+		$pdo->exec("INSERT INTO test (name) VALUES ('test')");
+		$count = $pdo->query("SELECT count(*) FROM test")->fetch(\PDO::FETCH_NUM);
 		$this->assertEquals('1', $count[0]);
 
 		$transaction->rollback();
-		$count = $driver->query("SELECT count(*) FROM test")->fetch(Statement::FETCH_NUM);
-
+		$count = $pdo->query("SELECT count(*) FROM test")->fetch(\PDO::FETCH_NUM);
 		$this->assertEquals('0', $count[0]);
 	}
 
@@ -65,13 +61,10 @@ SQL
 	{
 		$pdo = $this->getPdo();
 		$transaction = new PdoTransaction($pdo);
-		$driver = new PdoDriver($pdo);
-
 		$transaction->begin();
-		$driver->execute("INSERT INTO test (name) VALUES ('test')");
+		$pdo->exec("INSERT INTO test (name) VALUES ('test')");
 		$transaction->commit();
-		$count = $driver->query("SELECT count(*) FROM test")->fetch(Statement::FETCH_NUM);
-
+		$count = $pdo->query("SELECT count(*) FROM test")->fetch(\PDO::FETCH_NUM);
 		$this->assertEquals('1', $count[0]);
 	}
 

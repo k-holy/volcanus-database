@@ -37,6 +37,7 @@ class PdoTransaction implements TransactionInterface
 	 * トランザクションを開始します。
 	 *
 	 * @return boolean 処理に失敗した場合に false を返します。
+	 * @throws RuntimeException
 	 */
 	public function begin()
 	{
@@ -45,14 +46,17 @@ class PdoTransaction implements TransactionInterface
 				return true;
 			}
 		} catch (\PDOException $e) {
+			throw new \RuntimeException(
+				sprintf('Failed to begin transaction. "%s"', $e->getMessage())
+			);
 		}
-		throw new \RuntimeException('Failed to begin transaction');
 	}
 
 	/**
 	 * トランザクションをコミットします。
 	 *
 	 * @return boolean 処理に失敗した場合に false を返します。
+	 * @throws RuntimeException
 	 */
 	public function commit()
 	{
@@ -61,14 +65,17 @@ class PdoTransaction implements TransactionInterface
 				return true;
 			}
 		} catch (\PDOException $e) {
+			throw new \RuntimeException(
+				sprintf('Failed to commit transaction. "%s"', $e->getMessage())
+			);
 		}
-		throw new \RuntimeException('Failed to commit transaction');
 	}
 
 	/**
 	 * トランザクションをロールバックします。
 	 *
 	 * @return boolean 処理に失敗した場合に false を返します。
+	 * @throws RuntimeException
 	 */
 	public function rollback()
 	{
@@ -77,8 +84,10 @@ class PdoTransaction implements TransactionInterface
 				return true;
 			}
 		} catch (\PDOException $e) {
+			throw new \RuntimeException(
+				sprintf('Failed to rollback transaction. "%s"', $e->getMessage())
+			);
 		}
-		throw new \RuntimeException('Failed to rollback transaction');
 	}
 
 }
