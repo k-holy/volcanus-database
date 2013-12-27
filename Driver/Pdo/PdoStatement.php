@@ -43,7 +43,6 @@ class PdoStatement implements StatementInterface
 	public function __construct(\PDOStatement $statement)
 	{
 		$this->statement = $statement;
-		$this->setFetchMode(Statement::FETCH_ASSOC);
 		$this->callback = null;
 	}
 
@@ -139,12 +138,11 @@ class PdoStatement implements StatementInterface
 	/**
 	 * 結果セットから次の行を取得して返します。
 	 *
-	 * @param int フェッチモード定数 (Statement::FETCH_**)
 	 * @return mixed
 	 */
-	public function fetch($mode = null)
+	public function fetch()
 	{
-		$result = $this->statement->fetch($this->convertFetchMode($mode));
+		$result = $this->statement->fetch();
 		if (!isset($this->callback) || $result === false) {
 			return $result;
 		}
@@ -154,30 +152,10 @@ class PdoStatement implements StatementInterface
 	/**
 	 * 結果セットから全ての行を取得して配列で返します。
 	 *
-	 * @param int フェッチモード定数 (Statement::FETCH_**)
-	 * @param mixed フェッチモードのオプション引数
-	 * @param array Statement::FETCH_CLASS の場合のコンストラクタ引数
 	 * @return array
 	 */
-	public function fetchAll($mode = null, $option = null, array $arguments = null)
+	public function fetchAll()
 	{
-		switch (func_num_args()) {
-		case 3:
-			return $this->statement->fetchAll(
-				$this->convertFetchMode($mode),
-				$option,
-				$arguments
-			);
-		case 2:
-			return $this->statement->fetchAll(
-				$this->convertFetchMode($mode),
-				$option
-			);
-		case 1:
-			return $this->statement->fetchAll(
-				$this->convertFetchMode($mode)
-			);
-		}
 		return $this->statement->fetchAll();
 	}
 
@@ -195,9 +173,6 @@ class PdoStatement implements StatementInterface
 
 	private function convertFetchMode($mode)
 	{
-		if ($mode === null) {
-			$mode = $this->fetchMode;
-		}
 		switch ($mode) {
 		case Statement::FETCH_ASSOC:
 			return \PDO::FETCH_ASSOC;
