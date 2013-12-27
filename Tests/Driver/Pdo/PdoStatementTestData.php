@@ -47,19 +47,21 @@ class PdoStatementTestData
 	 */
 	public function __construct(array $properties = null)
 	{
-		foreach (array_keys(get_object_vars($this)) as $name) {
-			$this->{$name} = null;
-			if (array_key_exists($name, $properties)) {
-				$this->__set($name, $properties[$name]);
-				unset($properties[$name]);
+		if ($properties !== null) {
+			foreach (array_keys(get_object_vars($this)) as $name) {
+				$this->{$name} = null;
+				if (array_key_exists($name, $properties)) {
+					$this->__set($name, $properties[$name]);
+					unset($properties[$name]);
+				}
 			}
-		}
-		if (count($properties) !== 0) {
-			throw new \InvalidArgumentException(
-				sprintf('Not supported properties [%s]',
-					implode(',', array_keys($properties))
-				)
-			);
+			if (count($properties) !== 0) {
+				throw new \InvalidArgumentException(
+					sprintf('Not supported properties [%s]',
+						implode(',', array_keys($properties))
+					)
+				);
+			}
 		}
 	}
 
@@ -82,9 +84,8 @@ class PdoStatementTestData
 	 */
 	public function __get($name)
 	{
-		$camelize = $this->camelize($name);
-		if (method_exists($this, 'get' . $camelize)) {
-			return $this->{'get' . $camelize}();
+		if (method_exists($this, 'get' . ucfirst($name))) {
+			return $this->{'get' . ucfirst($name)}();
 		}
 		if (!property_exists($this, $name)) {
 			throw new \InvalidArgumentException(
@@ -103,9 +104,8 @@ class PdoStatementTestData
 	 */
 	public function __set($name, $value)
 	{
-		$camelize = $this->camelize($name);
-		if (method_exists($this, 'set' . $camelize)) {
-			return $this->{'set' . $camelize}($value);
+		if (method_exists($this, 'set' . ucfirst($name))) {
+			return $this->{'set' . ucfirst($name)}($value);
 		}
 		if (!property_exists($this, $name)) {
 			throw new \InvalidArgumentException(
@@ -131,22 +131,28 @@ class PdoStatementTestData
 		$this->{$name} = null;
 	}
 
+	/**
+	 * 現在日時をセットします。
+	 *
+	 * @param \DateTime
+	 */
+	private function setNow(\DateTime $now)
+	{
+		$this->now = $now;
+	}
+
+	/**
+	 * 年齢を返します。
+	 *
+	 * @return int
+	 */
 	public function getAge()
 	{
-		if (isset($this->birthday)) {
+		if ($this->birthday !== null && $this->now !== null) {
 			$birthday = \DateTime::createFromFormat('Y-m-d', $this->birthday);
 			return (int)(((int)$this->now->format('Ymd') - (int)$birthday->format('Ymd')) / 10000);
 		}
 		return null;
-	}
-
-	/**
-	 * @param string  $string
-	 * @return string
-	 */
-	private function camelize($string)
-	{
-		return str_replace(' ', '', ucwords(str_replace('_', ' ', $string)));
 	}
 
 }

@@ -136,4 +136,19 @@ interface DriverInterface
 	 */
 	public function quote($value);
 
+	/**
+	 * LIKE演算子のエスケープ文字をセットします。
+	 *
+	 * @param string エスケープに使用する文字
+	 */
+	public function setEscapeCharacter($char);
+
+	/**
+	 * LIKE演算子のパターンとして使用する文字列をエスケープして返します。
+	 *
+	 * @param string パターン文字列
+	 * @return string エスケープされたパターン文字列
+	 */
+	public function escapeLikePattern($pattern);
+
 }

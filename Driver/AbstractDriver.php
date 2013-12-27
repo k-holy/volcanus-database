@@ -35,6 +35,11 @@ abstract class AbstractDriver
 	protected $lastQuery;
 
 	/**
+	 * @var string LIKE演算子のエスケープ文字
+	 */
+	protected $escapeCharacter = '\\';
+
+	/**
 	 * DSNをセットします。
 	 *
 	 * @param Volcanus\Database\Dsn
@@ -146,6 +151,31 @@ abstract class AbstractDriver
 			);
 		}
 		return $this->metaDataProcessor->getMetaColumns($this, $table);
+	}
+
+	/**
+	 * LIKE演算子のエスケープ文字をセットします。
+	 *
+	 * @param string エスケープに使用する文字
+	 */
+	public function setEscapeCharacter($char)
+	{
+		$this->escapeCharacter = $char;
+	}
+
+	/**
+	 * LIKE演算子のパターンとして使用する文字列をエスケープして返します。
+	 *
+	 * @param string パターン文字列
+	 * @return string エスケープされたパターン文字列
+	 */
+	public function escapeLikePattern($pattern)
+	{
+		return strtr($pattern, [
+			'_' => $this->escapeCharacter . '_',
+			'%' => $this->escapeCharacter . '%',
+			$this->escapeCharacter => $this->escapeCharacter . $this->escapeCharacter,
+		]);
 	}
 
 	/**

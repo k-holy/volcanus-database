@@ -42,19 +42,15 @@ interface StatementInterface extends \IteratorAggregate
 	/**
 	 * 結果セットから次の行を取得して返します。
 	 *
-	 * @param int フェッチモード定数 (Statement::FETCH_**)
 	 * @return mixed
 	 */
-	public function fetch($mode = null);
+	public function fetch();
 
 	/**
 	 * 結果セットから全ての行を取得して配列で返します。
 	 *
-	 * @param int フェッチモード定数 (Statement::FETCH_**)
-	 * @param mixed フェッチモードのオプション引数
-	 * @param array Statement::FETCH_CLASS の場合のコンストラクタ引数
 	 * @return array
 	 */
-	public function fetchAll($mode = null, $option = null, array $arguments = null);
+	public function fetchAll();
 
 }

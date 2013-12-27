@@ -10,6 +10,7 @@ namespace Volcanus\Database\Tests\Driver\Pdo;
 
 use Volcanus\Database\Dsn;
 use Volcanus\Database\Driver\Pdo\PdoDriver;
+use Volcanus\Database\Statement;
 use Volcanus\Database\MetaData\SqliteMetaDataProcessor;
 
 /**
@@ -32,10 +33,10 @@ class PdoDriverTest extends \PHPUnit_Framework_TestCase
 	{
 		if (!isset(static::$pdo)) {
 			static::$pdo = new \PDO('sqlite::memory:');
-			static::$pdo->exec(<<<SQL
+			static::$pdo->exec(<<<'SQL'
 CREATE TABLE test(
-     id         INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-    ,name       TEXT
+  id    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT 
+, name  TEXT
 );
 SQL
 			);
@@ -124,7 +125,7 @@ SQL
 		$this->assertEquals(0, $driver->execute("SELECT count(*) FROM test"));
 		$this->assertEquals(1, $driver->execute("INSERT INTO test (name) VALUES ('test')"));
 		$this->assertEquals(1, $driver->execute("INSERT INTO test (name) VALUES ('test')"));
-		$this->assertEquals(2, $driver->execute("UPDATE test SET name='retest' WHERE name = 'test'"));
+		$this->assertEquals(2, $driver->execute("UPDATE test SET name='retest' WHERE name='test'"));
 	}
 
 	public function testPrepareSetLastQuery()
@@ -209,6 +210,61 @@ SQL
 		$driver = new PdoDriver($this->getPdo());
 		$this->assertEquals("'Foo'", $driver->quote('Foo'));
 		$this->assertEquals("'''Foo'''", $driver->quote("'Foo'"));
+	}
+
+	public function testEscapeCharacter()
+	{
+		$driver = new PdoDriver($this->getPdo());
+		$driver->setEscapeCharacter('!');
+		$this->assertEquals('!%Foo!%', $driver->escapeLikePattern('%Foo%'));
+		$this->assertEquals('!_Foo!_', $driver->escapeLikePattern('_Foo_'));
+	}
+
+	public function testPrepareEscapeLikePattern()
+	{
+		$driver = new PdoDriver($this->getPdo());
+
+		$statement = $driver->prepare(
+			"INSERT INTO test (name) VALUES (:name)"
+		);
+		$statement->execute(array('name' => 'Foo-%RIK%-1'));
+		$statement->execute(array('name' => 'Bar-%RIK%-2'));
+		$statement->execute(array('name' => 'Baz-%RIK%-3'));
+		$statement = $driver->prepare(
+			"SELECT id, name FROM test WHERE name LIKE :name ESCAPE '\\'"
+		);
+		$statement->setFetchMode(Statement::FETCH_ASSOC);
+
+		$statement->execute(array(
+			'name' => '%' . $driver->escapeLikePattern('%RIK%') . '%',
+		));
+
+		$user = $statement->fetch();
+		$this->assertEquals('Foo-%RIK%-1', $user['name']);
+
+		$user = $statement->fetch();
+		$this->assertEquals('Bar-%RIK%-2', $user['name']);
+
+		$user = $statement->fetch();
+		$this->assertEquals('Baz-%RIK%-3', $user['name']);
+
+		$statement->execute(array(
+			'name' => $driver->escapeLikePattern('Foo-%') . '%',
+		));
+		$user = $statement->fetch();
+		$this->assertEquals('Foo-%RIK%-1', $user['name']);
+
+		$statement->execute(array(
+			'name' => $driver->escapeLikePattern('Bar-%') . '%',
+		));
+		$user = $statement->fetch();
+		$this->assertEquals('Bar-%RIK%-2', $user['name']);
+
+		$statement->execute(array(
+			'name' => $driver->escapeLikePattern('Baz-%') . '%',
+		));
+		$user = $statement->fetch();
+		$this->assertEquals('Baz-%RIK%-3', $user['name']);
 	}
 
 }
