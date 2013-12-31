@@ -5,19 +5,7 @@
  * @copyright 2011-2013 k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
  */
-spl_autoload_register(function($className) {
-	$namespace = 'Volcanus\Database';
-	if (0 === strpos(ltrim($className, DIRECTORY_SEPARATOR), $namespace)) {
-		$path = realpath(__DIR__ . '/..') . substr(
-			str_replace('\\', DIRECTORY_SEPARATOR, $className),
-			strlen($namespace)
-		).'.php';
-		if (file_exists($path)) {
-			return include $path;
-		}
-	}
-	return false;
-}, true, true);
+error_reporting(E_ALL | E_STRICT | E_DEPRECATED);
 
-// autload for vendor
-include realpath(__DIR__ . '/../vendor/autoload.php');
+$loader = include realpath(__DIR__ . '/../vendor/autoload.php');
+$loader->add('Volcanus\Database\Test', __DIR__);
