@@ -6,7 +6,7 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database\Tests;
+namespace Volcanus\Database\Test;
 
 use Volcanus\Database\Dsn;
 

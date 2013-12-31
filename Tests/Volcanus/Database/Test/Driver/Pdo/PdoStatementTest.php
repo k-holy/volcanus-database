@@ -6,7 +6,7 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database\Tests\Driver\Pdo;
+namespace Volcanus\Database\Test\Driver\Pdo;
 
 use Volcanus\Database\Statement;
 use Volcanus\Database\Driver\Pdo\PdoStatement;
@@ -269,11 +269,11 @@ SQL
 		));
 		$statement->execute(array('userId' => 1));
 		$statement->setFetchMode(Statement::FETCH_CLASS,
-			'\Volcanus\Database\Tests\Driver\Pdo\PdoStatementTestData'
+			'\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData'
 		);
 		$user = $statement->fetch();
 
-		$this->assertInstanceOf('\Volcanus\Database\Tests\Driver\Pdo\PdoStatementTestData', $user);
+		$this->assertInstanceOf('\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData', $user);
 		$this->assertEquals('1', $user->userId);
 		$this->assertEquals('test1', $user->userName);
 		$this->assertEquals('1980-12-20', $user->birthday);
@@ -307,7 +307,7 @@ SQL
 		));
 		$statement->execute(array('userId' => 1));
 		$statement->setFetchMode(Statement::FETCH_CLASS,
-			'\Volcanus\Database\Tests\Driver\Pdo\PdoStatementTestData',
+			'\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData',
 			array(
 				array(
 					'now' => $now,
@@ -316,7 +316,7 @@ SQL
 		);
 		$user = $statement->fetch();
 
-		$this->assertInstanceOf('\Volcanus\Database\Tests\Driver\Pdo\PdoStatementTestData', $user);
+		$this->assertInstanceOf('\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData', $user);
 		$this->assertEquals('1', $user->userId);
 		$this->assertEquals('test1', $user->userName);
 		$this->assertEquals('1980-12-20', $user->birthday);
@@ -380,7 +380,7 @@ SQL
 		});
 		$user = $statement->fetch();
 
-		$this->assertInstanceOf('\Volcanus\Database\Tests\Driver\Pdo\PdoStatementTestData', $user);
+		$this->assertInstanceOf('\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData', $user);
 		$this->assertEquals(1, $user->userId);
 		$this->assertEquals('test1', $user->userName);
 		$this->assertEquals('1980-12-20', $user->birthday);
@@ -441,7 +441,7 @@ SQL
 		});
 
 		foreach ($statement as $user) {
-			$this->assertInstanceOf('\Volcanus\Database\Tests\Driver\Pdo\PdoStatementTestData', $user);
+			$this->assertInstanceOf('\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData', $user);
 			$this->assertEquals($now->getTimestamp(), $user->createdAt);
 			switch ($user->userId) {
 			case 1:
@@ -596,20 +596,20 @@ SQL
 		));
 		$statement->execute();
 		$statement->setFetchMode(Statement::FETCH_CLASS,
-			'\Volcanus\Database\Tests\Driver\Pdo\PdoStatementTestData'
+			'\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData'
 		);
 		$users = $statement->fetchAll();
 
 		$this->assertCount(2, $users);
 
-		$this->assertInstanceOf('\Volcanus\Database\Tests\Driver\Pdo\PdoStatementTestData', $users[0]);
+		$this->assertInstanceOf('\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData', $users[0]);
 		$this->assertEquals('1', $users[0]->userId);
 		$this->assertEquals('test1', $users[0]->userName);
 		$this->assertEquals('1980-12-20', $users[0]->birthday);
 		$this->assertEquals($now->getTimestamp(), $users[0]->createdAt);
 		$this->assertNull($users[0]->age);
 
-		$this->assertInstanceOf('\Volcanus\Database\Tests\Driver\Pdo\PdoStatementTestData', $users[1]);
+		$this->assertInstanceOf('\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData', $users[1]);
 		$this->assertEquals('2', $users[1]->userId);
 		$this->assertEquals('test2', $users[1]->userName);
 		$this->assertEquals('1996-01-01', $users[1]->birthday);
@@ -650,7 +650,7 @@ SQL
 		));
 		$statement->execute();
 		$statement->setFetchMode(Statement::FETCH_CLASS,
-			'\Volcanus\Database\Tests\Driver\Pdo\PdoStatementTestData',
+			'\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData',
 			array(
 				array(
 					'now' => $now,
@@ -660,14 +660,14 @@ SQL
 
 		$this->assertCount(2, $users);
 
-		$this->assertInstanceOf('\Volcanus\Database\Tests\Driver\Pdo\PdoStatementTestData', $users[0]);
+		$this->assertInstanceOf('\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData', $users[0]);
 		$this->assertEquals('1', $users[0]->userId);
 		$this->assertEquals('test1', $users[0]->userName);
 		$this->assertEquals('1980-12-20', $users[0]->birthday);
 		$this->assertEquals($now->getTimestamp(), $users[0]->createdAt);
 		$this->assertEquals(33, $users[0]->age);
 
-		$this->assertInstanceOf('\Volcanus\Database\Tests\Driver\Pdo\PdoStatementTestData', $users[1]);
+		$this->assertInstanceOf('\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData', $users[1]);
 		$this->assertEquals('2', $users[1]->userId);
 		$this->assertEquals('test2', $users[1]->userName);
 		$this->assertEquals('1996-01-01', $users[1]->birthday);

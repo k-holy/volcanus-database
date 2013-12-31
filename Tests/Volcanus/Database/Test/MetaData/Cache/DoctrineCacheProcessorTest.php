@@ -6,7 +6,7 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database\Tests\MetaData\Cache;
+namespace Volcanus\Database\Test\MetaData\Cache;
 
 use Volcanus\Database\MetaData\Cache\DoctrineCacheProcessor;
 use Volcanus\Database\MetaData\Table;

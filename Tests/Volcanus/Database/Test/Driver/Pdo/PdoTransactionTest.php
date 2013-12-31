@@ -6,7 +6,7 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database\Tests\Driver\Pdo;
+namespace Volcanus\Database\Test\Driver\Pdo;
 
 use Volcanus\Database\Driver\Pdo\PdoTransaction;
 use Volcanus\Database\Driver\Pdo\PdoDriver;
@@ -73,7 +73,7 @@ SQL
 	 */
 	public function testBeginRaiseRuntimeException()
 	{
-		$pdo = $this->getMock('\Volcanus\Database\Tests\Driver\Pdo\PdoMock');
+		$pdo = $this->getMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
 		$pdo->expects($this->once())
 			->method('beginTransaction')
 			->will($this->throwException(new \PDOException()));
@@ -87,7 +87,7 @@ SQL
 	 */
 	public function testCommitRaiseRuntimeException()
 	{
-		$pdo = $this->getMock('\Volcanus\Database\Tests\Driver\Pdo\PdoMock');
+		$pdo = $this->getMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
 		$pdo->expects($this->once())
 			->method('commit')
 			->will($this->throwException(new \PDOException()));
@@ -101,7 +101,7 @@ SQL
 	 */
 	public function testRollbackRaiseRuntimeException()
 	{
-		$pdo = $this->getMock('\Volcanus\Database\Tests\Driver\Pdo\PdoMock');
+		$pdo = $this->getMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
 		$pdo->expects($this->once())
 			->method('rollback')
 			->will($this->throwException(new \PDOException()));

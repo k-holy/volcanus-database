@@ -6,7 +6,7 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database\Tests\Driver\Pdo;
+namespace Volcanus\Database\Test\Driver\Pdo;
 
 /**
  * TestData for PdoStatement

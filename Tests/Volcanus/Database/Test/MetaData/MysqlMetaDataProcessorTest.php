@@ -6,7 +6,7 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database\Tests\MetaData;
+namespace Volcanus\Database\Test\MetaData;
 
 use Volcanus\Database\Driver\Pdo\PdoDriver;
 use Volcanus\Database\MetaData\MysqlMetaDataProcessor;
