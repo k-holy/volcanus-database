@@ -171,11 +171,11 @@ abstract class AbstractDriver
 	 */
 	public function escapeLikePattern($pattern)
 	{
-		return strtr($pattern, [
+		return strtr($pattern, array(
 			'_' => $this->escapeCharacter . '_',
 			'%' => $this->escapeCharacter . '%',
 			$this->escapeCharacter => $this->escapeCharacter . $this->escapeCharacter,
-		]);
+		));
 	}
 
 	/**
