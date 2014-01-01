@@ -142,6 +142,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertEquals('user_id'  , $metaColumns['user_id']->name);
 		$this->assertEquals('user_type', $metaColumns['user_type']->name);
+		$this->assertEquals('user_gender', $metaColumns['user_gender']->name);
 		$this->assertEquals('user_name', $metaColumns['user_name']->name);
 		$this->assertEquals('user_decimal', $metaColumns['user_decimal']->name);
 		$this->assertEquals('user_binary' , $metaColumns['user_binary']->name);
@@ -154,6 +155,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertEquals('int', $metaColumns['user_id']->type);
 		$this->assertEquals('int', $metaColumns['user_type']->type);
+		$this->assertEquals('enum', $metaColumns['user_gender']->type);
 		$this->assertEquals('varchar', $metaColumns['user_key']->type);
 		$this->assertEquals('varchar', $metaColumns['user_name']->type);
 		$this->assertEquals('decimal', $metaColumns['user_decimal']->type);
@@ -167,6 +169,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertEquals('10', $metaColumns['user_id']->maxLength);
 		$this->assertEquals('11', $metaColumns['user_type']->maxLength);
+		$this->assertEquals('6', $metaColumns['user_gender']->maxLength);
 		$this->assertEquals('64', $metaColumns['user_key']->maxLength);
 		$this->assertEquals('255', $metaColumns['user_name']->maxLength);
 		$this->assertEquals('10', $metaColumns['user_decimal']->maxLength);
@@ -180,6 +183,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertNull($metaColumns['user_id']->scale);
 		$this->assertNull($metaColumns['user_type']->scale);
+		$this->assertNull($metaColumns['user_gender']->scale);
 		$this->assertNull($metaColumns['user_key']->scale);
 		$this->assertNull($metaColumns['user_name']->scale);
 		$this->assertEquals('5' , $metaColumns['user_decimal']->scale);
@@ -193,6 +197,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertFalse($metaColumns['user_id']->binary);
 		$this->assertFalse($metaColumns['user_type']->binary);
+		$this->assertFalse($metaColumns['user_gender']->binary);
 		$this->assertFalse($metaColumns['user_key']->binary);
 		$this->assertFalse($metaColumns['user_name']->binary);
 		$this->assertFalse($metaColumns['user_decimal']->binary);
@@ -206,6 +211,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertNull($metaColumns['user_id']->default);
 		$this->assertEquals('1', $metaColumns['user_type']->default);
+		$this->assertNull($metaColumns['user_gender']->default);
 		$this->assertNull($metaColumns['user_key']->default);
 		$this->assertNull($metaColumns['user_name']->default);
 		$this->assertNull($metaColumns['user_decimal']->default);
@@ -219,6 +225,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertTrue($metaColumns['user_id']->notNull);
 		$this->assertTrue($metaColumns['user_type']->notNull);
+		$this->assertTrue($metaColumns['user_gender']->notNull);
 		$this->assertTrue($metaColumns['user_key']->notNull);
 		$this->assertFalse($metaColumns['user_name']->notNull);
 		$this->assertFalse($metaColumns['user_decimal']->notNull);
@@ -232,6 +239,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertTrue($metaColumns['user_id']->primaryKey);
 		$this->assertFalse($metaColumns['user_type']->primaryKey);
+		$this->assertFalse($metaColumns['user_gender']->primaryKey);
 		$this->assertFalse($metaColumns['user_key']->primaryKey);
 		$this->assertFalse($metaColumns['user_name']->primaryKey);
 		$this->assertFalse($metaColumns['user_decimal']->primaryKey);
@@ -245,6 +253,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertFalse($metaColumns['user_id']->uniqueKey);
 		$this->assertFalse($metaColumns['user_type']->uniqueKey);
+		$this->assertFalse($metaColumns['user_gender']->uniqueKey);
 		$this->assertTrue($metaColumns['user_key']->uniqueKey);
 		$this->assertFalse($metaColumns['user_name']->uniqueKey);
 		$this->assertFalse($metaColumns['user_decimal']->uniqueKey);
@@ -258,6 +267,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertTrue($metaColumns['user_id']->autoIncrement);
 		$this->assertFalse($metaColumns['user_type']->autoIncrement);
+		$this->assertFalse($metaColumns['user_gender']->autoIncrement);
 		$this->assertFalse($metaColumns['user_key']->autoIncrement);
 		$this->assertFalse($metaColumns['user_name']->autoIncrement);
 		$this->assertFalse($metaColumns['user_decimal']->autoIncrement);
@@ -271,6 +281,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertEquals('ユーザーID', $metaColumns['user_id']->comment);
 		$this->assertEquals('ユーザー種別', $metaColumns['user_type']->comment);
+		$this->assertEquals('ユーザー性別', $metaColumns['user_gender']->comment);
 		$this->assertEquals('ユーザー識別子', $metaColumns['user_key']->comment);
 		$this->assertEquals('ユーザー名', $metaColumns['user_name']->comment);
 		$this->assertEquals('ユーザー小数', $metaColumns['user_decimal']->comment);
@@ -316,6 +327,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit_Framework_TestCase
 CREATE TABLE users(
      user_id      INTEGER UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY  comment 'ユーザーID'
     ,user_type    INTEGER                         NOT NULL DEFAULT 1    comment 'ユーザー種別'
+    ,user_gender  ENUM('female', 'male')          NOT NULL              comment 'ユーザー性別'
     ,user_key     VARCHAR(64)  BINARY             NOT NULL UNIQUE       comment 'ユーザー識別子'
     ,user_name    VARCHAR(255)                             DEFAULT NULL comment 'ユーザー名'
     ,user_decimal DECIMAL(10,5)                                         comment 'ユーザー小数'
@@ -344,6 +356,17 @@ CREATE TABLE users(
 							'Extra'      => NULL,
 							'Privileged' => 'select,insert,update,references',
 							'Comment'    => 'ユーザー種別',
+						),
+						array(
+							'Field'      => 'user_gender',
+							'Type'       => 'enum(\'female\', \'male\')',
+							'Collation'  => 'NULL',
+							'Null'       => 'NO',
+							'Key'        => NULL,
+							'Default'    => 'NULL',
+							'Extra'      => NULL,
+							'Privileged' => 'select,insert,update,references',
+							'Comment'    => 'ユーザー性別',
 						),
 						array(
 							'Field'      => 'user_key',

@@ -42,9 +42,7 @@ class PdoTransaction implements TransactionInterface
 	public function begin()
 	{
 		try {
-			if ($this->pdo->beginTransaction()) {
-				return true;
-			}
+			return $this->pdo->beginTransaction();
 		} catch (\PDOException $e) {
 			throw new \RuntimeException(
 				sprintf('Failed to begin transaction. "%s"', $e->getMessage())
@@ -61,9 +59,7 @@ class PdoTransaction implements TransactionInterface
 	public function commit()
 	{
 		try {
-			if ($this->pdo->commit()) {
-				return true;
-			}
+			return $this->pdo->commit();
 		} catch (\PDOException $e) {
 			throw new \RuntimeException(
 				sprintf('Failed to commit transaction. "%s"', $e->getMessage())
@@ -80,9 +76,7 @@ class PdoTransaction implements TransactionInterface
 	public function rollback()
 	{
 		try {
-			if ($this->pdo->rollBack()) {
-				return true;
-			}
+			return $this->pdo->rollBack();
 		} catch (\PDOException $e) {
 			throw new \RuntimeException(
 				sprintf('Failed to rollback transaction. "%s"', $e->getMessage())
