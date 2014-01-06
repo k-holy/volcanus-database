@@ -12,9 +12,8 @@
         }
     ],
     "autoload": {
-        "psr-0": { "Volcanus\\Database": "." }
+        "psr-0": { "Volcanus\\Database": "src/" }
     },
-    "target-dir": "Volcanus/Database",
     "require": {
         "php": ">=5.3.3",
         "doctrine/cache": "1.2.*"
