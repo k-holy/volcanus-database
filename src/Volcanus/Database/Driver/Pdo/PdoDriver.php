@@ -150,7 +150,13 @@ class PdoDriver extends AbstractDriver implements DriverInterface
 	 */
 	protected function doPrepare($query)
 	{
-		return new PdoStatement($this->pdo->prepare($query));
+		$statement = $this->pdo->prepare($query);
+		if ($statement === false) {
+			throw new \RuntimeException(
+				sprintf('Invalid query:%s', $query)
+			);
+		}
+		return new PdoStatement($statement);
 	}
 
 	/**
@@ -161,7 +167,13 @@ class PdoDriver extends AbstractDriver implements DriverInterface
 	 */
 	protected function doQuery($query)
 	{
-		return new PdoStatement($this->pdo->query($query));
+		$statement = $this->pdo->query($query);
+		if ($statement === false) {
+			throw new \RuntimeException(
+				sprintf('Invalid query:%s', $query)
+			);
+		}
+		return new PdoStatement($statement);
 	}
 
 	/**

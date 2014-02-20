@@ -111,12 +111,30 @@ SQL
 		);
 	}
 
+	/**
+	 * @expectedException \RuntimeException
+	 */
+	public function testPrepareRaiseExceptionWhenInvalidQuery()
+	{
+		$driver = new PdoDriver($this->getPdo());
+		$driver->prepare("SELECT id, name FROM undefined_table WHERE id = :id");
+	}
+
 	public function testQueryReturnedPdoStatement()
 	{
 		$driver = new PdoDriver($this->getPdo());
 		$this->assertInstanceOf('\Volcanus\Database\Driver\Pdo\PdoStatement',
 			$driver->query("SELECT count(*) FROM test")
 		);
+	}
+
+	/**
+	 * @expectedException \RuntimeException
+	 */
+	public function testQueryRaiseExceptionWhenInvalidQuery()
+	{
+		$driver = new PdoDriver($this->getPdo());
+		$driver->query("SELECT * FROM undefined_table_called_by_testQueryRaiseExceptionWhenInvalidQuery");
 	}
 
 	public function testExecuteReturnedAffectedRows()
@@ -155,9 +173,8 @@ SQL
 	public function testGetLastError()
 	{
 		$driver = new PdoDriver($this->getPdo());
-		$this->assertNull($driver->getLastError());
-		$driver->execute("SELECT count(*) FROM undefined_table");
-		$this->assertNotNull($driver->getLastError());
+		$driver->execute("SELECT * FROM undefined_table_called_by_testGetLastError");
+		$this->assertContains('undefined_table_called_by_testGetLastError', $driver->getLastError());
 	}
 
 	public function testLastInsertId()
