@@ -69,6 +69,11 @@ class DoctrineCacheProcessor implements CacheProcessorInterface
 	 */
 	public function setMetaTables($tables, $lifetime = null)
 	{
+		if ($lifetime === null) {
+			return $this->cache->save(
+				self::META_TABLES_ID, $tables
+			);
+		}
 		return $this->cache->save(
 			self::META_TABLES_ID, $tables, $lifetime
 		);
@@ -121,6 +126,11 @@ class DoctrineCacheProcessor implements CacheProcessorInterface
 	 */
 	public function setMetaColumns($table, $columns, $lifetime = null)
 	{
+		if ($lifetime === null) {
+			return $this->cache->save(
+				sprintf(self::META_COLUMNS_ID, $table), $columns
+			);
+		}
 		return $this->cache->save(
 			sprintf(self::META_COLUMNS_ID, $table), $columns, $lifetime
 		);
