@@ -9,154 +9,144 @@
 namespace Volcanus\Database\Test\MetaData\Cache;
 
 use Volcanus\Database\MetaData\Cache\PhalconCacheProcessor;
-use Volcanus\Database\MetaData\Table;
-use Volcanus\Database\MetaData\Column;
 
 /**
  * Test for PhalconCacheProcessor
  *
  * @author k.holy74@gmail.com
  */
-class PhalconCacheProcessorTest extends \PHPUnit_Framework_TestCase
+class PhalconCacheProcessorTest extends AbstractCacheProcessorTest
 {
 
-	public function testHasMetaTables()
+	private function createCacheProvider()
 	{
-		$phalconCacheBackendInterface = $this->getMock('\\Phalcon\\Cache\\BackendInterface');
-		$phalconCacheBackendInterface->expects($this->once())
-			->method('exists')
-			->will($this->returnValue(true));
-
-		$cache = new PhalconCacheProcessor($phalconCacheBackendInterface);
-		$this->assertTrue($cache->hasMetaTables());
+		return new \Phalcon\Cache\Backend\File(
+			new \Phalcon\Cache\Frontend\Data(), ['cacheDir' => $this->cacheDir]
+		);
 	}
 
-	public function testGetMetaTables()
+	public function testSetAndGetMetaTables()
 	{
 		$metaTables = $this->buildMetaTables();
 
-		$phalconCacheBackendInterface = $this->getMock('\\Phalcon\\Cache\\BackendInterface');
-		$phalconCacheBackendInterface->expects($this->once())
+		$cacheProcessor = new PhalconCacheProcessor($this->createCacheProvider());
+		$this->assertTrue($cacheProcessor->setMetaTables($metaTables, 86400));
+		$this->assertTrue($cacheProcessor->hasMetaTables());
+		$this->assertEquals($metaTables, $cacheProcessor->getMetaTables());
+	}
+
+	public function testUnsetAndNotHasMetaTables()
+	{
+		$metaTables = $this->buildMetaTables();
+
+		$cacheProcessor = new PhalconCacheProcessor($this->createCacheProvider());
+		$this->assertTrue($cacheProcessor->setMetaTables($metaTables, 86400));
+		$this->assertTrue($cacheProcessor->unsetMetaTables());
+		$this->assertFalse($cacheProcessor->hasMetaTables());
+	}
+
+	public function testSetAndGetMetaColumns()
+	{
+		$metaColumns = $this->buildMetaColumns();
+
+		$cacheProcessor = new PhalconCacheProcessor($this->createCacheProvider());
+		$this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns, 86400));
+		$this->assertTrue($cacheProcessor->hasMetaColumns('users'));
+		$this->assertEquals($metaColumns, $cacheProcessor->getMetaColumns('users'));
+	}
+
+	public function testUnsetAndNotHasMetaColumns()
+	{
+		$metaColumns = $this->buildMetaColumns();
+
+		$cacheProcessor = new PhalconCacheProcessor($this->createCacheProvider());
+		$this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns, 86400));
+		$this->assertTrue($cacheProcessor->unsetMetaColumns('users'));
+		$this->assertFalse($cacheProcessor->hasMetaColumns('users'));
+	}
+
+	public function testSetAndGetMetaTablesByMock()
+	{
+		$metaTables = $this->buildMetaTables();
+
+		$cacheProvider = $this->getMock('\\Phalcon\\Cache\\BackendInterface');
+		$cacheProvider->expects($this->once())
+			->method('save')
+			->will($this->returnValue(true));
+		$cacheProvider->expects($this->once())
+			->method('exists')
+			->will($this->returnValue(true));
+		$cacheProvider->expects($this->once())
 			->method('get')
 			->will($this->returnValue($metaTables));
 
-		$cache = new PhalconCacheProcessor($phalconCacheBackendInterface);
-		$this->assertEquals($metaTables, $cache->getMetaTables());
+		$cacheProcessor = new PhalconCacheProcessor($cacheProvider);
+		$this->assertTrue($cacheProcessor->setMetaTables($metaTables));
+		$this->assertTrue($cacheProcessor->hasMetaTables());
+		$this->assertEquals($metaTables, $cacheProcessor->getMetaTables());
 	}
 
-	public function testSetMetaTables()
+	public function testUnsetAndNotHasMetaTablesByMock()
 	{
 		$metaTables = $this->buildMetaTables();
 
-		$phalconCacheBackendInterface = $this->getMock('\\Phalcon\\Cache\\BackendInterface');
-		$phalconCacheBackendInterface->expects($this->once())
+		$cacheProvider = $this->getMock('\\Phalcon\\Cache\\BackendInterface');
+		$cacheProvider->expects($this->once())
 			->method('save')
 			->will($this->returnValue(true));
-
-		$cache = new PhalconCacheProcessor($phalconCacheBackendInterface);
-		$this->assertTrue($cache->setMetaTables('users', $metaTables));
-	}
-
-	public function testUnsetMetaTables()
-	{
-		$phalconCacheBackendInterface = $this->getMock('\\Phalcon\\Cache\\BackendInterface');
-		$phalconCacheBackendInterface->expects($this->once())
+		$cacheProvider->expects($this->once())
 			->method('delete')
 			->will($this->returnValue(true));
-
-		$cache = new PhalconCacheProcessor($phalconCacheBackendInterface);
-		$this->assertTrue($cache->unsetMetaTables());
-	}
-
-	public function testHasMetaColumns()
-	{
-		$phalconCacheBackendInterface = $this->getMock('\\Phalcon\\Cache\\BackendInterface');
-		$phalconCacheBackendInterface->expects($this->once())
+		$cacheProvider->expects($this->once())
 			->method('exists')
-			->will($this->returnValue(true));
+			->will($this->returnValue(false));
 
-		$cache = new PhalconCacheProcessor($phalconCacheBackendInterface);
-		$this->assertTrue($cache->hasMetaColumns('users'));
+		$cacheProcessor = new PhalconCacheProcessor($cacheProvider);
+		$this->assertTrue($cacheProcessor->setMetaTables($metaTables));
+		$this->assertTrue($cacheProcessor->unsetMetaTables());
+		$this->assertFalse($cacheProcessor->hasMetaTables());
 	}
 
-	public function testGetMetaColumns()
+	public function testSetAndGetMetaColumnsByMock()
 	{
 		$metaColumns = $this->buildMetaColumns();
 
-		$phalconCacheBackendInterface = $this->getMock('\\Phalcon\\Cache\\BackendInterface');
-		$phalconCacheBackendInterface->expects($this->once())
+		$cacheProvider = $this->getMock('\\Phalcon\\Cache\\BackendInterface');
+		$cacheProvider->expects($this->once())
+			->method('save')
+			->will($this->returnValue(true));
+		$cacheProvider->expects($this->once())
+			->method('exists')
+			->will($this->returnValue(true));
+		$cacheProvider->expects($this->once())
 			->method('get')
 			->will($this->returnValue($metaColumns));
 
-		$cache = new PhalconCacheProcessor($phalconCacheBackendInterface);
-		$this->assertEquals($metaColumns, $cache->getMetaColumns('users'));
+		$cacheProcessor = new PhalconCacheProcessor($cacheProvider);
+		$this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns));
+		$this->assertTrue($cacheProcessor->hasMetaColumns('users'));
+		$this->assertEquals($metaColumns, $cacheProcessor->getMetaColumns('users'));
 	}
 
-	public function testSetMetaColumns()
+	public function testUnsetAndNotHasMetaColumnsByMock()
 	{
 		$metaColumns = $this->buildMetaColumns();
 
-		$phalconCacheBackendInterface = $this->getMock('\\Phalcon\\Cache\\BackendInterface');
-		$phalconCacheBackendInterface->expects($this->once())
+		$cacheProvider = $this->getMock('\\Phalcon\\Cache\\BackendInterface');
+		$cacheProvider->expects($this->once())
 			->method('save')
 			->will($this->returnValue(true));
-
-		$cache = new PhalconCacheProcessor($phalconCacheBackendInterface);
-		$this->assertTrue($cache->setMetaColumns('users', $metaColumns));
-	}
-
-	public function testUnsetMetaColumns()
-	{
-		$phalconCacheBackendInterface = $this->getMock('\\Phalcon\\Cache\\BackendInterface');
-		$phalconCacheBackendInterface->expects($this->once())
+		$cacheProvider->expects($this->once())
 			->method('delete')
 			->will($this->returnValue(true));
+		$cacheProvider->expects($this->once())
+			->method('exists')
+			->will($this->returnValue(false));
 
-		$cache = new PhalconCacheProcessor($phalconCacheBackendInterface);
-		$this->assertTrue($cache->unsetMetaColumns('users'));
-	}
-
-	private function buildMetaTables()
-	{
-		return array(
-			new Table(array(
-				'name' => 'users',
-				'comment' => 'Table of Users',
-				'columns' => $this->buildMetaColumns(),
-			)),
-		);
-	}
-
-	private function buildMetaColumns()
-	{
-		return array(
-			'id' => new Column(array(
-				'name' => 'user_id',
-				'type' => 'integer',
-				'maxLength' => '11',
-				'scale' => null,
-				'binary' => false,
-				'default' => null,
-				'notNull' => true,
-				'primaryKey' => true,
-				'uniqueKey' => true,
-				'autoIncrement' => false,
-				'comment' => 'Primary key of User',
-			)),
-			'name' => new Column(array(
-				'name' => 'user_name',
-				'type' => 'varchar',
-				'maxLength' => '255',
-				'scale' => null,
-				'binary' => false,
-				'default' => null,
-				'notNull' => true,
-				'primaryKey' => false,
-				'uniqueKey' => false,
-				'autoIncrement' => false,
-				'comment' => 'Name of User',
-			)),
-		);
+		$cacheProcessor = new PhalconCacheProcessor($cacheProvider);
+		$this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns));
+		$this->assertTrue($cacheProcessor->unsetMetaColumns('users'));
+		$this->assertFalse($cacheProcessor->hasMetaColumns('users'));
 	}
 
 }
