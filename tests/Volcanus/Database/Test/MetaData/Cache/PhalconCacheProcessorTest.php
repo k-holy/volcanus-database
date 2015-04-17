@@ -21,7 +21,7 @@ class PhalconCacheProcessorTest extends AbstractCacheProcessorTest
 	private function createCacheProvider()
 	{
 		return new \Phalcon\Cache\Backend\File(
-			new \Phalcon\Cache\Frontend\Data(), ['cacheDir' => $this->cacheDir]
+			new \Phalcon\Cache\Frontend\Data(), array('cacheDir' => $this->cacheDir)
 		);
 	}
 
