@@ -17,8 +17,5 @@
     "require": {
         "php": ">=5.3.3",
         "doctrine/cache": "1.2.*"
-    },
-    "require-dev": {
-        "satooshi/php-coveralls": "dev-master"
     }
 }
