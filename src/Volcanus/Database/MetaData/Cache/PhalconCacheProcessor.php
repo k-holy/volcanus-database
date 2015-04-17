@@ -67,9 +67,15 @@ class PhalconCacheProcessor implements CacheProcessorInterface
 	 */
 	public function setMetaTables($tables, $lifetime = null)
 	{
-		$this->cache->save(
-			self::META_TABLES_ID, $tables, $lifetime
-		);
+		if ($lifetime === null) {
+			$this->cache->save(
+				self::META_TABLES_ID, $tables
+			);
+		} else {
+			$this->cache->save(
+				self::META_TABLES_ID, $tables, $lifetime
+			);
+		}
 		return true;
 	}
 
@@ -120,9 +126,15 @@ class PhalconCacheProcessor implements CacheProcessorInterface
 	 */
 	public function setMetaColumns($table, $columns, $lifetime = null)
 	{
-		$this->cache->save(
-			sprintf(self::META_COLUMNS_ID, $table), $columns, $lifetime
-		);
+		if ($lifetime === null) {
+			$this->cache->save(
+				sprintf(self::META_COLUMNS_ID, $table), $columns
+			);
+		} else {
+			$this->cache->save(
+				sprintf(self::META_COLUMNS_ID, $table), $columns, $lifetime
+			);
+		}
 		return true;
 	}
 
