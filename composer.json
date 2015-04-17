@@ -3,7 +3,7 @@
     "homepage": "https://github.com/k-holy/volcanus-database",
     "type": "library",
     "description": "database abstraction layer",
-    "version": "0.4.1",
+    "version": "0.4.2",
     "license": "MIT",
     "authors": [
         {
@@ -12,13 +12,10 @@
         }
     ],
     "autoload": {
-        "psr-0": { "Volcanus\\Database": "src/" }
+        "psr-4": { "Volcanus\\Database\\": "src/" }
     },
     "require": {
         "php": ">=5.3.3",
         "doctrine/cache": "1.2.*"
-    },
-    "require-dev": {
-        "satooshi/php-coveralls": "dev-master"
     }
 }
