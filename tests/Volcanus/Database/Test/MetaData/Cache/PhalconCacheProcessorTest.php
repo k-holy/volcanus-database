@@ -18,6 +18,14 @@ use Volcanus\Database\MetaData\Cache\PhalconCacheProcessor;
 class PhalconCacheProcessorTest extends AbstractCacheProcessorTest
 {
 
+	public function setUp()
+	{
+		if (!extension_loaded('phalcon')) {
+			$this->markTestSkipped('phalcon extension is not loaded.');
+		}
+		parent::setUp();
+	}
+
 	private function createCacheProvider()
 	{
 		return new \Phalcon\Cache\Backend\File(
@@ -27,10 +35,6 @@ class PhalconCacheProcessorTest extends AbstractCacheProcessorTest
 
 	public function testSetAndGetMetaTables()
 	{
-		if (!extension_loaded('phalcon')) {
-			$this->markTestSkipped('phalcon extension is not loaded.');
-		}
-
 		$metaTables = $this->buildMetaTables();
 
 		$cacheProcessor = new PhalconCacheProcessor($this->createCacheProvider());
@@ -41,10 +45,6 @@ class PhalconCacheProcessorTest extends AbstractCacheProcessorTest
 
 	public function testUnsetAndNotHasMetaTables()
 	{
-		if (!extension_loaded('phalcon')) {
-			$this->markTestSkipped('phalcon extension is not loaded.');
-		}
-
 		$metaTables = $this->buildMetaTables();
 
 		$cacheProcessor = new PhalconCacheProcessor($this->createCacheProvider());
@@ -55,10 +55,6 @@ class PhalconCacheProcessorTest extends AbstractCacheProcessorTest
 
 	public function testSetAndGetMetaColumns()
 	{
-		if (!extension_loaded('phalcon')) {
-			$this->markTestSkipped('phalcon extension is not loaded.');
-		}
-
 		$metaColumns = $this->buildMetaColumns();
 
 		$cacheProcessor = new PhalconCacheProcessor($this->createCacheProvider());
@@ -69,10 +65,6 @@ class PhalconCacheProcessorTest extends AbstractCacheProcessorTest
 
 	public function testUnsetAndNotHasMetaColumns()
 	{
-		if (!extension_loaded('phalcon')) {
-			$this->markTestSkipped('phalcon extension is not loaded.');
-		}
-
 		$metaColumns = $this->buildMetaColumns();
 
 		$cacheProcessor = new PhalconCacheProcessor($this->createCacheProvider());
