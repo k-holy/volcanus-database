@@ -15,7 +15,7 @@
         "psr-4": { "Volcanus\\Database\\": "src/" }
     },
     "require": {
-        "php": ">=5.3.9",
+        "php": ">=5.5.9",
         "doctrine/cache": "1.4.*"
     }
 }
