@@ -25,7 +25,7 @@ class SqliteMetaDataProcessor extends AbstractMetaDataProcessor
 	/**
 	 * コンストラクタ
 	 *
-	 * @param array | Traversable
+     * @param \Volcanus\Database\MetaData\Cache\CacheProcessorInterface $cacheProcessor キャッシュプロセッサ
 	 */
 	public function __construct(CacheProcessorInterface $cacheProcessor = null)
 	{
@@ -37,7 +37,7 @@ class SqliteMetaDataProcessor extends AbstractMetaDataProcessor
 	/**
 	 * テーブルオブジェクトを配列で返します。
 	 *
-	 * @param Volcanus\Database\Driver\DriverInterface データベースドライバ
+	 * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
 	 * @return array of Table
 	 */
 	protected function doGetMetaTables(DriverInterface $driver)
@@ -56,8 +56,8 @@ class SqliteMetaDataProcessor extends AbstractMetaDataProcessor
 	/**
 	 * 指定テーブルのカラムオブジェクトを配列で返します。
 	 *
-	 * @param Volcanus\Database\Driver\DriverInterface データベースドライバ
-	 * @param string テーブル名
+	 * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
+	 * @param string $table テーブル名
 	 * @return array of Column
 	 */
 	protected function doGetMetaColumns(DriverInterface $driver, $table)
@@ -67,7 +67,7 @@ class SqliteMetaDataProcessor extends AbstractMetaDataProcessor
 		$indexes = array();
 		foreach ($indexListStatement as $cols) {
 			$indexInfoStatement = $driver->query($this->indexInfoOf($cols['name']));
-			$indexInfo = $indexInfoStatement->fetch(Statement::FETCH_ASSOC);
+			$indexInfo = $indexInfoStatement->fetch();
 			$indexes[$indexInfo['name']] = $cols;
 		}
 
@@ -126,7 +126,7 @@ class SqliteMetaDataProcessor extends AbstractMetaDataProcessor
 	/**
 	 * 指定テーブルのカラム情報を取得するクエリを返します。
 	 *
-	 * @param string テーブル名
+	 * @param string $table テーブル名
 	 * @return string SQL
 	 */
 	private function tableInfoOf($table)
@@ -137,7 +137,7 @@ class SqliteMetaDataProcessor extends AbstractMetaDataProcessor
 	/**
 	 * 指定テーブルのインデックス情報を取得するクエリを返します。
 	 *
-	 * @param string テーブル名
+	 * @param string $table テーブル名
 	 * @return string SQL
 	 */
 	private function indexListOf($table)
@@ -148,7 +148,7 @@ class SqliteMetaDataProcessor extends AbstractMetaDataProcessor
 	/**
 	 * 指定インデックスの情報を取得するクエリを返します。
 	 *
-	 * @param string インデックス名
+	 * @param string $name インデックス名
 	 * @return string SQL
 	 */
 	private function indexInfoOf($name)

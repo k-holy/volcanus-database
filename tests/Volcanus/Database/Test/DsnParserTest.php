@@ -15,7 +15,7 @@ use Volcanus\Database\DsnParser;
  *
  * @author k.holy74@gmail.com
  */
-class DsnParserTest extends \PHPUnit_Framework_TestCase
+class DsnParserTest extends \PHPUnit\Framework\TestCase
 {
 
 	public function testParseDriver()
@@ -293,6 +293,7 @@ class DsnParserTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testParseRaiseInvalidArgumentExceptionWhenDriverNotFound()
 	{
+        /** @noinspection PhpUnusedLocalVariableInspection */
 		$parser = new DsnParser('username:password@hostname:port/database?option=value');
 	}
 

@@ -25,7 +25,7 @@ class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
 	/**
 	 * コンストラクタ
 	 *
-	 * @param array | Traversable
+     * @param \Volcanus\Database\MetaData\Cache\CacheProcessorInterface $cacheProcessor キャッシュプロセッサ
 	 */
 	public function __construct(CacheProcessorInterface $cacheProcessor = null)
 	{
@@ -37,7 +37,7 @@ class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
 	/**
 	 * テーブルオブジェクトを配列で返します。
 	 *
-	 * @param Volcanus\Database\Driver\DriverInterface データベースドライバ
+	 * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
 	 * @return array of Table
 	 */
 	protected function doGetMetaTables(DriverInterface $driver)
@@ -56,8 +56,8 @@ class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
 	/**
 	 * 指定テーブルのカラムオブジェクトを配列で返します。
 	 *
-	 * @param Volcanus\Database\Driver\DriverInterface データベースドライバ
-	 * @param string テーブル名
+	 * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
+	 * @param string $table テーブル名
 	 * @return array of Column
 	 */
 	protected function doGetMetaColumns(DriverInterface $driver, $table)
@@ -123,7 +123,7 @@ class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
 	/**
 	 * 指定テーブルのカラム情報を取得するクエリを返します。
 	 *
-	 * @param string テーブル名
+	 * @param string $table テーブル名
 	 * @return string SQL
 	 */
 	private function showFullColumnsFrom($table)

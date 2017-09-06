@@ -13,6 +13,10 @@ use Volcanus\Database\AbstractPropertyAccessor;
 /**
  * テーブルクラス
  *
+ * @property string $name
+ * @property string $comment
+ * @property array $columns
+ *
  * @author k.holy74@gmail.com
  */
 class Table extends AbstractPropertyAccessor
@@ -36,7 +40,7 @@ class Table extends AbstractPropertyAccessor
 	/**
 	 * コンストラクタ
 	 *
-	 * @param array
+	 * @param array $properties
 	 */
 	public function __construct(array $properties = array())
 	{

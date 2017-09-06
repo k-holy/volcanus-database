@@ -24,8 +24,8 @@ class CallbackIterator extends \IteratorIterator
 	/**
 	 * コンストラクタ
 	 *
-	 * @param \Traversable
-	 * @param callable 要素を返す際に実行するコールバック関数
+	 * @param \Traversable $iterator
+	 * @param callable $callback 要素を返す際に実行するコールバック関数
 	 */
 	public function __construct(\Traversable $iterator, $callback)
 	{

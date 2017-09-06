@@ -43,7 +43,7 @@ class PdoStatementTestData
 	/**
 	 * __construct()
 	 *
-	 * @param array プロパティの配列
+	 * @param array $properties プロパティの配列
 	 */
 	public function __construct(array $properties = null)
 	{
@@ -68,7 +68,7 @@ class PdoStatementTestData
 	/**
 	 * __isset
 	 *
-	 * @param mixed
+	 * @param mixed $name
 	 * @return bool
 	 */
 	public function __isset($name)
@@ -79,7 +79,7 @@ class PdoStatementTestData
 	/**
 	 * __get
 	 *
-	 * @param mixed
+	 * @param mixed $name
 	 * @throws \InvalidArgumentException
 	 */
 	public function __get($name)
@@ -98,14 +98,14 @@ class PdoStatementTestData
 	/**
 	 * __set
 	 *
-	 * @param mixed
-	 * @param mixed
+	 * @param mixed $name
+	 * @param mixed $value
 	 * @throws \InvalidArgumentException
 	 */
 	public function __set($name, $value)
 	{
 		if (method_exists($this, 'set' . ucfirst($name))) {
-			return $this->{'set' . ucfirst($name)}($value);
+			$this->{'set' . ucfirst($name)}($value);
 		}
 		if (!property_exists($this, $name)) {
 			throw new \InvalidArgumentException(
@@ -118,7 +118,7 @@ class PdoStatementTestData
 	/**
 	 * __unset
 	 *
-	 * @param mixed
+	 * @param mixed $name
 	 * @throws \InvalidArgumentException
 	 */
 	public function __unset($name)
@@ -134,7 +134,7 @@ class PdoStatementTestData
 	/**
 	 * 現在日時をセットします。
 	 *
-	 * @param \DateTime
+	 * @param \DateTime $now
 	 */
 	private function setNow(\DateTime $now)
 	{

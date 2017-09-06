@@ -15,7 +15,7 @@ use Volcanus\Database\Dsn;
  *
  * @author k.holy74@gmail.com
  */
-class DsnTest extends \PHPUnit_Framework_TestCase
+class DsnTest extends \PHPUnit\Framework\TestCase
 {
 
 	public function testCreateFromString()

@@ -16,7 +16,7 @@ use Volcanus\Database\MetaData\Column;
  *
  * @author k.holy74@gmail.com
  */
-abstract class AbstractCacheProcessorTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractCacheProcessorTest extends \PHPUnit\Framework\TestCase
 {
 
 	protected $cacheDir;

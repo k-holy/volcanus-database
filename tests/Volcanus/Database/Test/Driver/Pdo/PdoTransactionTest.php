@@ -17,9 +17,10 @@ use Volcanus\Database\Statement;
  *
  * @author k.holy74@gmail.com
  */
-class PdoTransactionTest extends \PHPUnit_Framework_TestCase
+class PdoTransactionTest extends \PHPUnit\Framework\TestCase
 {
 
+    /** @var \PDO */
 	private static $pdo;
 
 	public function tearDown()
@@ -73,7 +74,8 @@ SQL
 	 */
 	public function testBeginRaiseRuntimeException()
 	{
-		$pdo = $this->getMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
+        /** @var $pdo \Volcanus\Database\Test\Driver\Pdo\PdoMock|\PHPUnit_Framework_MockObject_MockObject */
+		$pdo = $this->createMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
 		$pdo->expects($this->once())
 			->method('beginTransaction')
 			->will($this->throwException(new \PDOException()));
@@ -87,7 +89,8 @@ SQL
 	 */
 	public function testCommitRaiseRuntimeException()
 	{
-		$pdo = $this->getMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
+        /** @var $pdo \Volcanus\Database\Test\Driver\Pdo\PdoMock|\PHPUnit_Framework_MockObject_MockObject */
+		$pdo = $this->createMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
 		$pdo->expects($this->once())
 			->method('commit')
 			->will($this->throwException(new \PDOException()));
@@ -101,7 +104,8 @@ SQL
 	 */
 	public function testRollbackRaiseRuntimeException()
 	{
-		$pdo = $this->getMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
+        /** @var $pdo \Volcanus\Database\Test\Driver\Pdo\PdoMock|\PHPUnit_Framework_MockObject_MockObject */
+		$pdo = $this->createMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
 		$pdo->expects($this->once())
 			->method('rollback')
 			->will($this->throwException(new \PDOException()));

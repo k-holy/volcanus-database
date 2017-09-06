@@ -15,13 +15,13 @@ use Volcanus\Database\DoctrineCacheFactory;
  *
  * @author k.holy74@gmail.com
  */
-class DoctrineCacheFactoryTest extends \PHPUnit_Framework_TestCase
+class DoctrineCacheFactoryTest extends \PHPUnit\Framework\TestCase
 {
 
 	public function testCreateInstance()
 	{
 		$cache = DoctrineCacheFactory::create('array');
-		$this->assertInstanceOf('\\Doctrine\\Common\\Cache\\ArrayCache', $cache);
+		$this->assertInstanceOf('\Doctrine\Common\Cache\ArrayCache', $cache);
 	}
 
 	public function testCreateInstanceWithParameters()
@@ -30,7 +30,7 @@ class DoctrineCacheFactoryTest extends \PHPUnit_Framework_TestCase
 			'directory' => __DIR__,
 			'extension' => '.tmp',
 		));
-		$this->assertInstanceOf('\\Doctrine\\Common\\Cache\\FilesystemCache', $cache);
+		$this->assertInstanceOf('\Doctrine\Common\Cache\FilesystemCache', $cache);
 	}
 
 	public function testCreateInstanceWithNamespace()
@@ -46,6 +46,7 @@ class DoctrineCacheFactoryTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testRaiseExceptionWhenUnsupportedProviderName()
 	{
+        /** @noinspection PhpUnusedLocalVariableInspection */
 		$cache = DoctrineCacheFactory::create('unsupportedProvicerName');
 	}
 
@@ -54,6 +55,7 @@ class DoctrineCacheFactoryTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testRaiseExceptionWhenUnsupportedParameter()
 	{
+        /** @noinspection PhpUnusedLocalVariableInspection */
 		$cache = DoctrineCacheFactory::create('array', array(
 			'unsupported_parameter' => 'foo',
 		));
@@ -62,6 +64,7 @@ class DoctrineCacheFactoryTest extends \PHPUnit_Framework_TestCase
 	public function testExceptionMessageContainsUnsupportedParameterName()
 	{
 		try {
+            /** @noinspection PhpUnusedLocalVariableInspection */
 			$cache = DoctrineCacheFactory::create('array', array(
 				'unsupportedParameter1' => 'foo',
 				'unsupportedParameter2' => 'bar',

@@ -22,21 +22,21 @@ interface DriverInterface
 	/**
 	 * DSNをセットします。
 	 *
-	 * @param Volcanus\Database\Dsn
+	 * @param \Volcanus\Database\Dsn
 	 */
 	public function setDsn(Dsn $dsn);
 
 	/**
 	 * メタデータプロセッサをセットします。
 	 *
-	 * @param Volcanus\Database\MetaData\MetaDataProcessorInterface
+	 * @param \Volcanus\Database\MetaData\MetaDataProcessorInterface
 	 */
 	public function setMetaDataProcessor(MetaDataProcessorInterface $metaDataProcessor);
 
 	/**
 	 * DBに接続します。
 	 *
-	 * @param Volcanus\Database\Dsn DSNオブジェクト
+	 * @param \Volcanus\Database\Dsn DSNオブジェクト
 	 * @return self
 	 */
 	public function connect(Dsn $dsn);
@@ -65,30 +65,30 @@ interface DriverInterface
 	/**
 	 * ドライバに合ったメタデータプロセッサを生成します。
 	 *
-	 * @return Volcanus\Database\MetaData\MetaDataProcessorInterface
+	 * @return \Volcanus\Database\MetaData\MetaDataProcessorInterface
 	 */
 	public function createMetaDataProcessor();
 
 	/**
 	 * SQL実行準備を行い、ステートメントオブジェクトを返します。
 	 *
-	 * @string SQL
-	 * @return StatementInterface
+     * @param string $query SQL
+	 * @return \Volcanus\Database\Driver\StatementInterface
 	 */
 	public function prepare($query);
 
 	/**
 	 * SQLを実行し、ステートメントオブジェクトを返します。
 	 *
-	 * @string SQL
-	 * @return StatementInterface
+	 * @param string $query SQL
+	 * @return \Volcanus\Database\Driver\StatementInterface
 	 */
 	public function query($query);
 
 	/**
 	 * SQLを実行します。
 	 *
-	 * @string SQL
+     * @param string $query SQL
 	 */
 	public function execute($query);
 
@@ -123,7 +123,7 @@ interface DriverInterface
 	/**
 	 * 指定テーブルのカラムオブジェクトを配列で返します。
 	 *
-	 * @param string テーブル名
+	 * @param string $table テーブル名
 	 * @return array of Column
 	 */
 	public function getMetaColumns($table);
@@ -131,7 +131,7 @@ interface DriverInterface
 	/**
 	 * 文字列を引用符で適切にクォートして返します。
 	 *
-	 * @param string クォートしたい値
+	 * @param string $value クォートしたい値
 	 * @return string クォート結果の文字列
 	 */
 	public function quote($value);
@@ -139,14 +139,14 @@ interface DriverInterface
 	/**
 	 * LIKE演算子のエスケープ文字をセットします。
 	 *
-	 * @param string エスケープに使用する文字
+	 * @param string $char エスケープに使用する文字
 	 */
 	public function setEscapeCharacter($char);
 
 	/**
 	 * LIKE演算子のパターンとして使用する文字列をエスケープして返します。
 	 *
-	 * @param string パターン文字列
+	 * @param string $pattern パターン文字列
 	 * @return string エスケープされたパターン文字列
 	 */
 	public function escapeLikePattern($pattern);

@@ -16,11 +16,21 @@ namespace Volcanus\Database;
 abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggregate
 {
 
+    /**
+     * AbstractPropertyAccessor constructor.
+     *
+     * @param array $properties プロパティの配列
+     */
+    public function __construct(array $properties = array())
+    {
+        $this->initialize($properties);
+    }
+
 	/**
 	 * プロパティを引数の配列からセットして自身を返します。
 	 *
-	 * @param array プロパティの配列
-	 * @return self
+	 * @param array $properties プロパティの配列
+	 * @return $this
 	 */
 	public function initialize(array $properties = array())
 	{
@@ -46,7 +56,7 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
 	/**
 	 * __isset
 	 *
-	 * @param mixed
+	 * @param mixed $name
 	 * @return bool
 	 */
 	public function __isset($name)
@@ -57,7 +67,7 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
 	/**
 	 * __get
 	 *
-	 * @param mixed
+	 * @param mixed $name
 	 */
 	public function __get($name)
 	{
@@ -72,8 +82,8 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
 	/**
 	 * __set
 	 *
-	 * @param mixed
-	 * @param mixed
+	 * @param mixed $name
+	 * @param mixed $value
 	 */
 	public function __set($name, $value)
 	{
@@ -85,7 +95,7 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
 	/**
 	 * __unset
 	 *
-	 * @param mixed
+	 * @param mixed $name
 	 */
 	public function __unset($name)
 	{
@@ -119,8 +129,8 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
 	/**
 	 * __set_state for var_export()
 	 *
-	 * @param array
-	 * @return object
+	 * @param array $properties
+	 * @return static
 	 */
 	public static function __set_state($properties)
 	{
@@ -150,7 +160,7 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
 	/**
 	 * ArrayAccess::offsetExists()
 	 *
-	 * @param mixed
+	 * @param mixed $name
 	 * @return bool
 	 */
 	public function offsetExists($name)
@@ -161,7 +171,7 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
 	/**
 	 * ArrayAccess::offsetGet()
 	 *
-	 * @param mixed
+	 * @param mixed $name
 	 * @return mixed
 	 */
 	public function offsetGet($name)
@@ -172,8 +182,8 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
 	/**
 	 * ArrayAccess::offsetSet()
 	 *
-	 * @param mixed
-	 * @param mixed
+	 * @param mixed $name
+	 * @param mixed $value
 	 */
 	public function offsetSet($name, $value)
 	{
@@ -183,7 +193,7 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
 	/**
 	 * ArrayAccess::offsetUnset()
 	 *
-	 * @param mixed
+	 * @param mixed $name
 	 */
 	public function offsetUnset($name)
 	{

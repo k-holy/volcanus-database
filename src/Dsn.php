@@ -13,6 +13,14 @@ use Volcanus\Database\DsnParser;
 /**
  * DSN
  *
+ * @property string $driver
+ * @property string $database
+ * @property string $hostname
+ * @property string $port
+ * @property string $username
+ * @property string $password
+ * @property array $options
+ *
  * @author k.holy74@gmail.com
  */
 class Dsn extends AbstractPropertyAccessor
@@ -56,7 +64,7 @@ class Dsn extends AbstractPropertyAccessor
 	/**
 	 * コンストラクタ
 	 *
-	 * @param array
+	 * @param array $properties
 	 */
 	public function __construct(array $properties = array())
 	{
@@ -66,7 +74,7 @@ class Dsn extends AbstractPropertyAccessor
 	/**
 	 * DSN文字列からインスタンスを生成します。
 	 *
-	 * @param string
+	 * @param string $dsn
 	 * @return self
 	 */
 	public static function createFromString($dsn)

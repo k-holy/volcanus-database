@@ -13,6 +13,18 @@ use Volcanus\Database\AbstractPropertyAccessor;
 /**
  * カラムクラス
  *
+ * @property string $name
+ * @property string $type
+ * @property int $maxLength
+ * @property int $scale
+ * @property boolean $binary
+ * @property mixed $default
+ * @property boolean $notNull
+ * @property boolean $primaryKey
+ * @property boolean $uniqueKey
+ * @property boolean $autoIncrement
+ * @property string $comment
+ *
  * @author k.holy74@gmail.com
  */
 class Column extends AbstractPropertyAccessor
@@ -76,7 +88,7 @@ class Column extends AbstractPropertyAccessor
 	/**
 	 * コンストラクタ
 	 *
-	 * @param array
+	 * @param array $properties
 	 */
 	public function __construct(array $properties = array())
 	{

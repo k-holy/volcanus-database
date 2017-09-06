@@ -17,21 +17,26 @@ use Volcanus\Database\MetaData\MetaDataProcessorInterface;
 /**
  * PDOコネクション
  *
+ * @property \Volcanus\Database\Dsn $dsn
+ * @property \Volcanus\Database\MetaData\MetaDataProcessorInterface $metaDataProcessor
+ * @property string $lastQuery
+ * @property string $escapeCharacter
+ *
  * @author k_horii@rikcorp.jp
  */
-class PdoDriver extends AbstractDriver implements DriverInterface
+class PdoDriver extends AbstractDriver
 {
 
 	/**
-	 * @var PDO
+	 * @var \PDO
 	 */
 	private $pdo;
 
 	/**
 	 * コンストラクタ
 	 *
-	 * @param PDO
-	 * @param Volcanus\Database\MetaData\MetaDataProcessorInterface
+	 * @param \PDO $pdo
+	 * @param \Volcanus\Database\MetaData\MetaDataProcessorInterface $metaDataProcessor
 	 */
 	public function __construct(\PDO $pdo = null, MetaDataProcessorInterface $metaDataProcessor = null)
 	{
@@ -51,8 +56,8 @@ class PdoDriver extends AbstractDriver implements DriverInterface
 	/**
 	 * DSNからインスタンスを生成します。
 	 *
-	 * @param Volcanus\Database\Dsn
-	 * @return self
+	 * @param \Volcanus\Database\Dsn
+	 * @return static
 	 */
 	public static function createFromDsn(Dsn $dsn)
 	{
@@ -64,8 +69,8 @@ class PdoDriver extends AbstractDriver implements DriverInterface
 	/**
 	 * DBに接続します。
 	 *
-	 * @param Volcanus\Database\Dsn DSNオブジェクト
-	 * @return self
+	 * @param \Volcanus\Database\Dsn $dsn DSNオブジェクト
+	 * @return $this
 	 */
 	public function connect(Dsn $dsn = null)
 	{
@@ -100,7 +105,7 @@ class PdoDriver extends AbstractDriver implements DriverInterface
 	/**
 	 * ドライバ名を返します。
 	 *
-	 * @return string ドライバ名
+	 * @return string|null ドライバ名
 	 */
 	public function getDriverName()
 	{
@@ -113,7 +118,7 @@ class PdoDriver extends AbstractDriver implements DriverInterface
 	/**
 	 * 最後に発生したエラーを返します。
 	 *
-	 * @return string
+	 * @return string|null
 	 */
 	public function getLastError()
 	{
@@ -134,7 +139,7 @@ class PdoDriver extends AbstractDriver implements DriverInterface
 	/**
 	 * 文字列を引用符で適切にクォートして返します。
 	 *
-	 * @param string クォートしたい値
+	 * @param string $value クォートしたい値
 	 * @return string クォート結果の文字列
 	 */
 	public function quote($value)
@@ -145,7 +150,7 @@ class PdoDriver extends AbstractDriver implements DriverInterface
 	/**
 	 * SQL実行準備を行い、ステートメントオブジェクトを返します。
 	 *
-	 * @param string SQL
+	 * @param string $query SQL
 	 * @return PdoStatement
 	 */
 	protected function doPrepare($query)
@@ -162,7 +167,7 @@ class PdoDriver extends AbstractDriver implements DriverInterface
 	/**
 	 * SQLを実行し、ステートメントオブジェクトを返します。
 	 *
-	 * @param string SQL
+	 * @param string $query SQL
 	 * @return PdoStatement
 	 */
 	protected function doQuery($query)
@@ -179,8 +184,8 @@ class PdoDriver extends AbstractDriver implements DriverInterface
 	/**
 	 * SQLを実行します。
 	 *
-	 * @param string SQL
-	 * @retrun boolean
+	 * @param string $query SQL
+	 * @return boolean
 	 */
 	protected function doExecute($query)
 	{

@@ -16,13 +16,13 @@ use Volcanus\Database\Dsn;
  *
  * @author k.holy74@gmail.com
  */
-class PdoFactoryTest extends \PHPUnit_Framework_TestCase
+class PdoFactoryTest extends \PHPUnit\Framework\TestCase
 {
 
 	public function testCreate()
 	{
 		$pdo = PdoFactory::create('sqlite::memory:');
-		$this->assertInstanceOf('\\PDO', $pdo);
+		$this->assertInstanceOf('\PDO', $pdo);
 		$this->assertEquals('sqlite', $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME));
 	}
 
@@ -32,7 +32,7 @@ class PdoFactoryTest extends \PHPUnit_Framework_TestCase
 			'driver'   => 'sqlite',
 			'database' => ':memory:',
 		)));
-		$this->assertInstanceOf('\\PDO', $pdo);
+		$this->assertInstanceOf('\PDO', $pdo);
 		$this->assertEquals('sqlite', $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME));
 	}
 
@@ -66,6 +66,7 @@ class PdoFactoryTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testCreateRaiseExceptionWhenInvalidDsn()
 	{
+        /** @noinspection PhpUnusedLocalVariableInspection */
 		$pdo = PdoFactory::create('unsupported-driver:');
 	}
 

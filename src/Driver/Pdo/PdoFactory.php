@@ -22,11 +22,11 @@ class PdoFactory
 	 * 指定されたPDOドライバを生成して返します。
 	 * エラーモード定数が指定されていなければ、強制的に ERRMODE_EXCEPTION に設定します。
 	 *
-	 * @param string PDOスタイルのDSN文字列
-	 * @param string ユーザー名
-	 * @param string パスワード
-	 * @param array 接続オプションの配列
-	 * @return PDO
+	 * @param string $dsn PDOスタイルのDSN文字列
+	 * @param string $username ユーザー名
+	 * @param string $password パスワード
+	 * @param array $options 接続オプションの配列
+	 * @return \PDO
 	 */
 	public static function create($dsn, $username = null, $password = null, array $options = array())
 	{
@@ -49,9 +49,9 @@ class PdoFactory
 	/**
 	 * DSNオブジェクトからPDOドライバを生成して返します。
 	 *
-	 * @param Volcanus\Database\Dsn DSNオブジェクト
+	 * @param \Volcanus\Database\Dsn $dsn DSNオブジェクト
 	 * @param array $driverOptions ドライバ固有の接続オプションを指定するキー=> 値の配列
-	 * @return PDO
+	 * @return \PDO
 	 */
 	public static function createFromDsn(Dsn $dsn, $driverOptions = array())
 	{

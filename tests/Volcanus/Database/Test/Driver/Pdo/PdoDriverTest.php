@@ -18,9 +18,10 @@ use Volcanus\Database\MetaData\SqliteMetaDataProcessor;
  *
  * @author k.holy74@gmail.com
  */
-class PdoDriverTest extends \PHPUnit_Framework_TestCase
+class PdoDriverTest extends \PHPUnit\Framework\TestCase
 {
 
+    /** @var \PDO */
 	private static $pdo;
 
 	public function tearDown()

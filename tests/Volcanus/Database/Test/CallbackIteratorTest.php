@@ -15,7 +15,7 @@ use Volcanus\Database\CallbackIterator;
  *
  * @author k.holy74@gmail.com
  */
-class CallbackIteratorTest extends \PHPUnit_Framework_TestCase
+class CallbackIteratorTest extends \PHPUnit\Framework\TestCase
 {
 
 	/**
@@ -23,6 +23,8 @@ class CallbackIteratorTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testConstructorRaiseInvalidArgumentExceptionWhenInvalidType()
 	{
+        /** @noinspection PhpUnusedLocalVariableInspection */
+        /** @noinspection PhpParamsInspection */
 		$iterator = new CallbackIterator(new \ArrayIterator(array()), false);
 	}
 
@@ -31,6 +33,8 @@ class CallbackIteratorTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testConstructorRaiseInvalidArgumentExceptionWhenInvalidObject()
 	{
+        /** @noinspection PhpUnusedLocalVariableInspection */
+        /** @noinspection PhpParamsInspection */
 		$iterator = new CallbackIterator(new \ArrayIterator(array()), new \StdClass());
 	}
 
