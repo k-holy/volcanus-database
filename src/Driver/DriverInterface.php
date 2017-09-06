@@ -19,136 +19,136 @@ use Volcanus\Database\MetaData\MetaDataProcessorInterface;
 interface DriverInterface
 {
 
-	/**
-	 * DSNをセットします。
-	 *
-	 * @param \Volcanus\Database\Dsn
-	 */
-	public function setDsn(Dsn $dsn);
+    /**
+     * DSNをセットします。
+     *
+     * @param \Volcanus\Database\Dsn
+     */
+    public function setDsn(Dsn $dsn);
 
-	/**
-	 * メタデータプロセッサをセットします。
-	 *
-	 * @param \Volcanus\Database\MetaData\MetaDataProcessorInterface
-	 */
-	public function setMetaDataProcessor(MetaDataProcessorInterface $metaDataProcessor);
+    /**
+     * メタデータプロセッサをセットします。
+     *
+     * @param \Volcanus\Database\MetaData\MetaDataProcessorInterface
+     */
+    public function setMetaDataProcessor(MetaDataProcessorInterface $metaDataProcessor);
 
-	/**
-	 * DBに接続します。
-	 *
-	 * @param \Volcanus\Database\Dsn DSNオブジェクト
-	 * @return self
-	 */
-	public function connect(Dsn $dsn);
+    /**
+     * DBに接続します。
+     *
+     * @param \Volcanus\Database\Dsn DSNオブジェクト
+     * @return self
+     */
+    public function connect(Dsn $dsn);
 
-	/**
-	 * DBとの接続を解放します。
-	 *
-	 * @return bool
-	 */
-	public function disconnect();
+    /**
+     * DBとの接続を解放します。
+     *
+     * @return bool
+     */
+    public function disconnect();
 
-	/**
-	 * DBと接続中かどうかを返します。
-	 *
-	 * @return bool
-	 */
-	public function connected();
+    /**
+     * DBと接続中かどうかを返します。
+     *
+     * @return bool
+     */
+    public function connected();
 
-	/**
-	 * ドライバ名を返します。
-	 *
-	 * @return string ドライバ名
-	 */
-	public function getDriverName();
+    /**
+     * ドライバ名を返します。
+     *
+     * @return string ドライバ名
+     */
+    public function getDriverName();
 
-	/**
-	 * ドライバに合ったメタデータプロセッサを生成します。
-	 *
-	 * @return \Volcanus\Database\MetaData\MetaDataProcessorInterface
-	 */
-	public function createMetaDataProcessor();
+    /**
+     * ドライバに合ったメタデータプロセッサを生成します。
+     *
+     * @return \Volcanus\Database\MetaData\MetaDataProcessorInterface
+     */
+    public function createMetaDataProcessor();
 
-	/**
-	 * SQL実行準備を行い、ステートメントオブジェクトを返します。
-	 *
+    /**
+     * SQL実行準備を行い、ステートメントオブジェクトを返します。
+     *
      * @param string $query SQL
-	 * @return \Volcanus\Database\Driver\StatementInterface
-	 */
-	public function prepare($query);
+     * @return \Volcanus\Database\Driver\StatementInterface
+     */
+    public function prepare($query);
 
-	/**
-	 * SQLを実行し、ステートメントオブジェクトを返します。
-	 *
-	 * @param string $query SQL
-	 * @return \Volcanus\Database\Driver\StatementInterface
-	 */
-	public function query($query);
-
-	/**
-	 * SQLを実行します。
-	 *
+    /**
+     * SQLを実行し、ステートメントオブジェクトを返します。
+     *
      * @param string $query SQL
-	 */
-	public function execute($query);
+     * @return \Volcanus\Database\Driver\StatementInterface
+     */
+    public function query($query);
 
-	/**
-	 * 最後に発行(prepare/query/execute)したクエリを返します。
-	 *
-	 * @return string
-	 */
-	public function getLastQuery();
+    /**
+     * SQLを実行します。
+     *
+     * @param string $query SQL
+     */
+    public function execute($query);
 
-	/**
-	 * 最後に発生したエラーを返します。
-	 *
-	 * @return string
-	 */
-	public function getLastError();
+    /**
+     * 最後に発行(prepare/query/execute)したクエリを返します。
+     *
+     * @return string
+     */
+    public function getLastQuery();
 
-	/**
-	 * 直近のinsert操作で生成されたIDを返します。
-	 *
-	 * @return mixed 実行結果
-	 */
-	public function lastInsertId();
+    /**
+     * 最後に発生したエラーを返します。
+     *
+     * @return string
+     */
+    public function getLastError();
 
-	/**
-	 * テーブルオブジェクトを配列で返します。
-	 *
-	 * @return array of Table
-	 */
-	public function getMetaTables();
+    /**
+     * 直近のinsert操作で生成されたIDを返します。
+     *
+     * @return mixed 実行結果
+     */
+    public function lastInsertId();
 
-	/**
-	 * 指定テーブルのカラムオブジェクトを配列で返します。
-	 *
-	 * @param string $table テーブル名
-	 * @return array of Column
-	 */
-	public function getMetaColumns($table);
+    /**
+     * テーブルオブジェクトを配列で返します。
+     *
+     * @return array of Table
+     */
+    public function getMetaTables();
 
-	/**
-	 * 文字列を引用符で適切にクォートして返します。
-	 *
-	 * @param string $value クォートしたい値
-	 * @return string クォート結果の文字列
-	 */
-	public function quote($value);
+    /**
+     * 指定テーブルのカラムオブジェクトを配列で返します。
+     *
+     * @param string $table テーブル名
+     * @return array of Column
+     */
+    public function getMetaColumns($table);
 
-	/**
-	 * LIKE演算子のエスケープ文字をセットします。
-	 *
-	 * @param string $char エスケープに使用する文字
-	 */
-	public function setEscapeCharacter($char);
+    /**
+     * 文字列を引用符で適切にクォートして返します。
+     *
+     * @param string $value クォートしたい値
+     * @return string クォート結果の文字列
+     */
+    public function quote($value);
 
-	/**
-	 * LIKE演算子のパターンとして使用する文字列をエスケープして返します。
-	 *
-	 * @param string $pattern パターン文字列
-	 * @return string エスケープされたパターン文字列
-	 */
-	public function escapeLikePattern($pattern);
+    /**
+     * LIKE演算子のエスケープ文字をセットします。
+     *
+     * @param string $char エスケープに使用する文字
+     */
+    public function setEscapeCharacter($char);
+
+    /**
+     * LIKE演算子のパターンとして使用する文字列をエスケープして返します。
+     *
+     * @param string $pattern パターン文字列
+     * @return string エスケープされたパターン文字列
+     */
+    public function escapeLikePattern($pattern);
 
 }

@@ -19,28 +19,28 @@ use Volcanus\Database\Driver\DriverInterface;
 interface MetaDataProcessorInterface
 {
 
-	/**
-	 * キャッシュプロセッサをセットします。
-	 *
-	 * @param \Volcanus\Database\MetaData\Cache\CacheProcessorInterface $cacheProcessor キャッシュプロセッサ
-	 */
-	public function setCacheProcessor(CacheProcessorInterface $cacheProcessor);
+    /**
+     * キャッシュプロセッサをセットします。
+     *
+     * @param \Volcanus\Database\MetaData\Cache\CacheProcessorInterface $cacheProcessor キャッシュプロセッサ
+     */
+    public function setCacheProcessor(CacheProcessorInterface $cacheProcessor);
 
-	/**
-	 * テーブルオブジェクトを配列で返します。
-	 *
-	 * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
-	 * @return array of Table
-	 */
-	public function getMetaTables(DriverInterface $driver);
+    /**
+     * テーブルオブジェクトを配列で返します。
+     *
+     * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
+     * @return array of Table
+     */
+    public function getMetaTables(DriverInterface $driver);
 
-	/**
-	 * 指定テーブルのカラムオブジェクトを配列で返します。
-	 *
-	 * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
-	 * @param string $table テーブル名
-	 * @return array of Column
-	 */
-	public function getMetaColumns(DriverInterface $driver, $table);
+    /**
+     * 指定テーブルのカラムオブジェクトを配列で返します。
+     *
+     * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
+     * @param string $table テーブル名
+     * @return array of Column
+     */
+    public function getMetaColumns(DriverInterface $driver, $table);
 
 }
