@@ -2,7 +2,7 @@
 /**
  * Volcanus libraries for PHP
  *
- * @copyright 2011-2013 k-holy <k.holy74@gmail.com>
+ * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
  */
 
@@ -16,253 +16,255 @@ namespace Volcanus\Database;
 class DsnParser
 {
 
-	/**
-	 * @var array of DSN attributes
-	 */
-	private $attributes;
+    /**
+     * @var array of DSN attributes
+     */
+    private $attributes;
 
-	/**
-	 * コンストラクタ
-	 *
-	 * @param string DSN文字列
-	 */
-	public function __construct($dsn = null)
-	{
-		$this->initialize($dsn);
-	}
+    /**
+     * コンストラクタ
+     *
+     * @param string $dsn DSN文字列
+     */
+    public function __construct($dsn = null)
+    {
+        $this->initialize($dsn);
+    }
 
-	/**
-	 * オブジェクトを初期化します。
-	 *
-	 * @param string DSN文字列
-	 * @return self
-	 */
-	public function initialize($dsn = null)
-	{
-		$this->attributes = array(
-			'driver'   => null,
-			'username' => null,
-			'password' => null,
-			'hostname' => null,
-			'port'     => null,
-			'database' => null,
-			'options'  => null,
-		);
+    /**
+     * オブジェクトを初期化します。
+     *
+     * @param string $dsn DSN文字列
+     * @return $this
+     */
+    public function initialize($dsn = null)
+    {
+        $this->attributes = [
+            'driver' => null,
+            'username' => null,
+            'password' => null,
+            'hostname' => null,
+            'port' => null,
+            'database' => null,
+            'options' => null,
+        ];
 
-		if (isset($dsn)) {
-			$this->parse($dsn);
-		}
+        if (isset($dsn)) {
+            $this->parse($dsn);
+        }
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * パース結果を返します。
-	 *
-	 * @return array of DSN attributes
-	 */
-	public function getAttributes()
-	{
-		return $this->attributes;
-	}
+    /**
+     * パース結果を返します。
+     *
+     * @return array of DSN attributes
+     */
+    public function getAttributes()
+    {
+        return $this->attributes;
+    }
 
-	/**
-	 * DSN文字列を解析します。
-	 *
-	 * driver://username:password@hostname:port/database?option=value
-	 * driver://username:password@hostname:port/database
-	 * driver://username:password@hostname/database
-	 * driver://username@hostname:port/database
-	 * driver://username:password@hostname
-	 * driver://username@hostname/database
-	 * driver://username@hostname
-	 * driver://hostname:port/database
-	 * driver://hostname/database
-	 * driver://hostname:port
-	 * driver://hostname
-	 * driver:///database
-	 * sqlite:///path/to/file/
-	 * sqlite://C:\path\to\file
-	 * sqlite:/path/to/file
-	 * sqlite:C:\path\to\file
-	 * sqlite::memory:
-	 *
-	 * @return DSNオブジェクトのインスタンス
-	 */
-	public function parse($dsn)
-	{
+    /**
+     * DSN文字列を解析します。
+     *
+     * driver://username:password@hostname:port/database?option=value
+     * driver://username:password@hostname:port/database
+     * driver://username:password@hostname/database
+     * driver://username@hostname:port/database
+     * driver://username:password@hostname
+     * driver://username@hostname/database
+     * driver://username@hostname
+     * driver://hostname:port/database
+     * driver://hostname/database
+     * driver://hostname:port
+     * driver://hostname
+     * driver:///database
+     * sqlite:///path/to/file/
+     * sqlite://C:\path\to\file
+     * sqlite:/path/to/file
+     * sqlite:C:\path\to\file
+     * sqlite::memory:
+     *
+     * @param string $dsn DSN文字列
+     * @return array
+     */
+    public function parse($dsn)
+    {
 
-		$this->attributes = array(
-			'driver'   => null,
-			'username' => null,
-			'password' => null,
-			'hostname' => null,
-			'port'     => null,
-			'database' => null,
-			'options'  => null,
-		);
+        $this->attributes = [
+            'driver' => null,
+            'username' => null,
+            'password' => null,
+            'hostname' => null,
+            'port' => null,
+            'database' => null,
+            'options' => null,
+        ];
 
-		$value = $this->parseDriver($dsn);
+        $value = $this->parseDriver($dsn);
 
-		if (!isset($this->attributes['driver'])) {
-			throw new \InvalidArgumentException(
-				sprintf('Invalid DSN string "%s" to parse.', $dsn)
-			);
-		}
+        if (!isset($this->attributes['driver'])) {
+            throw new \InvalidArgumentException(
+                sprintf('Invalid DSN string "%s" to parse.', $dsn)
+            );
+        }
 
-		// SQLiteの場合はスキーム部のみ
-		if ($this->attributes['driver'] === 'sqlite') {
-			return $this->attributes;
-		}
+        // SQLiteの場合はスキーム部のみ
+        if ($this->attributes['driver'] === 'sqlite') {
+            return $this->attributes;
+        }
 
-		if (strlen($value) >= 1) {
-			$value = $this->parseUsernameAndPassword($value);
-		}
+        if (strlen($value) >= 1) {
+            $value = $this->parseUsernameAndPassword($value);
+        }
 
-		if (strlen($value) >= 1) {
-			$value = $this->parseHostnameAndPort($value);
-		}
+        if (strlen($value) >= 1) {
+            $value = $this->parseHostnameAndPort($value);
+        }
 
-		if (strlen($value) >= 1) {
-			$value = $this->parseDatabaseAndOptions($value);
-		}
+        if (strlen($value) >= 1) {
+            /** @noinspection PhpUnusedLocalVariableInspection */
+            $value = $this->parseDatabaseAndOptions($value);
+        }
 
-		return $this->attributes;
-	}
+        return $this->attributes;
+    }
 
-	/**
-	 * ドライバを取得し、取得した部分を除去した文字列を返します。
-	 *
-	 * @param string DSN文字列
-	 * @return string "driver://" までを除去した文字列
-	 */
-	public function parseDriver($value)
-	{
-		$endOfScheme = strpos($value, '://');
+    /**
+     * ドライバを取得し、取得した部分を除去した文字列を返します。
+     *
+     * @param string $value DSN文字列
+     * @return string "driver://" までを除去した文字列
+     */
+    public function parseDriver($value)
+    {
+        $endOfScheme = strpos($value, '://');
 
-		if ($endOfScheme === false) {
+        if ($endOfScheme === false) {
 
-			if (strpos($value, 'sqlite:') === 0) {
-				// sqlite:/path/to/file
-				// sqlite:C:\path\to\file
-				// sqlite::memory:
-				$this->attributes['driver'] = 'sqlite';
-				$database = rawurldecode(substr($value, 7));
-				if (strlen($database) >= 1) {
-					$this->attributes['database'] = $database;
-				}
-			}
+            if (strpos($value, 'sqlite:') === 0) {
+                // sqlite:/path/to/file
+                // sqlite:C:\path\to\file
+                // sqlite::memory:
+                $this->attributes['driver'] = 'sqlite';
+                $database = rawurldecode(substr($value, 7));
+                if (strlen($database) >= 1) {
+                    $this->attributes['database'] = $database;
+                }
+            }
 
-			return '';
-		}
+            return '';
+        }
 
-		$driver = substr($value, 0, $endOfScheme);
+        $driver = substr($value, 0, $endOfScheme);
 
-		if (strlen($driver) >= 1) {
-			$this->attributes['driver'] = rawurldecode($driver);
-		}
+        if (strlen($driver) >= 1) {
+            $this->attributes['driver'] = rawurldecode($driver);
+        }
 
-		$value = substr($value, $endOfScheme + 3);
+        $value = substr($value, $endOfScheme + 3);
 
-		// sqlite:///path/to/file
-		// sqlite://C:\path\to\file
-		if ($this->attributes['driver'] === 'sqlite') {
-			if (strlen($value) >= 1) {
-				$this->attributes['database'] = rawurldecode($value);
-			}
-		}
+        // sqlite:///path/to/file
+        // sqlite://C:\path\to\file
+        if ($this->attributes['driver'] === 'sqlite') {
+            if (strlen($value) >= 1) {
+                $this->attributes['database'] = rawurldecode($value);
+            }
+        }
 
-		return $value;
-	}
+        return $value;
+    }
 
-	/**
-	 * ユーザー名およびパスワードを取得し、取得した部分を除去した文字列を返します。
-	 *
-	 * @param string "driver://" までを除去した文字列
-	 * @return string "username:password@" までを除去した文字列
-	 */
-	public function parseUsernameAndPassword($value)
-	{
-		$endOfUserAndPassword = strrpos($value,'@');
+    /**
+     * ユーザー名およびパスワードを取得し、取得した部分を除去した文字列を返します。
+     *
+     * @param string $value "driver://" までを除去した文字列
+     * @return string "username:password@" までを除去した文字列
+     */
+    public function parseUsernameAndPassword($value)
+    {
+        $endOfUserAndPassword = strrpos($value, '@');
 
-		if ($endOfUserAndPassword !== false) {
-			$username = substr($value, 0, $endOfUserAndPassword);
-			if (strlen($username) >= 1) {
-				$usernameAndPassword = explode(':', $username);
-				if (isset($usernameAndPassword[0]) && strlen($usernameAndPassword[0]) >= 1) {
-					$this->attributes['username'] = rawurldecode($usernameAndPassword[0]);
-				}
-				if (isset($usernameAndPassword[1]) && strlen($usernameAndPassword[1]) >= 1) {
-					$this->attributes['password'] = rawurldecode($usernameAndPassword[1]);
-				}
-			}
-			$value = substr($value, $endOfUserAndPassword + 1);
-		}
+        if ($endOfUserAndPassword !== false) {
+            $username = substr($value, 0, $endOfUserAndPassword);
+            if (strlen($username) >= 1) {
+                $usernameAndPassword = explode(':', $username);
+                if (isset($usernameAndPassword[0]) && strlen($usernameAndPassword[0]) >= 1) {
+                    $this->attributes['username'] = rawurldecode($usernameAndPassword[0]);
+                }
+                if (isset($usernameAndPassword[1]) && strlen($usernameAndPassword[1]) >= 1) {
+                    $this->attributes['password'] = rawurldecode($usernameAndPassword[1]);
+                }
+            }
+            $value = substr($value, $endOfUserAndPassword + 1);
+        }
 
-		return $value;
-	}
+        return $value;
+    }
 
-	/**
-	 * ホスト名およびポートを取得し、取得した部分を除去した文字列を返します。
-	 *
-	 * @param string "username:password@" までを除去した文字列
-	 * @return string "hostname:port/" までを除去した文字列
-	 */
-	public function parseHostnameAndPort($value)
-	{
+    /**
+     * ホスト名およびポートを取得し、取得した部分を除去した文字列を返します。
+     *
+     * @param string $value "username:password@" までを除去した文字列
+     * @return string "hostname:port/" までを除去した文字列
+     */
+    public function parseHostnameAndPort($value)
+    {
 
-		// hostname(+port) と database(+option) を分割
-		$hostspecAndDatabase = explode('/', $value, 2);
+        // hostname(+port) と database(+option) を分割
+        $hostspecAndDatabase = explode('/', $value, 2);
 
-		if (count($hostspecAndDatabase) === 1) {
-			$hostspec = $hostspecAndDatabase[0];
-			$value = '';
-		} else {
-			$hostspec = $hostspecAndDatabase[0];
-			$value = $hostspecAndDatabase[1];
-		}
+        if (count($hostspecAndDatabase) === 1) {
+            $hostspec = $hostspecAndDatabase[0];
+            $value = '';
+        } else {
+            $hostspec = $hostspecAndDatabase[0];
+            $value = $hostspecAndDatabase[1];
+        }
 
-		if (strlen($hostspec) >= 1) {
-			$hostnameAndPort = explode(':', $hostspec);
-			if (isset($hostnameAndPort[0]) && strlen($hostnameAndPort[0]) >= 1) {
-				$this->attributes['hostname'] = rawurldecode($hostnameAndPort[0]);
-			}
-			if (isset($hostnameAndPort[1]) && strlen($hostnameAndPort[1]) >= 1) {
-				$this->attributes['port'] = rawurldecode($hostnameAndPort[1]);
-			}
-		}
+        if (strlen($hostspec) >= 1) {
+            $hostnameAndPort = explode(':', $hostspec);
+            if (isset($hostnameAndPort[0]) && strlen($hostnameAndPort[0]) >= 1) {
+                $this->attributes['hostname'] = rawurldecode($hostnameAndPort[0]);
+            }
+            if (isset($hostnameAndPort[1]) && strlen($hostnameAndPort[1]) >= 1) {
+                $this->attributes['port'] = rawurldecode($hostnameAndPort[1]);
+            }
+        }
 
-		return $value;
-	}
+        return $value;
+    }
 
-	/**
-	 * データベース名およびオプション引数を取得し、取得した部分を除去した文字列を返します。
-	 *
-	 * @param string "hostname:port/" までを除去した文字列
-	 * @return string "database?option=value" までを除去した文字列
-	 */
-	public function parseDatabaseAndOptions($value)
-	{
-		$endOfDatabase = strpos($value, '?');
+    /**
+     * データベース名およびオプション引数を取得し、取得した部分を除去した文字列を返します。
+     *
+     * @param string $value "hostname:port/" までを除去した文字列
+     * @return string "database?option=value" までを除去した文字列
+     */
+    public function parseDatabaseAndOptions($value)
+    {
+        $endOfDatabase = strpos($value, '?');
 
-		if ($endOfDatabase === false) {
-			$this->attributes['database'] = $value;
-		} else {
-			$database = substr($value, 0, $endOfDatabase);
-			if (strlen($database) >= 1) {
-				$this->attributes['database'] = rawurldecode($database);
-			}
-			$value = substr($value, $endOfDatabase + 1);
-			parse_str($value, $parameters);
-			if (!empty($parameters)) {
-				$this->attributes['options'] = array();
-				foreach ($parameters as $name => $val) {
-					$this->attributes['options'][$name] = $val;
-				}
-			}
-		}
+        if ($endOfDatabase === false) {
+            $this->attributes['database'] = $value;
+        } else {
+            $database = substr($value, 0, $endOfDatabase);
+            if (strlen($database) >= 1) {
+                $this->attributes['database'] = rawurldecode($database);
+            }
+            $value = substr($value, $endOfDatabase + 1);
+            parse_str($value, $parameters);
+            if (!empty($parameters)) {
+                $this->attributes['options'] = [];
+                foreach ($parameters as $name => $val) {
+                    $this->attributes['options'][$name] = $val;
+                }
+            }
+        }
 
-		return $value;
-	}
+        return $value;
+    }
 
 }

@@ -2,7 +2,7 @@
 /**
  * Volcanus libraries for PHP
  *
- * @copyright 2011-2013 k-holy <k.holy74@gmail.com>
+ * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
  */
 
@@ -13,34 +13,38 @@ use Volcanus\Database\AbstractPropertyAccessor;
 /**
  * テーブルクラス
  *
+ * @property string $name
+ * @property string $comment
+ * @property array $columns
+ *
  * @author k.holy74@gmail.com
  */
 class Table extends AbstractPropertyAccessor
 {
 
-	/**
-	 * @var string テーブル名
-	 */
-	protected $name;
+    /**
+     * @var string テーブル名
+     */
+    protected $name;
 
-	/**
-	 * @var string コメント
-	 */
-	protected $comment;
+    /**
+     * @var string コメント
+     */
+    protected $comment;
 
-	/**
-	 * @var array カラム配列
-	 */
-	protected $columns;
+    /**
+     * @var array カラム配列
+     */
+    protected $columns;
 
-	/**
-	 * コンストラクタ
-	 *
-	 * @param array
-	 */
-	public function __construct(array $properties = array())
-	{
-		$this->initialize($properties);
-	}
+    /**
+     * コンストラクタ
+     *
+     * @param array $properties
+     */
+    public function __construct(array $properties = [])
+    {
+        $this->initialize($properties);
+    }
 
 }
