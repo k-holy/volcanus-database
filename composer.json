@@ -1,24 +1,26 @@
 {
-    "name": "volcanus/database",
-    "homepage": "https://github.com/k-holy/volcanus-database",
-    "type": "library",
-    "description": "database abstraction layer",
-    "version": "0.5.1",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "k-holy",
-            "email": "k.holy74@gmail.com"
-        }
-    ],
-    "autoload": {
-        "psr-4": { "Volcanus\\Database\\": "src/" }
-    },
-    "require": {
-        "php": ">=5.5.9",
-        "doctrine/cache": "1.4.*"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^5.7.20||^6.0"
+  "name": "volcanus/database",
+  "homepage": "https://github.com/k-holy/volcanus-database",
+  "type": "library",
+  "description": "database abstraction layer",
+  "version": "0.5.1",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "k-holy",
+      "email": "k.holy74@gmail.com"
     }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Volcanus\\Database\\": "src/"
+    }
+  },
+  "require": {
+    "php": "^5.6||^7.0||^7.1",
+    "doctrine/cache": "1.4.*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^5.7.20||^6.0"
+  }
 }
