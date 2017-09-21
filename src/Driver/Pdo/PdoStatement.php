@@ -21,7 +21,7 @@ class PdoStatement implements StatementInterface
 {
 
     /**
-     * @var PDOStatement
+     * @var \PDOStatement
      */
     private $statement;
 
@@ -31,14 +31,14 @@ class PdoStatement implements StatementInterface
     private $fetchMode;
 
     /**
-     * @param callable フェッチ後に実行するコールバック
+     * @var callable フェッチ後に実行するコールバック
      */
     private $callback;
 
     /**
      * コンストラクタ
      *
-     * @param PDOStatement
+     * @param \PDOStatement
      */
     public function __construct(\PDOStatement $statement)
     {
@@ -49,7 +49,7 @@ class PdoStatement implements StatementInterface
     /**
      * フェッチ後に実行するコールバックをセットします。
      *
-     * @param callable コールバック
+     * @param callable $callback コールバック
      */
     public function setFetchCallback($callback)
     {
@@ -68,7 +68,7 @@ class PdoStatement implements StatementInterface
     /**
      * プリペアドステートメントを実行します。
      *
-     * @param array | Traversable パラメータ
+     * @param array|\Traversable $parameters パラメータ
      * @return bool
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
@@ -113,9 +113,10 @@ class PdoStatement implements StatementInterface
     /**
      * このステートメントのデフォルトのフェッチモードを設定します。
      *
-     * @param int フェッチモード定数 (Statement::FETCH_**)
-     * @param mixed フェッチモードのオプション引数
-     * @param array Statement::FETCH_CLASS の場合のコンストラクタ引数
+     * @param int $mode フェッチモード定数 (Statement::FETCH_**)
+     * @param mixed $option フェッチモードのオプション引数
+     * @param array $arguments Statement::FETCH_CLASS の場合のコンストラクタ引数
+     * @return $this
      */
     public function setFetchMode($mode, $option = null, array $arguments = null)
     {
@@ -123,9 +124,11 @@ class PdoStatement implements StatementInterface
         $fetchMode = $this->convertFetchMode($mode);
         switch (func_num_args()) {
             case 3:
+                /** @noinspection PhpMethodParametersCountMismatchInspection */
                 $this->statement->setFetchMode($fetchMode, $option, $arguments);
                 break;
             case 2:
+                /** @noinspection PhpMethodParametersCountMismatchInspection */
                 $this->statement->setFetchMode($fetchMode, $option);
                 break;
             case 1:

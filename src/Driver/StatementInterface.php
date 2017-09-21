@@ -19,23 +19,23 @@ interface StatementInterface extends \IteratorAggregate
     /**
      * フェッチ後に実行するコールバックをセットします。
      *
-     * @param callable コールバック
+     * @param callable $callback コールバック
      */
     public function setFetchCallback($callback);
 
     /**
      * プリペアドステートメントを実行します。
      *
-     * @param array | Traversable パラメータ
+     * @param array|\Traversable $parameters パラメータ
      */
     public function execute($parameters = null);
 
     /**
      * このステートメントのデフォルトのフェッチモードを設定します。
      *
-     * @param int フェッチモード定数 (Statement::FETCH_**)
-     * @param mixed フェッチモードのオプション引数
-     * @param array Statement::FETCH_CLASS の場合のコンストラクタ引数
+     * @param int $mode フェッチモード定数 (Statement::FETCH_**)
+     * @param mixed $option フェッチモードのオプション引数
+     * @param array $arguments Statement::FETCH_CLASS の場合のコンストラクタ引数
      */
     public function setFetchMode($mode, $option = null, array $arguments = null);
 

@@ -77,7 +77,8 @@ class PhalconCacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaTables = $this->buildMetaTables();
 
-        $cacheProvider = $this->getMock('\\Phalcon\\Cache\\BackendInterface');
+        /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProvider = $this->getMock('\Phalcon\Cache\BackendInterface');
         $cacheProvider->expects($this->once())
             ->method('save')
             ->will($this->returnValue(true));
@@ -98,7 +99,8 @@ class PhalconCacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaTables = $this->buildMetaTables();
 
-        $cacheProvider = $this->getMock('\\Phalcon\\Cache\\BackendInterface');
+        /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProvider = $this->getMock('\Phalcon\Cache\BackendInterface');
         $cacheProvider->expects($this->once())
             ->method('save')
             ->will($this->returnValue(true));
@@ -119,7 +121,8 @@ class PhalconCacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaColumns = $this->buildMetaColumns();
 
-        $cacheProvider = $this->getMock('\\Phalcon\\Cache\\BackendInterface');
+        /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProvider = $this->getMock('\Phalcon\Cache\BackendInterface');
         $cacheProvider->expects($this->once())
             ->method('save')
             ->will($this->returnValue(true));
@@ -140,7 +143,8 @@ class PhalconCacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaColumns = $this->buildMetaColumns();
 
-        $cacheProvider = $this->getMock('\\Phalcon\\Cache\\BackendInterface');
+        /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProvider = $this->getMock('\Phalcon\Cache\BackendInterface');
         $cacheProvider->expects($this->once())
             ->method('save')
             ->will($this->returnValue(true));

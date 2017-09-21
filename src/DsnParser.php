@@ -24,7 +24,7 @@ class DsnParser
     /**
      * コンストラクタ
      *
-     * @param string DSN文字列
+     * @param string $dsn DSN文字列
      */
     public function __construct($dsn = null)
     {
@@ -34,8 +34,8 @@ class DsnParser
     /**
      * オブジェクトを初期化します。
      *
-     * @param string DSN文字列
-     * @return self
+     * @param string $dsn DSN文字列
+     * @return $this
      */
     public function initialize($dsn = null)
     {
@@ -87,7 +87,8 @@ class DsnParser
      * sqlite:C:\path\to\file
      * sqlite::memory:
      *
-     * @return DSNオブジェクトのインスタンス
+     * @param string $dsn DSN文字列
+     * @return array
      */
     public function parse($dsn)
     {
@@ -124,6 +125,7 @@ class DsnParser
         }
 
         if (strlen($value) >= 1) {
+            /** @noinspection PhpUnusedLocalVariableInspection */
             $value = $this->parseDatabaseAndOptions($value);
         }
 
@@ -133,7 +135,7 @@ class DsnParser
     /**
      * ドライバを取得し、取得した部分を除去した文字列を返します。
      *
-     * @param string DSN文字列
+     * @param string $value DSN文字列
      * @return string "driver://" までを除去した文字列
      */
     public function parseDriver($value)
@@ -178,7 +180,7 @@ class DsnParser
     /**
      * ユーザー名およびパスワードを取得し、取得した部分を除去した文字列を返します。
      *
-     * @param string "driver://" までを除去した文字列
+     * @param string $value "driver://" までを除去した文字列
      * @return string "username:password@" までを除去した文字列
      */
     public function parseUsernameAndPassword($value)
@@ -205,7 +207,7 @@ class DsnParser
     /**
      * ホスト名およびポートを取得し、取得した部分を除去した文字列を返します。
      *
-     * @param string "username:password@" までを除去した文字列
+     * @param string $value "username:password@" までを除去した文字列
      * @return string "hostname:port/" までを除去した文字列
      */
     public function parseHostnameAndPort($value)
@@ -238,7 +240,7 @@ class DsnParser
     /**
      * データベース名およびオプション引数を取得し、取得した部分を除去した文字列を返します。
      *
-     * @param string "hostname:port/" までを除去した文字列
+     * @param string $value "hostname:port/" までを除去した文字列
      * @return string "database?option=value" までを除去した文字列
      */
     public function parseDatabaseAndOptions($value)

@@ -293,6 +293,7 @@ class DsnParserTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseRaiseInvalidArgumentExceptionWhenDriverNotFound()
     {
+        /** @noinspection PhpUnusedLocalVariableInspection */
         $parser = new DsnParser('username:password@hostname:port/database?option=value');
     }
 

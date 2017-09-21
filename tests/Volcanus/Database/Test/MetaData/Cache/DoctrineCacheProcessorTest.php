@@ -67,7 +67,8 @@ class DoctrineCacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaTables = $this->buildMetaTables();
 
-        $cacheProvider = $this->getMock('\\Doctrine\\Common\\Cache\\Cache');
+        /** @var $cacheProvider \Doctrine\Common\Cache\Cache|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProvider = $this->getMock('\Doctrine\Common\Cache\Cache');
         $cacheProvider->expects($this->once())
             ->method('save')
             ->will($this->returnValue(true));
@@ -88,7 +89,8 @@ class DoctrineCacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaTables = $this->buildMetaTables();
 
-        $cacheProvider = $this->getMock('\\Doctrine\\Common\\Cache\\Cache');
+        /** @var $cacheProvider \Doctrine\Common\Cache\Cache|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProvider = $this->getMock('\Doctrine\Common\Cache\Cache');
         $cacheProvider->expects($this->once())
             ->method('save')
             ->will($this->returnValue(true));
@@ -109,7 +111,8 @@ class DoctrineCacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaColumns = $this->buildMetaColumns();
 
-        $cacheProvider = $this->getMock('\\Doctrine\\Common\\Cache\\Cache');
+        /** @var $cacheProvider \Doctrine\Common\Cache\Cache|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProvider = $this->getMock('\Doctrine\Common\Cache\Cache');
         $cacheProvider->expects($this->once())
             ->method('save')
             ->will($this->returnValue(true));
@@ -130,7 +133,8 @@ class DoctrineCacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaColumns = $this->buildMetaColumns();
 
-        $cacheProvider = $this->getMock('\\Doctrine\\Common\\Cache\\Cache');
+        /** @var $cacheProvider \Doctrine\Common\Cache\Cache|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProvider = $this->getMock('\Doctrine\Common\Cache\Cache');
         $cacheProvider->expects($this->once())
             ->method('save')
             ->will($this->returnValue(true));

@@ -16,16 +16,16 @@ use Volcanus\Database\MetaData\MetaDataProcessorInterface;
  *
  * @author k.holy74@gmail.com
  */
-abstract class AbstractDriver
+abstract class AbstractDriver implements DriverInterface
 {
 
     /**
-     * @var Volcanus\Database\Dsn
+     * @var \Volcanus\Database\Dsn
      */
     protected $dsn;
 
     /**
-     * @var Volcanus\Database\MetaData\MetaDataProcessorInterface
+     * @var \Volcanus\Database\MetaData\MetaDataProcessorInterface
      */
     protected $metaDataProcessor;
 
@@ -42,7 +42,7 @@ abstract class AbstractDriver
     /**
      * DSNをセットします。
      *
-     * @param Volcanus\Database\Dsn
+     * @param \Volcanus\Database\Dsn $dsn
      */
     public function setDsn(Dsn $dsn)
     {
@@ -52,7 +52,7 @@ abstract class AbstractDriver
     /**
      * メタデータプロセッサをセットします。
      *
-     * @param Volcanus\Database\MetaData\MetaDataProcessorInterface
+     * @param \Volcanus\Database\MetaData\MetaDataProcessorInterface $metaDataProcessor
      */
     public function setMetaDataProcessor(MetaDataProcessorInterface $metaDataProcessor)
     {
@@ -62,7 +62,7 @@ abstract class AbstractDriver
     /**
      * ドライバに合ったメタデータプロセッサを生成します。
      *
-     * @return Volcanus\Database\MetaData\MetaDataProcessorInterface
+     * @return \Volcanus\Database\MetaData\MetaDataProcessorInterface
      */
     public function createMetaDataProcessor()
     {
@@ -79,8 +79,8 @@ abstract class AbstractDriver
     /**
      * SQL実行準備を行い、ステートメントオブジェクトを返します。
      *
-     * @param string SQL
-     * @return PdoStatement
+     * @param string $query SQL
+     * @return \Volcanus\Database\Driver\StatementInterface
      */
     public function prepare($query)
     {
@@ -91,8 +91,8 @@ abstract class AbstractDriver
     /**
      * SQLを実行し、ステートメントオブジェクトを返します。
      *
-     * @param string SQL
-     * @return PdoStatement
+     * @param string $query SQL
+     * @return \Volcanus\Database\Driver\StatementInterface
      */
     public function query($query)
     {
@@ -103,8 +103,8 @@ abstract class AbstractDriver
     /**
      * SQLを実行します。
      *
-     * @param string SQL
-     * @retrun boolean
+     * @param string $query SQL
+     * @return boolean
      */
     public function execute($query)
     {
@@ -140,7 +140,7 @@ abstract class AbstractDriver
     /**
      * 指定テーブルのカラムオブジェクトを配列で返します。
      *
-     * @param string テーブル名
+     * @param string $table テーブル名
      * @return array of Column
      */
     public function getMetaColumns($table)
@@ -156,7 +156,7 @@ abstract class AbstractDriver
     /**
      * LIKE演算子のエスケープ文字をセットします。
      *
-     * @param string エスケープに使用する文字
+     * @param string $char エスケープに使用する文字
      */
     public function setEscapeCharacter($char)
     {
@@ -166,7 +166,7 @@ abstract class AbstractDriver
     /**
      * LIKE演算子のパターンとして使用する文字列をエスケープして返します。
      *
-     * @param string パターン文字列
+     * @param string $pattern パターン文字列
      * @return string エスケープされたパターン文字列
      */
     public function escapeLikePattern($pattern)
@@ -181,23 +181,23 @@ abstract class AbstractDriver
     /**
      * SQL実行準備を行い、ステートメントオブジェクトを返します。
      *
-     * @string SQL
-     * @return StatementInterface
+     * @param string $query SQL
+     * @return \Volcanus\Database\Driver\StatementInterface
      */
     abstract protected function doPrepare($query);
 
     /**
      * SQLを実行し、ステートメントオブジェクトを返します。
      *
-     * @string SQL
-     * @return StatementInterface
+     * @param string $query SQL
+     * @return \Volcanus\Database\Driver\StatementInterface
      */
     abstract protected function doQuery($query);
 
     /**
      * SQLを実行します。
      *
-     * @string SQL
+     * @param string $query SQL
      */
     abstract protected function doExecute($query);
 

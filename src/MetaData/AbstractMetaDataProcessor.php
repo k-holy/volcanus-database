@@ -20,14 +20,14 @@ abstract class AbstractMetaDataProcessor implements MetaDataProcessorInterface
 {
 
     /**
-     * @var Volcanus\Database\MetaData\Cache\CacheProcessorInterface
+     * @var \Volcanus\Database\MetaData\Cache\CacheProcessorInterface
      */
     protected $cacheProcessor;
 
     /**
      * キャッシュプロセッサをセットします。
      *
-     * @param Volcanus\Database\MetaData\Cache\CacheProcessorInterface キャッシュプロセッサ
+     * @param \Volcanus\Database\MetaData\Cache\CacheProcessorInterface $cacheProcessor キャッシュプロセッサ
      */
     public function setCacheProcessor(CacheProcessorInterface $cacheProcessor)
     {
@@ -37,7 +37,7 @@ abstract class AbstractMetaDataProcessor implements MetaDataProcessorInterface
     /**
      * テーブルオブジェクトを配列で返します。
      *
-     * @param Volcanus\Database\Driver\DriverInterface データベースドライバ
+     * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
      * @return array of Table
      */
     public function getMetaTables(DriverInterface $driver)
@@ -57,8 +57,8 @@ abstract class AbstractMetaDataProcessor implements MetaDataProcessorInterface
     /**
      * 指定テーブルのカラムオブジェクトを配列で返します。
      *
-     * @param Volcanus\Database\Driver\DriverInterface データベースドライバ
-     * @param string テーブル名
+     * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
+     * @param string $table テーブル名
      * @return array of Column
      */
     public function getMetaColumns(DriverInterface $driver, $table)
@@ -78,7 +78,7 @@ abstract class AbstractMetaDataProcessor implements MetaDataProcessorInterface
     /**
      * テーブルオブジェクトを配列で返します。
      *
-     * @param Volcanus\Database\Driver\DriverInterface データベースドライバ
+     * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
      * @return array of Table
      */
     abstract protected function doGetMetaTables(DriverInterface $driver);
@@ -86,8 +86,8 @@ abstract class AbstractMetaDataProcessor implements MetaDataProcessorInterface
     /**
      * 指定テーブルのカラムオブジェクトを配列で返します。
      *
-     * @param Volcanus\Database\Driver\DriverInterface データベースドライバ
-     * @param string テーブル名
+     * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
+     * @param string $table テーブル名
      * @return array of Column
      */
     abstract protected function doGetMetaColumns(DriverInterface $driver, $table);

@@ -33,6 +33,7 @@ class AbstractPropertyAccessorTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstructorRaiseInvalidArgumentExceptionUndefinedProperty()
     {
+        /** @noinspection PhpUnusedLocalVariableInspection */
         $test = new Test(array(
             'undefined_property' => 'Foo',
         ));
@@ -65,6 +66,7 @@ class AbstractPropertyAccessorTest extends \PHPUnit_Framework_TestCase
     public function testGetRaiseInvalidArgumentExceptionUndefinedProperty()
     {
         $test = new Test();
+        /** @noinspection PhpUndefinedFieldInspection */
         $test->undefined_property;
     }
 
@@ -113,6 +115,7 @@ class AbstractPropertyAccessorTest extends \PHPUnit_Framework_TestCase
             'datetime' => new \DateTime(),
         ));
         eval('$exported = ' . var_export($test, true) . ';');
+        /** @noinspection PhpUndefinedVariableInspection */
         $this->assertEquals($test, $exported);
         $this->assertNotSame($test, $exported);
     }
@@ -208,6 +211,14 @@ class AbstractPropertyAccessorTest extends \PHPUnit_Framework_TestCase
 
 }
 
+/**
+ * Class Test
+ *
+ * @property string $string
+ * @property $null
+ * @property boolean $boolean
+ * @property \DateTime $datetime
+ */
 class Test extends AbstractPropertyAccessor
 {
     protected $string;

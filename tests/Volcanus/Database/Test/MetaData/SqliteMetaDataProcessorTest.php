@@ -68,7 +68,8 @@ SQL
         $metaDataProcessor = new SqliteMetaDataProcessor();
         $metaTablesCache = $metaDataProcessor->getMetaTables($this->getDriver());
 
-        $cacheProcessorInterface = $this->getMock('\\Volcanus\Database\MetaData\Cache\CacheProcessorInterface');
+        /** @var $cacheProcessorInterface \Volcanus\Database\MetaData\Cache\CacheProcessorInterface|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProcessorInterface = $this->getMock('\Volcanus\Database\MetaData\Cache\CacheProcessorInterface');
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaTables')
             ->will($this->returnValue(true));
@@ -86,7 +87,8 @@ SQL
         $metaDataProcessor = new SqliteMetaDataProcessor();
         $metaTablesCache = $metaDataProcessor->getMetaTables($this->getDriver());
 
-        $cacheProcessorInterface = $this->getMock('\\Volcanus\Database\MetaData\Cache\CacheProcessorInterface');
+        /** @var $cacheProcessorInterface \Volcanus\Database\MetaData\Cache\CacheProcessorInterface|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProcessorInterface = $this->getMock('\Volcanus\Database\MetaData\Cache\CacheProcessorInterface');
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaTables')
             ->will($this->returnValue(false));
@@ -133,7 +135,8 @@ SQL
         $metaDataProcessor = new SqliteMetaDataProcessor();
         $metaColumnsCache = $metaDataProcessor->getMetaColumns($this->getDriver(), 'users');
 
-        $cacheProcessorInterface = $this->getMock('\\Volcanus\Database\MetaData\Cache\CacheProcessorInterface');
+        /** @var $cacheProcessorInterface \Volcanus\Database\MetaData\Cache\CacheProcessorInterface|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProcessorInterface = $this->getMock('\Volcanus\Database\MetaData\Cache\CacheProcessorInterface');
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaColumns')
             ->will($this->returnValue(true));
@@ -151,7 +154,8 @@ SQL
         $metaDataProcessor = new SqliteMetaDataProcessor();
         $metaColumnsCache = $metaDataProcessor->getMetaColumns($this->getDriver(), 'users');
 
-        $cacheProcessorInterface = $this->getMock('\\Volcanus\Database\MetaData\Cache\CacheProcessorInterface');
+        /** @var $cacheProcessorInterface \Volcanus\Database\MetaData\Cache\CacheProcessorInterface|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProcessorInterface = $this->getMock('\Volcanus\Database\MetaData\Cache\CacheProcessorInterface');
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaColumns')
             ->will($this->returnValue(false));

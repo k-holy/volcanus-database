@@ -20,6 +20,7 @@ use Volcanus\Database\Statement;
 class PdoTransactionTest extends \PHPUnit_Framework_TestCase
 {
 
+    /** @var \PDO */
     private static $pdo;
 
     public function tearDown()
@@ -73,6 +74,7 @@ SQL
      */
     public function testBeginRaiseRuntimeException()
     {
+        /** @var $pdo \Volcanus\Database\Test\Driver\Pdo\PdoMock|\PHPUnit_Framework_MockObject_MockObject */
         $pdo = $this->getMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
         $pdo->expects($this->once())
             ->method('beginTransaction')
@@ -87,6 +89,7 @@ SQL
      */
     public function testCommitRaiseRuntimeException()
     {
+        /** @var $pdo \Volcanus\Database\Test\Driver\Pdo\PdoMock|\PHPUnit_Framework_MockObject_MockObject */
         $pdo = $this->getMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
         $pdo->expects($this->once())
             ->method('commit')
@@ -101,6 +104,7 @@ SQL
      */
     public function testRollbackRaiseRuntimeException()
     {
+        /** @var $pdo \Volcanus\Database\Test\Driver\Pdo\PdoMock|\PHPUnit_Framework_MockObject_MockObject */
         $pdo = $this->getMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
         $pdo->expects($this->once())
             ->method('rollback')

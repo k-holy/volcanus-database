@@ -19,6 +19,7 @@ use Volcanus\Database\Driver\Pdo\PdoStatement;
 class PdoStatementTest extends \PHPUnit_Framework_TestCase
 {
 
+    /** @var \PDO */
     private static $pdo;
 
     public function tearDown()
@@ -349,6 +350,7 @@ WHERE
 SQL
         ));
         $statement->execute(array('user_id' => 1));
+        /** @noinspection PhpUnusedLocalVariableInspection */
         $user = $statement->fetch();
 
         $this->assertFalse($statement->fetch());
@@ -403,6 +405,7 @@ SQL
         $statement = new PdoStatement($pdo->prepare("SELECT * FROM users WHERE user_id = :userId"));
         $statement->execute(array('userId' => 1000));
         $statement->setFetchMode(Statement::FETCH_ASSOC);
+        /** @noinspection PhpUnusedParameterInspection */
         $statement->setFetchCallback(function ($cols) use ($now) {
             return true;
         });
@@ -467,6 +470,7 @@ SQL
         $statement = new PdoStatement($pdo->prepare("SELECT * FROM users"));
         $statement->execute();
         $statement->setFetchMode(Statement::FETCH_ASSOC);
+        /** @noinspection PhpParamsInspection */
         $statement->setFetchCallback(true);
     }
 

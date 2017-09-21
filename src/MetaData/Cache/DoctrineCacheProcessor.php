@@ -22,14 +22,14 @@ class DoctrineCacheProcessor implements CacheProcessorInterface
     const META_COLUMNS_ID = 'meta_columns[%s]';
 
     /**
-     * @var object implements Doctrine\Common\Cache\Cache
+     * @var \Doctrine\Common\Cache\Cache
      */
     private $cache;
 
     /**
      * コンストラクタ
      *
-     * @param Doctrine\Common\Cache\Cache
+     * @param \Doctrine\Common\Cache\Cache
      */
     public function __construct(DoctrineCacheInterface $cache)
     {
@@ -63,8 +63,8 @@ class DoctrineCacheProcessor implements CacheProcessorInterface
     /**
      * テーブルオブジェクトの配列をキャッシュに保存します。
      *
-     * @param array of Table
-     * @param int キャッシュの生存期間（秒） 0の場合は永続
+     * @param array $tables Table
+     * @param int $lifetime キャッシュの生存期間（秒） 0の場合は永続
      * @return boolean 成功時はtrue、失敗時はfalse
      */
     public function setMetaTables($tables, $lifetime = null)
@@ -94,6 +94,7 @@ class DoctrineCacheProcessor implements CacheProcessorInterface
     /**
      * 指定したテーブルのカラムオブジェクトの配列がキャッシュに存在するかどうかを返します。
      *
+     * @param string $table テーブル名
      * @return boolean
      */
     public function hasMetaColumns($table)
@@ -106,7 +107,7 @@ class DoctrineCacheProcessor implements CacheProcessorInterface
     /**
      * キャッシュから読み込んだ指定したテーブルのカラムオブジェクトの配列を返します。
      *
-     * @param string テーブル名
+     * @param string $table テーブル名
      * @return mixed null | array of Column from cache
      */
     public function getMetaColumns($table)
@@ -119,9 +120,9 @@ class DoctrineCacheProcessor implements CacheProcessorInterface
     /**
      * 指定したテーブルのカラムオブジェクトの配列をキャッシュに保存します。
      *
-     * @param string テーブル名
-     * @param array of Column
-     * @param int キャッシュの生存期間（秒） 0の場合は永続
+     * @param string $table テーブル名
+     * @param array $columns Column
+     * @param int $lifetime キャッシュの生存期間（秒） 0の場合は永続
      * @return boolean 成功時はtrue、失敗時はfalse
      */
     public function setMetaColumns($table, $columns, $lifetime = null)
@@ -139,7 +140,7 @@ class DoctrineCacheProcessor implements CacheProcessorInterface
     /**
      * 指定したテーブルのカラムオブジェクトの配列をキャッシュから破棄します。
      *
-     * @param string テーブル名
+     * @param string $table テーブル名
      * @return boolean 成功時はtrue、失敗時はfalse
      */
     public function unsetMetaColumns($table)

@@ -19,14 +19,14 @@ class PdoTransaction implements TransactionInterface
 {
 
     /**
-     * @var PDO
+     * @var \PDO
      */
     private $pdo;
 
     /**
      * コンストラクタ
      *
-     * @param PDO
+     * @param \PDO $pdo
      */
     public function __construct(\PDO $pdo)
     {
@@ -37,7 +37,7 @@ class PdoTransaction implements TransactionInterface
      * トランザクションを開始します。
      *
      * @return boolean 処理に失敗した場合に false を返します。
-     * @throws RuntimeException
+     * @throws \RuntimeException
      */
     public function begin()
     {
@@ -54,7 +54,7 @@ class PdoTransaction implements TransactionInterface
      * トランザクションをコミットします。
      *
      * @return boolean 処理に失敗した場合に false を返します。
-     * @throws RuntimeException
+     * @throws \RuntimeException
      */
     public function commit()
     {
@@ -71,7 +71,7 @@ class PdoTransaction implements TransactionInterface
      * トランザクションをロールバックします。
      *
      * @return boolean 処理に失敗した場合に false を返します。
-     * @throws RuntimeException
+     * @throws \RuntimeException
      */
     public function rollback()
     {

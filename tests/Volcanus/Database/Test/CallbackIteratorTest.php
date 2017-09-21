@@ -23,6 +23,8 @@ class CallbackIteratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstructorRaiseInvalidArgumentExceptionWhenInvalidType()
     {
+        /** @noinspection PhpUnusedLocalVariableInspection */
+        /** @noinspection PhpParamsInspection */
         $iterator = new CallbackIterator(new \ArrayIterator(array()), false);
     }
 
@@ -31,6 +33,8 @@ class CallbackIteratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstructorRaiseInvalidArgumentExceptionWhenInvalidObject()
     {
+        /** @noinspection PhpUnusedLocalVariableInspection */
+        /** @noinspection PhpParamsInspection */
         $iterator = new CallbackIterator(new \ArrayIterator(array()), new \StdClass());
     }
 

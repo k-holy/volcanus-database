@@ -19,8 +19,8 @@ class DoctrineCacheFactory
     /**
      * 指定された種別の Doctrine\Common\Cache\Cache オブジェクトを生成して返します。
      *
-     * @param string キャッシュプロバイダ種別 [apc|array|couchbase|filesystem|memcache|memcached|mongoDB|phpFile|redis|riak|winCache|xcache|zendData]
-     * @param array キャッシュプロバイダのコンストラクタ引数のオプション配列
+     * @param string $type キャッシュプロバイダ種別 [apc|array|couchbase|filesystem|memcache|memcached|mongoDB|phpFile|redis|riak|winCache|xcache|zendData]
+     * @param array $options キャッシュプロバイダのコンストラクタ引数のオプション配列
      * @return \Doctrine\Common\Cache\CacheProvider
      */
     public static function create($type, array $options = array())
@@ -55,6 +55,7 @@ class DoctrineCacheFactory
             }
         }
 
+        /** @var $provider \Doctrine\Common\Cache\CacheProvider */
         $provider = (count($arguments) >= 1)
             ? $refClass->newInstanceArgs($arguments)
             : $refClass->newInstance();
