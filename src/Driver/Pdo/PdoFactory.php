@@ -53,7 +53,7 @@ class PdoFactory
 	 * @param array $driverOptions ドライバ固有の接続オプションを指定するキー=> 値の配列
 	 * @return PDO
 	 */
-	public static function createFromDsn(Dsn $dsn, driverOptions = array())
+	public static function createFromDsn(Dsn $dsn, $driverOptions = array())
 	{
 		$options = (isset($dsn->options)) ? $dsn->options : array();
 		if (!empty($driverOptions)) {
