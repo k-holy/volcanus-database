@@ -50,15 +50,20 @@ class PdoFactory
 	 * DSNオブジェクトからPDOドライバを生成して返します。
 	 *
 	 * @param Volcanus\Database\Dsn DSNオブジェクト
+	 * @param array $driverOptions ドライバ固有の接続オプションを指定するキー=> 値の配列
 	 * @return PDO
 	 */
-	public static function createFromDsn(Dsn $dsn)
+	public static function createFromDsn(Dsn $dsn, driverOptions = array())
 	{
+		$options = (isset($dsn->options)) ? $dsn->options : array();
+		if (!empty($driverOptions)) {
+			$options = $driverOptions + $options;
+		}
 		return static::create(
 			$dsn->toPdo(),
 			$dsn->username,
 			$dsn->password,
-			isset($dsn->options) ? $dsn->options : array()
+			$options
 		);
 	}
 

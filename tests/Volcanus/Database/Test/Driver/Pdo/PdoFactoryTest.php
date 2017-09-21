@@ -50,6 +50,17 @@ class PdoFactoryTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(\PDO::ERRMODE_WARNING, $pdo->getAttribute(\PDO::ATTR_ERRMODE));
 	}
 
+	public function testCreateFromDsnWithErrorMode()
+	{
+		$pdo = PdoFactory::createFromDsn(new Dsn(array(
+			'driver' => 'sqlite',
+			'database' => ':memory:',
+		)), array(
+			\PDO::ATTR_ERRMODE => \PDO::ERRMODE_WARNING,
+		));
+		$this->assertEquals(\PDO::ERRMODE_WARNING, $pdo->getAttribute(\PDO::ATTR_ERRMODE));
+	}
+
 	/**
 	 * @expectedException \InvalidArgumentException
 	 */
