@@ -18,133 +18,137 @@ use Volcanus\Database\MetaData\Cache\DoctrineCacheProcessor;
 class DoctrineCacheProcessorTest extends AbstractCacheProcessorTest
 {
 
-	private function createCacheProvider()
-	{
-		return new \Doctrine\Common\Cache\PhpFileCache($this->cacheDir);
-	}
+    private function createCacheProvider()
+    {
+        return new \Doctrine\Common\Cache\PhpFileCache($this->cacheDir);
+    }
 
-	public function testSetAndGetMetaTables()
-	{
-		$metaTables = $this->buildMetaTables();
+    public function testSetAndGetMetaTables()
+    {
+        $metaTables = $this->buildMetaTables();
 
-		$cacheProcessor = new DoctrineCacheProcessor($this->createCacheProvider());
-		$this->assertTrue($cacheProcessor->setMetaTables($metaTables, 86400));
-		$this->assertTrue($cacheProcessor->hasMetaTables());
-		$this->assertEquals($metaTables, $cacheProcessor->getMetaTables());
-	}
+        $cacheProcessor = new DoctrineCacheProcessor($this->createCacheProvider());
+        $this->assertTrue($cacheProcessor->setMetaTables($metaTables, 86400));
+        $this->assertTrue($cacheProcessor->hasMetaTables());
+        $this->assertEquals($metaTables, $cacheProcessor->getMetaTables());
+    }
 
-	public function testUnsetAndNotHasMetaTables()
-	{
-		$metaTables = $this->buildMetaTables();
+    public function testUnsetAndNotHasMetaTables()
+    {
+        $metaTables = $this->buildMetaTables();
 
-		$cacheProcessor = new DoctrineCacheProcessor($this->createCacheProvider());
-		$this->assertTrue($cacheProcessor->setMetaTables($metaTables, 86400));
-		$this->assertTrue($cacheProcessor->unsetMetaTables());
-		$this->assertFalse($cacheProcessor->hasMetaTables());
-	}
+        $cacheProcessor = new DoctrineCacheProcessor($this->createCacheProvider());
+        $this->assertTrue($cacheProcessor->setMetaTables($metaTables, 86400));
+        $this->assertTrue($cacheProcessor->unsetMetaTables());
+        $this->assertFalse($cacheProcessor->hasMetaTables());
+    }
 
-	public function testSetAndGetMetaColumns()
-	{
-		$metaColumns = $this->buildMetaColumns();
+    public function testSetAndGetMetaColumns()
+    {
+        $metaColumns = $this->buildMetaColumns();
 
-		$cacheProcessor = new DoctrineCacheProcessor($this->createCacheProvider());
-		$this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns, 86400));
-		$this->assertTrue($cacheProcessor->hasMetaColumns('users'));
-		$this->assertEquals($metaColumns, $cacheProcessor->getMetaColumns('users'));
-	}
+        $cacheProcessor = new DoctrineCacheProcessor($this->createCacheProvider());
+        $this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns, 86400));
+        $this->assertTrue($cacheProcessor->hasMetaColumns('users'));
+        $this->assertEquals($metaColumns, $cacheProcessor->getMetaColumns('users'));
+    }
 
-	public function testUnsetAndNotHasMetaColumns()
-	{
-		$metaColumns = $this->buildMetaColumns();
+    public function testUnsetAndNotHasMetaColumns()
+    {
+        $metaColumns = $this->buildMetaColumns();
 
-		$cacheProcessor = new DoctrineCacheProcessor($this->createCacheProvider());
-		$this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns, 86400));
-		$this->assertTrue($cacheProcessor->unsetMetaColumns('users'));
-		$this->assertFalse($cacheProcessor->hasMetaColumns('users'));
-	}
+        $cacheProcessor = new DoctrineCacheProcessor($this->createCacheProvider());
+        $this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns, 86400));
+        $this->assertTrue($cacheProcessor->unsetMetaColumns('users'));
+        $this->assertFalse($cacheProcessor->hasMetaColumns('users'));
+    }
 
-	public function testSetAndGetMetaTablesByMock()
-	{
-		$metaTables = $this->buildMetaTables();
+    public function testSetAndGetMetaTablesByMock()
+    {
+        $metaTables = $this->buildMetaTables();
 
-		$cacheProvider = $this->getMock('\\Doctrine\\Common\\Cache\\Cache');
-		$cacheProvider->expects($this->once())
-			->method('save')
-			->will($this->returnValue(true));
-		$cacheProvider->expects($this->once())
-			->method('contains')
-			->will($this->returnValue(true));
-		$cacheProvider->expects($this->once())
-			->method('fetch')
-			->will($this->returnValue($metaTables));
+        /** @var $cacheProvider \Doctrine\Common\Cache\Cache|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProvider = $this->getMock('\Doctrine\Common\Cache\Cache');
+        $cacheProvider->expects($this->once())
+            ->method('save')
+            ->will($this->returnValue(true));
+        $cacheProvider->expects($this->once())
+            ->method('contains')
+            ->will($this->returnValue(true));
+        $cacheProvider->expects($this->once())
+            ->method('fetch')
+            ->will($this->returnValue($metaTables));
 
-		$cacheProcessor = new DoctrineCacheProcessor($cacheProvider);
-		$this->assertTrue($cacheProcessor->setMetaTables($metaTables));
-		$this->assertTrue($cacheProcessor->hasMetaTables());
-		$this->assertEquals($metaTables, $cacheProcessor->getMetaTables());
-	}
+        $cacheProcessor = new DoctrineCacheProcessor($cacheProvider);
+        $this->assertTrue($cacheProcessor->setMetaTables($metaTables));
+        $this->assertTrue($cacheProcessor->hasMetaTables());
+        $this->assertEquals($metaTables, $cacheProcessor->getMetaTables());
+    }
 
-	public function testUnsetAndNotHasMetaTablesByMock()
-	{
-		$metaTables = $this->buildMetaTables();
+    public function testUnsetAndNotHasMetaTablesByMock()
+    {
+        $metaTables = $this->buildMetaTables();
 
-		$cacheProvider = $this->getMock('\\Doctrine\\Common\\Cache\\Cache');
-		$cacheProvider->expects($this->once())
-			->method('save')
-			->will($this->returnValue(true));
-		$cacheProvider->expects($this->once())
-			->method('delete')
-			->will($this->returnValue(true));
-		$cacheProvider->expects($this->once())
-			->method('contains')
-			->will($this->returnValue(false));
+        /** @var $cacheProvider \Doctrine\Common\Cache\Cache|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProvider = $this->getMock('\Doctrine\Common\Cache\Cache');
+        $cacheProvider->expects($this->once())
+            ->method('save')
+            ->will($this->returnValue(true));
+        $cacheProvider->expects($this->once())
+            ->method('delete')
+            ->will($this->returnValue(true));
+        $cacheProvider->expects($this->once())
+            ->method('contains')
+            ->will($this->returnValue(false));
 
-		$cacheProcessor = new DoctrineCacheProcessor($cacheProvider);
-		$this->assertTrue($cacheProcessor->setMetaTables($metaTables));
-		$this->assertTrue($cacheProcessor->unsetMetaTables());
-		$this->assertFalse($cacheProcessor->hasMetaTables());
-	}
+        $cacheProcessor = new DoctrineCacheProcessor($cacheProvider);
+        $this->assertTrue($cacheProcessor->setMetaTables($metaTables));
+        $this->assertTrue($cacheProcessor->unsetMetaTables());
+        $this->assertFalse($cacheProcessor->hasMetaTables());
+    }
 
-	public function testSetAndGetMetaColumnsByMock()
-	{
-		$metaColumns = $this->buildMetaColumns();
+    public function testSetAndGetMetaColumnsByMock()
+    {
+        $metaColumns = $this->buildMetaColumns();
 
-		$cacheProvider = $this->getMock('\\Doctrine\\Common\\Cache\\Cache');
-		$cacheProvider->expects($this->once())
-			->method('save')
-			->will($this->returnValue(true));
-		$cacheProvider->expects($this->once())
-			->method('contains')
-			->will($this->returnValue(true));
-		$cacheProvider->expects($this->once())
-			->method('fetch')
-			->will($this->returnValue($metaColumns));
+        /** @var $cacheProvider \Doctrine\Common\Cache\Cache|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProvider = $this->getMock('\Doctrine\Common\Cache\Cache');
+        $cacheProvider->expects($this->once())
+            ->method('save')
+            ->will($this->returnValue(true));
+        $cacheProvider->expects($this->once())
+            ->method('contains')
+            ->will($this->returnValue(true));
+        $cacheProvider->expects($this->once())
+            ->method('fetch')
+            ->will($this->returnValue($metaColumns));
 
-		$cacheProcessor = new DoctrineCacheProcessor($cacheProvider);
-		$this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns));
-		$this->assertTrue($cacheProcessor->hasMetaColumns('users'));
-		$this->assertEquals($metaColumns, $cacheProcessor->getMetaColumns('users'));
-	}
+        $cacheProcessor = new DoctrineCacheProcessor($cacheProvider);
+        $this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns));
+        $this->assertTrue($cacheProcessor->hasMetaColumns('users'));
+        $this->assertEquals($metaColumns, $cacheProcessor->getMetaColumns('users'));
+    }
 
-	public function testUnsetAndNotHasMetaColumnsByMock()
-	{
-		$metaColumns = $this->buildMetaColumns();
+    public function testUnsetAndNotHasMetaColumnsByMock()
+    {
+        $metaColumns = $this->buildMetaColumns();
 
-		$cacheProvider = $this->getMock('\\Doctrine\\Common\\Cache\\Cache');
-		$cacheProvider->expects($this->once())
-			->method('save')
-			->will($this->returnValue(true));
-		$cacheProvider->expects($this->once())
-			->method('delete')
-			->will($this->returnValue(true));
-		$cacheProvider->expects($this->once())
-			->method('contains')
-			->will($this->returnValue(false));
+        /** @var $cacheProvider \Doctrine\Common\Cache\Cache|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProvider = $this->getMock('\Doctrine\Common\Cache\Cache');
+        $cacheProvider->expects($this->once())
+            ->method('save')
+            ->will($this->returnValue(true));
+        $cacheProvider->expects($this->once())
+            ->method('delete')
+            ->will($this->returnValue(true));
+        $cacheProvider->expects($this->once())
+            ->method('contains')
+            ->will($this->returnValue(false));
 
-		$cacheProcessor = new DoctrineCacheProcessor($cacheProvider);
-		$this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns));
-		$this->assertTrue($cacheProcessor->unsetMetaColumns('users'));
-		$this->assertFalse($cacheProcessor->hasMetaColumns('users'));
-	}
+        $cacheProcessor = new DoctrineCacheProcessor($cacheProvider);
+        $this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns));
+        $this->assertTrue($cacheProcessor->unsetMetaColumns('users'));
+        $this->assertFalse($cacheProcessor->hasMetaColumns('users'));
+    }
 
 }

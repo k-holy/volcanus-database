@@ -18,37 +18,41 @@ use Volcanus\Database\CallbackIterator;
 class CallbackIteratorTest extends \PHPUnit_Framework_TestCase
 {
 
-	/**
-	 * @expectedException \InvalidArgumentException
-	 */
-	public function testConstructorRaiseInvalidArgumentExceptionWhenInvalidType()
-	{
-		$iterator = new CallbackIterator(new \ArrayIterator(array()), false);
-	}
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testConstructorRaiseInvalidArgumentExceptionWhenInvalidType()
+    {
+        /** @noinspection PhpUnusedLocalVariableInspection */
+        /** @noinspection PhpParamsInspection */
+        $iterator = new CallbackIterator(new \ArrayIterator(array()), false);
+    }
 
-	/**
-	 * @expectedException \InvalidArgumentException
-	 */
-	public function testConstructorRaiseInvalidArgumentExceptionWhenInvalidObject()
-	{
-		$iterator = new CallbackIterator(new \ArrayIterator(array()), new \StdClass());
-	}
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testConstructorRaiseInvalidArgumentExceptionWhenInvalidObject()
+    {
+        /** @noinspection PhpUnusedLocalVariableInspection */
+        /** @noinspection PhpParamsInspection */
+        $iterator = new CallbackIterator(new \ArrayIterator(array()), new \StdClass());
+    }
 
-	public function testCurrent()
-	{
-		$values = array();
-		$values[] = array('num' => 0);
-		$values[] = array('num' => 1);
-		$values[] = array('num' => 2);
-		$iterator = new CallbackIterator(new \ArrayIterator($values), function($value) {
-			$object = new \StdClass();
-			$object->num = $value['num'];
-			$object->pow = pow($value['num'], 2);
-			return $object;
-		});
-		foreach ($iterator as $current) {
-			$this->assertEquals(pow($current->num, 2), $current->pow);
-		}
-	}
+    public function testCurrent()
+    {
+        $values = array();
+        $values[] = array('num' => 0);
+        $values[] = array('num' => 1);
+        $values[] = array('num' => 2);
+        $iterator = new CallbackIterator(new \ArrayIterator($values), function ($value) {
+            $object = new \StdClass();
+            $object->num = $value['num'];
+            $object->pow = pow($value['num'], 2);
+            return $object;
+        });
+        foreach ($iterator as $current) {
+            $this->assertEquals(pow($current->num, 2), $current->pow);
+        }
+    }
 
 }

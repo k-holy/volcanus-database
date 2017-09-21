@@ -10,5 +10,7 @@ namespace Volcanus\Database\Test\Driver\Pdo;
 
 class PdoMock extends \PDO
 {
-	public function __construct(){}
+    public function __construct()
+    {
+    }
 }
