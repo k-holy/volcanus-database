@@ -18,29 +18,29 @@ use Volcanus\Database\AbstractPropertyAccessor;
 class Table extends AbstractPropertyAccessor
 {
 
-	/**
-	 * @var string テーブル名
-	 */
-	protected $name;
+    /**
+     * @var string テーブル名
+     */
+    protected $name;
 
-	/**
-	 * @var string コメント
-	 */
-	protected $comment;
+    /**
+     * @var string コメント
+     */
+    protected $comment;
 
-	/**
-	 * @var array カラム配列
-	 */
-	protected $columns;
+    /**
+     * @var array カラム配列
+     */
+    protected $columns;
 
-	/**
-	 * コンストラクタ
-	 *
-	 * @param array
-	 */
-	public function __construct(array $properties = array())
-	{
-		$this->initialize($properties);
-	}
+    /**
+     * コンストラクタ
+     *
+     * @param array
+     */
+    public function __construct(array $properties = array())
+    {
+        $this->initialize($properties);
+    }
 
 }
