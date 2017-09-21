@@ -3,7 +3,7 @@
     "homepage": "https://github.com/k-holy/volcanus-database",
     "type": "library",
     "description": "database abstraction layer",
-    "version": "0.4.4",
+    "version": "0.4.5",
     "license": "MIT",
     "authors": [
         {
