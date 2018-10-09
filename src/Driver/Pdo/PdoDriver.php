@@ -185,7 +185,7 @@ class PdoDriver extends AbstractDriver
      * SQLを実行します。
      *
      * @param string $query SQL
-     * @return boolean
+     * @return int
      */
     protected function doExecute($query)
     {
