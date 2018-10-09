@@ -104,7 +104,7 @@ abstract class AbstractDriver implements DriverInterface
      * SQLを実行します。
      *
      * @param string $query SQL
-     * @retrun boolean
+     * @return int
      */
     public function execute($query)
     {
@@ -198,6 +198,7 @@ abstract class AbstractDriver implements DriverInterface
      * SQLを実行します。
      *
      * @param string $query SQL
+     * @return int
      */
     abstract protected function doExecute($query);
 
