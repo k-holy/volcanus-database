@@ -16,6 +16,9 @@ namespace Volcanus\Database\MetaData\Cache;
 interface CacheProcessorInterface
 {
 
+    const META_TABLES_ID = 'meta_tables';
+    const META_COLUMNS_ID = 'meta_columns[%s]';
+
     /**
      * テーブルオブジェクトの配列がキャッシュに存在するかどうかを返します。
      *

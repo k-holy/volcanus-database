@@ -18,9 +18,6 @@ use Doctrine\Common\Cache\Cache as DoctrineCacheInterface;
 class DoctrineCacheProcessor implements CacheProcessorInterface
 {
 
-    const META_TABLES_ID = 'meta_tables';
-    const META_COLUMNS_ID = 'meta_columns[%s]';
-
     /**
      * @var object implements Doctrine\Common\Cache\Cache
      */
@@ -29,7 +26,7 @@ class DoctrineCacheProcessor implements CacheProcessorInterface
     /**
      * コンストラクタ
      *
-     * @param \Doctrine\Common\Cache\Cache $cache
+     * @param DoctrineCacheInterface $cache
      */
     public function __construct(DoctrineCacheInterface $cache)
     {
