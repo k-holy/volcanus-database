@@ -6,29 +6,30 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database\MetaData\Cache;
+namespace Volcanus\Database\MetaData\Cache\Processor;
 
-use Doctrine\Common\Cache\Cache as DoctrineCacheInterface;
+use Volcanus\Database\MetaData\Cache\CacheProcessorInterface;
+use Phalcon\Cache\BackendInterface as PhalconCacheInterface;
 
 /**
- * Doctrine Cache プロセッサ
+ * Phalcon3 Cache プロセッサ
  *
  * @author k.holy74@gmail.com
  */
-class DoctrineCacheProcessor implements CacheProcessorInterface
+class Phalcon3CacheProcessor implements CacheProcessorInterface
 {
 
     /**
-     * @var object implements Doctrine\Common\Cache\Cache
+     * @var PhalconCacheInterface;
      */
     private $cache;
 
     /**
      * コンストラクタ
      *
-     * @param DoctrineCacheInterface $cache
+     * @param PhalconCacheInterface $cache
      */
-    public function __construct(DoctrineCacheInterface $cache)
+    public function __construct(PhalconCacheInterface $cache)
     {
         $this->cache = $cache;
     }
@@ -40,7 +41,7 @@ class DoctrineCacheProcessor implements CacheProcessorInterface
      */
     public function hasMetaTables()
     {
-        return $this->cache->contains(
+        return $this->cache->exists(
             self::META_TABLES_ID
         );
     }
@@ -52,7 +53,7 @@ class DoctrineCacheProcessor implements CacheProcessorInterface
      */
     public function getMetaTables()
     {
-        return $this->cache->fetch(
+        return $this->cache->get(
             self::META_TABLES_ID
         );
     }
@@ -67,13 +68,15 @@ class DoctrineCacheProcessor implements CacheProcessorInterface
     public function setMetaTables($tables, $lifetime = null)
     {
         if ($lifetime === null) {
-            return $this->cache->save(
+            $this->cache->save(
                 self::META_TABLES_ID, $tables
             );
+        } else {
+            $this->cache->save(
+                self::META_TABLES_ID, $tables, $lifetime
+            );
         }
-        return $this->cache->save(
-            self::META_TABLES_ID, $tables, $lifetime
-        );
+        return true;
     }
 
     /**
@@ -96,7 +99,7 @@ class DoctrineCacheProcessor implements CacheProcessorInterface
      */
     public function hasMetaColumns($table)
     {
-        return $this->cache->contains(
+        return $this->cache->exists(
             sprintf(self::META_COLUMNS_ID, $table)
         );
     }
@@ -109,7 +112,7 @@ class DoctrineCacheProcessor implements CacheProcessorInterface
      */
     public function getMetaColumns($table)
     {
-        return $this->cache->fetch(
+        return $this->cache->get(
             sprintf(self::META_COLUMNS_ID, $table)
         );
     }
@@ -125,13 +128,15 @@ class DoctrineCacheProcessor implements CacheProcessorInterface
     public function setMetaColumns($table, $columns, $lifetime = null)
     {
         if ($lifetime === null) {
-            return $this->cache->save(
+            $this->cache->save(
                 sprintf(self::META_COLUMNS_ID, $table), $columns
             );
+        } else {
+            $this->cache->save(
+                sprintf(self::META_COLUMNS_ID, $table), $columns, $lifetime
+            );
         }
-        return $this->cache->save(
-            sprintf(self::META_COLUMNS_ID, $table), $columns, $lifetime
-        );
+        return true;
     }
 
     /**

@@ -20,8 +20,13 @@ class PhalconCacheProcessorTest extends AbstractCacheProcessorTest
 
     public function setUp()
     {
-        if (!extension_loaded('phalcon')) {
-            $this->markTestSkipped('phalcon extension is not loaded.');
+        if (!class_exists('\Phalcon\Version')) {
+            $this->markTestSkipped('needs \Phalcon.');
+        }
+        if (version_compare(\Phalcon\Version::get(), '4.0.0', '>=')) {
+            $this->markTestSkipped(
+                'A target of this test is Phalcon 3.'
+            );
         }
         parent::setUp();
     }
@@ -78,7 +83,7 @@ class PhalconCacheProcessorTest extends AbstractCacheProcessorTest
         $metaTables = $this->buildMetaTables();
 
         /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit_Framework_MockObject_MockObject */
-        $cacheProvider = $this->createMock('\Phalcon\Cache\BackendInterface');
+        $cacheProvider = $this->createMock(\Phalcon\Cache\BackendInterface::class);
         $cacheProvider->expects($this->once())
             ->method('save')
             ->will($this->returnValue(true));
@@ -100,7 +105,7 @@ class PhalconCacheProcessorTest extends AbstractCacheProcessorTest
         $metaTables = $this->buildMetaTables();
 
         /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit_Framework_MockObject_MockObject */
-        $cacheProvider = $this->createMock('\Phalcon\Cache\BackendInterface');
+        $cacheProvider = $this->createMock(\Phalcon\Cache\BackendInterface::class);
         $cacheProvider->expects($this->once())
             ->method('save')
             ->will($this->returnValue(true));
@@ -122,7 +127,7 @@ class PhalconCacheProcessorTest extends AbstractCacheProcessorTest
         $metaColumns = $this->buildMetaColumns();
 
         /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit_Framework_MockObject_MockObject */
-        $cacheProvider = $this->createMock('\Phalcon\Cache\BackendInterface');
+        $cacheProvider = $this->createMock(\Phalcon\Cache\BackendInterface::class);
         $cacheProvider->expects($this->once())
             ->method('save')
             ->will($this->returnValue(true));
@@ -144,7 +149,7 @@ class PhalconCacheProcessorTest extends AbstractCacheProcessorTest
         $metaColumns = $this->buildMetaColumns();
 
         /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit_Framework_MockObject_MockObject */
-        $cacheProvider = $this->createMock('\Phalcon\Cache\BackendInterface');
+        $cacheProvider = $this->createMock(\Phalcon\Cache\BackendInterface::class);
         $cacheProvider->expects($this->once())
             ->method('save')
             ->will($this->returnValue(true));

@@ -6,28 +6,44 @@
  * @license The MIT License (MIT)
  */
 
-namespace Volcanus\Database\Test\MetaData\Cache;
+namespace Volcanus\Database\Test\MetaData\Cache\Processor;
 
-use Volcanus\Database\MetaData\Cache\DoctrineCacheProcessor;
+use Volcanus\Database\Test\MetaData\Cache\AbstractCacheProcessorTest;
+use Volcanus\Database\MetaData\Cache\Processor\Phalcon3CacheProcessor;
 
 /**
- * Test for DoctrineCacheProcessor
+ * Test for Phalcon3CacheProcessor
  *
  * @author k.holy74@gmail.com
  */
-class DoctrineCacheProcessorTest extends AbstractCacheProcessorTest
+class Phalcon3CacheProcessorTest extends AbstractCacheProcessorTest
 {
+
+    public function setUp()
+    {
+        if (!class_exists('\Phalcon\Version')) {
+            $this->markTestSkipped('needs \Phalcon.');
+        }
+        if (version_compare(\Phalcon\Version::get(), '4.0.0', '>=')) {
+            $this->markTestSkipped(
+                'A target of this test is Phalcon 3.'
+            );
+        }
+        parent::setUp();
+    }
 
     private function createCacheProvider()
     {
-        return new \Doctrine\Common\Cache\PhpFileCache($this->cacheDir);
+        return new \Phalcon\Cache\Backend\File(
+            new \Phalcon\Cache\Frontend\Data(), ['cacheDir' => $this->cacheDir]
+        );
     }
 
     public function testSetAndGetMetaTables()
     {
         $metaTables = $this->buildMetaTables();
 
-        $cacheProcessor = new DoctrineCacheProcessor($this->createCacheProvider());
+        $cacheProcessor = new Phalcon3CacheProcessor($this->createCacheProvider());
         $this->assertTrue($cacheProcessor->setMetaTables($metaTables, 86400));
         $this->assertTrue($cacheProcessor->hasMetaTables());
         $this->assertEquals($metaTables, $cacheProcessor->getMetaTables());
@@ -37,7 +53,7 @@ class DoctrineCacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaTables = $this->buildMetaTables();
 
-        $cacheProcessor = new DoctrineCacheProcessor($this->createCacheProvider());
+        $cacheProcessor = new Phalcon3CacheProcessor($this->createCacheProvider());
         $this->assertTrue($cacheProcessor->setMetaTables($metaTables, 86400));
         $this->assertTrue($cacheProcessor->unsetMetaTables());
         $this->assertFalse($cacheProcessor->hasMetaTables());
@@ -47,7 +63,7 @@ class DoctrineCacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaColumns = $this->buildMetaColumns();
 
-        $cacheProcessor = new DoctrineCacheProcessor($this->createCacheProvider());
+        $cacheProcessor = new Phalcon3CacheProcessor($this->createCacheProvider());
         $this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns, 86400));
         $this->assertTrue($cacheProcessor->hasMetaColumns('users'));
         $this->assertEquals($metaColumns, $cacheProcessor->getMetaColumns('users'));
@@ -57,7 +73,7 @@ class DoctrineCacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaColumns = $this->buildMetaColumns();
 
-        $cacheProcessor = new DoctrineCacheProcessor($this->createCacheProvider());
+        $cacheProcessor = new Phalcon3CacheProcessor($this->createCacheProvider());
         $this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns, 86400));
         $this->assertTrue($cacheProcessor->unsetMetaColumns('users'));
         $this->assertFalse($cacheProcessor->hasMetaColumns('users'));
@@ -67,19 +83,19 @@ class DoctrineCacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaTables = $this->buildMetaTables();
 
-        /** @var $cacheProvider \Doctrine\Common\Cache\Cache|\PHPUnit_Framework_MockObject_MockObject */
-        $cacheProvider = $this->createMock(\Doctrine\Common\Cache\Cache::class);
+        /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProvider = $this->createMock(\Phalcon\Cache\BackendInterface::class);
         $cacheProvider->expects($this->once())
             ->method('save')
             ->will($this->returnValue(true));
         $cacheProvider->expects($this->once())
-            ->method('contains')
+            ->method('exists')
             ->will($this->returnValue(true));
         $cacheProvider->expects($this->once())
-            ->method('fetch')
+            ->method('get')
             ->will($this->returnValue($metaTables));
 
-        $cacheProcessor = new DoctrineCacheProcessor($cacheProvider);
+        $cacheProcessor = new Phalcon3CacheProcessor($cacheProvider);
         $this->assertTrue($cacheProcessor->setMetaTables($metaTables));
         $this->assertTrue($cacheProcessor->hasMetaTables());
         $this->assertEquals($metaTables, $cacheProcessor->getMetaTables());
@@ -89,8 +105,8 @@ class DoctrineCacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaTables = $this->buildMetaTables();
 
-        /** @var $cacheProvider \Doctrine\Common\Cache\Cache|\PHPUnit_Framework_MockObject_MockObject */
-        $cacheProvider = $this->createMock(\Doctrine\Common\Cache\Cache::class);
+        /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProvider = $this->createMock(\Phalcon\Cache\BackendInterface::class);
         $cacheProvider->expects($this->once())
             ->method('save')
             ->will($this->returnValue(true));
@@ -98,10 +114,10 @@ class DoctrineCacheProcessorTest extends AbstractCacheProcessorTest
             ->method('delete')
             ->will($this->returnValue(true));
         $cacheProvider->expects($this->once())
-            ->method('contains')
+            ->method('exists')
             ->will($this->returnValue(false));
 
-        $cacheProcessor = new DoctrineCacheProcessor($cacheProvider);
+        $cacheProcessor = new Phalcon3CacheProcessor($cacheProvider);
         $this->assertTrue($cacheProcessor->setMetaTables($metaTables));
         $this->assertTrue($cacheProcessor->unsetMetaTables());
         $this->assertFalse($cacheProcessor->hasMetaTables());
@@ -111,19 +127,19 @@ class DoctrineCacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaColumns = $this->buildMetaColumns();
 
-        /** @var $cacheProvider \Doctrine\Common\Cache\Cache|\PHPUnit_Framework_MockObject_MockObject */
-        $cacheProvider = $this->createMock(\Doctrine\Common\Cache\Cache::class);
+        /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProvider = $this->createMock(\Phalcon\Cache\BackendInterface::class);
         $cacheProvider->expects($this->once())
             ->method('save')
             ->will($this->returnValue(true));
         $cacheProvider->expects($this->once())
-            ->method('contains')
+            ->method('exists')
             ->will($this->returnValue(true));
         $cacheProvider->expects($this->once())
-            ->method('fetch')
+            ->method('get')
             ->will($this->returnValue($metaColumns));
 
-        $cacheProcessor = new DoctrineCacheProcessor($cacheProvider);
+        $cacheProcessor = new Phalcon3CacheProcessor($cacheProvider);
         $this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns));
         $this->assertTrue($cacheProcessor->hasMetaColumns('users'));
         $this->assertEquals($metaColumns, $cacheProcessor->getMetaColumns('users'));
@@ -133,8 +149,8 @@ class DoctrineCacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaColumns = $this->buildMetaColumns();
 
-        /** @var $cacheProvider \Doctrine\Common\Cache\Cache|\PHPUnit_Framework_MockObject_MockObject */
-        $cacheProvider = $this->createMock(\Doctrine\Common\Cache\Cache::class);
+        /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit_Framework_MockObject_MockObject */
+        $cacheProvider = $this->createMock(\Phalcon\Cache\BackendInterface::class);
         $cacheProvider->expects($this->once())
             ->method('save')
             ->will($this->returnValue(true));
@@ -142,10 +158,10 @@ class DoctrineCacheProcessorTest extends AbstractCacheProcessorTest
             ->method('delete')
             ->will($this->returnValue(true));
         $cacheProvider->expects($this->once())
-            ->method('contains')
+            ->method('exists')
             ->will($this->returnValue(false));
 
-        $cacheProcessor = new DoctrineCacheProcessor($cacheProvider);
+        $cacheProcessor = new Phalcon3CacheProcessor($cacheProvider);
         $this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns));
         $this->assertTrue($cacheProcessor->unsetMetaColumns('users'));
         $this->assertFalse($cacheProcessor->hasMetaColumns('users'));

@@ -8,6 +8,8 @@
 
 namespace Volcanus\Database\MetaData\Cache;
 
+use Phalcon\Cache\BackendInterface as PhalconCacheInterface;
+
 /**
  * Phalcon Cache プロセッサ
  *
@@ -15,9 +17,6 @@ namespace Volcanus\Database\MetaData\Cache;
  */
 class PhalconCacheProcessor implements CacheProcessorInterface
 {
-
-    const META_TABLES_ID = 'meta_tables';
-    const META_COLUMNS_ID = 'meta_columns[%s]';
 
     /**
      * @var object implements Phalcon\Common\Cache\Cache
@@ -27,9 +26,9 @@ class PhalconCacheProcessor implements CacheProcessorInterface
     /**
      * コンストラクタ
      *
-     * @param \Phalcon\Cache\BackendInterface
+     * @param PhalconCacheInterface
      */
-    public function __construct(\Phalcon\Cache\BackendInterface $cache)
+    public function __construct(PhalconCacheInterface $cache)
     {
         $this->cache = $cache;
     }
