@@ -9,8 +9,6 @@
 namespace Volcanus\Database\Test\Driver\Pdo;
 
 use Volcanus\Database\Driver\Pdo\PdoTransaction;
-use Volcanus\Database\Driver\Pdo\PdoDriver;
-use Volcanus\Database\Statement;
 
 /**
  * Test for PdoTransaction
@@ -29,7 +27,7 @@ class PdoTransactionTest extends \PHPUnit\Framework\TestCase
         $this->getPdo()->exec("UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'test'");
     }
 
-    public function getPdo()
+    public function getPdo(): \PDO
     {
         if (!isset(static::$pdo)) {
             static::$pdo = new \PDO('sqlite::memory:');

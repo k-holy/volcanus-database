@@ -31,7 +31,7 @@ abstract class AbstractCacheProcessorTest extends \PHPUnit\Framework\TestCase
         $this->clearDirectory();
     }
 
-    protected function buildMetaTables()
+    protected function buildMetaTables(): array
     {
         return [
             new Table([
@@ -42,7 +42,7 @@ abstract class AbstractCacheProcessorTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    protected function buildMetaColumns()
+    protected function buildMetaColumns(): array
     {
         return [
             'id' => new Column([

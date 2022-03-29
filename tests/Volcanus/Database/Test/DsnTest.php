@@ -21,7 +21,7 @@ class DsnTest extends \PHPUnit\Framework\TestCase
     public function testCreateFromString()
     {
         $dsn = Dsn::createFromString('sqlite::memory:');
-        $this->assertInstanceOf('\Volcanus\Database\Dsn', $dsn);
+        $this->assertInstanceOf(Dsn::class, $dsn);
     }
 
     public function testToPdoSqlite()

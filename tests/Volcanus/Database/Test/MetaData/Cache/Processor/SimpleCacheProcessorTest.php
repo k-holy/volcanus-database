@@ -12,6 +12,8 @@ use Volcanus\Database\Test\MetaData\Cache\AbstractCacheProcessorTest;
 use Volcanus\Database\MetaData\Cache\Processor\SimpleCacheProcessor;
 
 use Psr\SimpleCache\CacheInterface;
+use Symfony\Component\Cache\Psr16Cache;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 /**
  * Test for SimpleCacheProcessor
@@ -28,11 +30,11 @@ class SimpleCacheProcessorTest extends AbstractCacheProcessorTest
                 'A target of this test is PHP 7.1.3~'
             );
         }
-        if (class_exists('\Symfony\Component\Cache\Psr16Cache') &&
-            class_exists('\Symfony\Component\Cache\Adapter\FilesystemAdapter')
+        if (class_exists(Psr16Cache::class) &&
+            class_exists(FilesystemAdapter::class)
         ) {
-            return new \Symfony\Component\Cache\Psr16Cache(
-                new \Symfony\Component\Cache\Adapter\FilesystemAdapter('', 0, $this->cacheDir)
+            return new Psr16Cache(
+                new FilesystemAdapter('', 0, $this->cacheDir)
             );
         } else {
             $this->markTestSkipped(

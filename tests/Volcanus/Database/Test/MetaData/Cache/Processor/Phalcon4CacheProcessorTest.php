@@ -8,6 +8,7 @@
 
 namespace Volcanus\Database\Test\MetaData\Cache\Processor;
 
+use Phalcon\Cache\Adapter\AdapterInterface;
 use Volcanus\Database\Test\MetaData\Cache\AbstractCacheProcessorTest;
 use Volcanus\Database\MetaData\Cache\Processor\Phalcon4CacheProcessor;
 
@@ -32,7 +33,7 @@ class Phalcon4CacheProcessorTest extends AbstractCacheProcessorTest
         parent::setUp();
     }
 
-    private function createCacheProvider()
+    private function createCacheProvider(): \Phalcon\Cache\Adapter\Memory
     {
         $factory = new \Phalcon\Storage\SerializerFactory();
         return new \Phalcon\Cache\Adapter\Memory($factory);
@@ -82,8 +83,8 @@ class Phalcon4CacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaTables = $this->buildMetaTables();
 
-        /** @var $cacheProvider \Phalcon\Cache\Adapter\AdapterInterface|\PHPUnit\Framework\MockObject\MockObject */
-        $cacheProvider = $this->createMock(\Phalcon\Cache\Adapter\AdapterInterface::class);
+        /** @var $cacheProvider AdapterInterface|\PHPUnit\Framework\MockObject\MockObject */
+        $cacheProvider = $this->createMock(AdapterInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')
             ->will($this->returnValue(true));
@@ -104,8 +105,8 @@ class Phalcon4CacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaTables = $this->buildMetaTables();
 
-        /** @var $cacheProvider \Phalcon\Cache\Adapter\AdapterInterface|\PHPUnit\Framework\MockObject\MockObject */
-        $cacheProvider = $this->createMock(\Phalcon\Cache\Adapter\AdapterInterface::class);
+        /** @var $cacheProvider AdapterInterface|\PHPUnit\Framework\MockObject\MockObject */
+        $cacheProvider = $this->createMock(AdapterInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')
             ->will($this->returnValue(true));
@@ -126,8 +127,8 @@ class Phalcon4CacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaColumns = $this->buildMetaColumns();
 
-        /** @var $cacheProvider \Phalcon\Cache\Adapter\AdapterInterface|\PHPUnit\Framework\MockObject\MockObject */
-        $cacheProvider = $this->createMock(\Phalcon\Cache\Adapter\AdapterInterface::class);
+        /** @var $cacheProvider AdapterInterface|\PHPUnit\Framework\MockObject\MockObject */
+        $cacheProvider = $this->createMock(AdapterInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')
             ->will($this->returnValue(true));
@@ -148,8 +149,8 @@ class Phalcon4CacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaColumns = $this->buildMetaColumns();
 
-        /** @var $cacheProvider \Phalcon\Cache\Adapter\AdapterInterface|\PHPUnit\Framework\MockObject\MockObject */
-        $cacheProvider = $this->createMock(\Phalcon\Cache\Adapter\AdapterInterface::class);
+        /** @var $cacheProvider AdapterInterface|\PHPUnit\Framework\MockObject\MockObject */
+        $cacheProvider = $this->createMock(AdapterInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')
             ->will($this->returnValue(true));

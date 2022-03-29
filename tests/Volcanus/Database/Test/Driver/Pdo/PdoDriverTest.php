@@ -10,8 +10,11 @@ namespace Volcanus\Database\Test\Driver\Pdo;
 
 use Volcanus\Database\Dsn;
 use Volcanus\Database\Driver\Pdo\PdoDriver;
+use Volcanus\Database\Driver\Pdo\PdoStatement;
 use Volcanus\Database\Statement;
+use Volcanus\Database\MetaData\Column;
 use Volcanus\Database\MetaData\SqliteMetaDataProcessor;
+use Volcanus\Database\MetaData\Table;
 
 /**
  * Test for PdoDriver
@@ -53,7 +56,7 @@ SQL
             'driver' => 'sqlite',
             'database' => ':memory:',
         ]));
-        $this->assertInstanceOf('\Volcanus\Database\Driver\Pdo\PdoDriver', $driver);
+        $this->assertInstanceOf(PdoDriver::class, $driver);
     }
 
     public function testConnect()
@@ -91,7 +94,7 @@ SQL
     public function testCreateMetaDataProcessor()
     {
         $driver = new PdoDriver($this->getPdo());
-        $this->assertInstanceOf('\Volcanus\Database\MetaData\SqliteMetaDataProcessor',
+        $this->assertInstanceOf(SqliteMetaDataProcessor::class,
             $driver->createMetaDataProcessor()
         );
     }
@@ -107,7 +110,7 @@ SQL
     public function testPrepareReturnedPdoStatement()
     {
         $driver = new PdoDriver($this->getPdo());
-        $this->assertInstanceOf('\Volcanus\Database\Driver\Pdo\PdoStatement',
+        $this->assertInstanceOf(PdoStatement::class,
             $driver->prepare("SELECT id, name FROM test WHERE id = :id")
         );
     }
@@ -122,7 +125,7 @@ SQL
     public function testQueryReturnedPdoStatement()
     {
         $driver = new PdoDriver($this->getPdo());
-        $this->assertInstanceOf('\Volcanus\Database\Driver\Pdo\PdoStatement',
+        $this->assertInstanceOf(PdoStatement::class,
             $driver->query("SELECT count(*) FROM test")
         );
     }
@@ -188,7 +191,7 @@ SQL
         $driver = new PdoDriver($this->getPdo());
         $tables = $driver->getMetaTables();
         $this->assertArrayHasKey('test', $tables);
-        $this->assertInstanceOf('\Volcanus\Database\MetaData\Table', $tables['test']);
+        $this->assertInstanceOf(Table::class, $tables['test']);
     }
 
     public function testGetMetaColumns()
@@ -197,8 +200,8 @@ SQL
         $columns = $driver->getMetaColumns('test');
         $this->assertArrayHasKey('id', $columns);
         $this->assertArrayHasKey('name', $columns);
-        $this->assertInstanceOf('\Volcanus\Database\MetaData\Column', $columns['id']);
-        $this->assertInstanceOf('\Volcanus\Database\MetaData\Column', $columns['name']);
+        $this->assertInstanceOf(Column::class, $columns['id']);
+        $this->assertInstanceOf(Column::class, $columns['name']);
     }
 
     public function testGetMetaTablesRaiseExceptionWhenMetaDataProcessorIsNotSet()

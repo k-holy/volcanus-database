@@ -9,6 +9,7 @@
 namespace Volcanus\Database\Driver\Pdo;
 
 use Volcanus\Database\Driver\AbstractDriver;
+use Volcanus\Database\Driver\DriverInterface;
 use Volcanus\Database\Driver\StatementInterface;
 use Volcanus\Database\Dsn;
 use Volcanus\Database\MetaData\MetaDataProcessorInterface;
@@ -58,7 +59,7 @@ class PdoDriver extends AbstractDriver
      * @param Dsn $dsn
      * @return static
      */
-    public static function createFromDsn(Dsn $dsn): PdoDriver
+    public static function createFromDsn(Dsn $dsn): self
     {
         $driver = new static(PdoFactory::createFromDsn($dsn));
         $driver->setDsn($dsn);
@@ -71,7 +72,7 @@ class PdoDriver extends AbstractDriver
      * @param Dsn|null $dsn DSNオブジェクト
      * @return $this
      */
-    public function connect(Dsn $dsn = null): PdoDriver
+    public function connect(Dsn $dsn = null): DriverInterface
     {
         if (isset($dsn)) {
             $this->dsn = $dsn;
@@ -141,7 +142,7 @@ class PdoDriver extends AbstractDriver
      * @param string $value クォートしたい値
      * @return string クォート結果の文字列
      */
-    public function quote($value): string
+    public function quote(string $value): string
     {
         return $this->pdo->quote($value, \PDO::PARAM_STR);
     }
