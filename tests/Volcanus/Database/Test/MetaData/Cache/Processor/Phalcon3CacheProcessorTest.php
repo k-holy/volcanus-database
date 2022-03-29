@@ -83,7 +83,7 @@ class Phalcon3CacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaTables = $this->buildMetaTables();
 
-        /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit_Framework_MockObject_MockObject */
+        /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit\Framework\MockObject\MockObject */
         $cacheProvider = $this->createMock(\Phalcon\Cache\BackendInterface::class);
         $cacheProvider->expects($this->once())
             ->method('save')
@@ -105,7 +105,7 @@ class Phalcon3CacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaTables = $this->buildMetaTables();
 
-        /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit_Framework_MockObject_MockObject */
+        /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit\Framework\MockObject\MockObject */
         $cacheProvider = $this->createMock(\Phalcon\Cache\BackendInterface::class);
         $cacheProvider->expects($this->once())
             ->method('save')
@@ -127,7 +127,7 @@ class Phalcon3CacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaColumns = $this->buildMetaColumns();
 
-        /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit_Framework_MockObject_MockObject */
+        /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit\Framework\MockObject\MockObject */
         $cacheProvider = $this->createMock(\Phalcon\Cache\BackendInterface::class);
         $cacheProvider->expects($this->once())
             ->method('save')
@@ -149,7 +149,7 @@ class Phalcon3CacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaColumns = $this->buildMetaColumns();
 
-        /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit_Framework_MockObject_MockObject */
+        /** @var $cacheProvider \Phalcon\Cache\BackendInterface|\PHPUnit\Framework\MockObject\MockObject */
         $cacheProvider = $this->createMock(\Phalcon\Cache\BackendInterface::class);
         $cacheProvider->expects($this->once())
             ->method('save')

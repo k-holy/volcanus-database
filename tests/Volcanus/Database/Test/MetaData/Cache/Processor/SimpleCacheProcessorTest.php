@@ -90,7 +90,7 @@ class SimpleCacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaTables = $this->buildMetaTables();
 
-        /** @var $cacheProvider CacheInterface|\PHPUnit_Framework_MockObject_MockObject */
+        /** @var $cacheProvider CacheInterface|\PHPUnit\Framework\MockObject\MockObject */
         $cacheProvider = $this->createMock(CacheInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')
@@ -113,7 +113,7 @@ class SimpleCacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaTables = $this->buildMetaTables();
 
-        /** @var $cacheProvider CacheInterface|\PHPUnit_Framework_MockObject_MockObject */
+        /** @var $cacheProvider CacheInterface|\PHPUnit\Framework\MockObject\MockObject */
         $cacheProvider = $this->createMock(CacheInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')
@@ -136,7 +136,7 @@ class SimpleCacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaColumns = $this->buildMetaColumns();
 
-        /** @var $cacheProvider CacheInterface|\PHPUnit_Framework_MockObject_MockObject */
+        /** @var $cacheProvider CacheInterface|\PHPUnit\Framework\MockObject\MockObject */
         $cacheProvider = $this->createMock(CacheInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')
@@ -159,7 +159,7 @@ class SimpleCacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaColumns = $this->buildMetaColumns();
 
-        /** @var $cacheProvider CacheInterface|\PHPUnit_Framework_MockObject_MockObject */
+        /** @var $cacheProvider CacheInterface|\PHPUnit\Framework\MockObject\MockObject */
         $cacheProvider = $this->createMock(CacheInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')

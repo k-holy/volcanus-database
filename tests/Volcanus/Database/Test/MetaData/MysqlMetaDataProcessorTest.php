@@ -36,8 +36,8 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         $metaDataProcessor = new MysqlMetaDataProcessor();
         $metaTablesCache = $metaDataProcessor->getMetaTables($this->getDriverForGetMetaTables());
 
-        /** @var $cacheProcessorInterface \Volcanus\Database\MetaData\Cache\CacheProcessorInterface|\PHPUnit_Framework_MockObject_MockObject */
-        $cacheProcessorInterface = $this->createMock('\Volcanus\Database\MetaData\Cache\CacheProcessorInterface');
+        /** @var $cacheProcessorInterface \Volcanus\Database\MetaData\Cache\CacheProcessorInterface|\PHPUnit\Framework\MockObject\MockObject */
+        $cacheProcessorInterface = $this->createMock(\Volcanus\Database\MetaData\Cache\CacheProcessorInterface::class);
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaTables')
             ->will($this->returnValue(true));
@@ -56,8 +56,8 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         $metaDataProcessor = new MysqlMetaDataProcessor();
         $metaTablesCache = $metaDataProcessor->getMetaTables($this->getDriverForGetMetaTables());
 
-        /** @var $cacheProcessorInterface \Volcanus\Database\MetaData\Cache\CacheProcessorInterface|\PHPUnit_Framework_MockObject_MockObject */
-        $cacheProcessorInterface = $this->createMock('\Volcanus\Database\MetaData\Cache\CacheProcessorInterface');
+        /** @var $cacheProcessorInterface \Volcanus\Database\MetaData\Cache\CacheProcessorInterface|\PHPUnit\Framework\MockObject\MockObject */
+        $cacheProcessorInterface = $this->createMock(\Volcanus\Database\MetaData\Cache\CacheProcessorInterface::class);
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaTables')
             ->will($this->returnValue(false));
@@ -104,8 +104,8 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         $metaDataProcessor = new MysqlMetaDataProcessor();
         $metaColumnsCache = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
 
-        /** @var $cacheProcessorInterface \Volcanus\Database\MetaData\Cache\CacheProcessorInterface|\PHPUnit_Framework_MockObject_MockObject */
-        $cacheProcessorInterface = $this->createMock('\Volcanus\Database\MetaData\Cache\CacheProcessorInterface');
+        /** @var $cacheProcessorInterface \Volcanus\Database\MetaData\Cache\CacheProcessorInterface|\PHPUnit\Framework\MockObject\MockObject */
+        $cacheProcessorInterface = $this->createMock(\Volcanus\Database\MetaData\Cache\CacheProcessorInterface::class);
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaColumns')
             ->will($this->returnValue(true));
@@ -123,8 +123,8 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         $metaDataProcessor = new MysqlMetaDataProcessor();
         $metaColumnsCache = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
 
-        /** @var $cacheProcessorInterface \Volcanus\Database\MetaData\Cache\CacheProcessorInterface|\PHPUnit_Framework_MockObject_MockObject */
-        $cacheProcessorInterface = $this->createMock('\Volcanus\Database\MetaData\Cache\CacheProcessorInterface');
+        /** @var $cacheProcessorInterface \Volcanus\Database\MetaData\Cache\CacheProcessorInterface|\PHPUnit\Framework\MockObject\MockObject */
+        $cacheProcessorInterface = $this->createMock(\Volcanus\Database\MetaData\Cache\CacheProcessorInterface::class);
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaColumns')
             ->will($this->returnValue(false));
@@ -294,8 +294,8 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
 
     private function getDriverForGetMetaTables()
     {
-        /** @var $statementInterface \Volcanus\Database\Driver\StatementInterface|\PHPUnit_Framework_MockObject_MockObject */
-        $statementInterface = $this->createMock('\Volcanus\Database\Driver\StatementInterface');
+        /** @var $statementInterface \Volcanus\Database\Driver\StatementInterface|\PHPUnit\Framework\MockObject\MockObject */
+        $statementInterface = $this->createMock(\Volcanus\Database\Driver\StatementInterface::class);
         $statementInterface->expects($this->any())
             ->method('setFetchMode')
             ->will($this->returnValue(true));
@@ -310,8 +310,8 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
                 )
             ));
 
-        /** @var $driverInterface \Volcanus\Database\Driver\DriverInterface|\PHPUnit_Framework_MockObject_MockObject */
-        $driverInterface = $this->createMock('\Volcanus\Database\Driver\DriverInterface');
+        /** @var $driverInterface \Volcanus\Database\Driver\DriverInterface|\PHPUnit\Framework\MockObject\MockObject */
+        $driverInterface = $this->createMock(\Volcanus\Database\Driver\DriverInterface::class);
         $driverInterface->expects($this->any())
             ->method('query')
             ->will($this->returnValue($statementInterface));
@@ -321,8 +321,8 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
 
     private function getDriverForGetMetaColumnsOfUsers()
     {
-        /** @var $statementInterface \Volcanus\Database\Driver\StatementInterface|\PHPUnit_Framework_MockObject_MockObject */
-        $statementInterface = $this->createMock('\Volcanus\Database\Driver\StatementInterface');
+        /** @var $statementInterface \Volcanus\Database\Driver\StatementInterface|\PHPUnit\Framework\MockObject\MockObject */
+        $statementInterface = $this->createMock(\Volcanus\Database\Driver\StatementInterface::class);
         $statementInterface->expects($this->any())
             ->method('setFetchMode')
             ->will($this->returnValue(true));
@@ -423,8 +423,8 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
                 )
             ));
 
-        /** @var $driverInterface \Volcanus\Database\Driver\DriverInterface|\PHPUnit_Framework_MockObject_MockObject */
-        $driverInterface = $this->createMock('\Volcanus\Database\Driver\DriverInterface');
+        /** @var $driverInterface \Volcanus\Database\Driver\DriverInterface|\PHPUnit\Framework\MockObject\MockObject */
+        $driverInterface = $this->createMock(\Volcanus\Database\Driver\DriverInterface::class);
         $driverInterface->expects($this->any())
             ->method('query')
             ->will($this->returnValue($statementInterface));
@@ -434,8 +434,8 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
 
     private function getDriverForGetMetaColumnsOfMessages()
     {
-        /** @var $statementInterface \Volcanus\Database\Driver\StatementInterface|\PHPUnit_Framework_MockObject_MockObject */
-        $statementInterface = $this->createMock('\Volcanus\Database\Driver\StatementInterface');
+        /** @var $statementInterface \Volcanus\Database\Driver\StatementInterface|\PHPUnit\Framework\MockObject\MockObject */
+        $statementInterface = $this->createMock(\Volcanus\Database\Driver\StatementInterface::class);
         $statementInterface->expects($this->any())
             ->method('setFetchMode')
             ->will($this->returnValue(true));
@@ -501,8 +501,8 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
                 )
             ));
 
-        /** @var $driverInterface \Volcanus\Database\Driver\DriverInterface|\PHPUnit_Framework_MockObject_MockObject */
-        $driverInterface = $this->createMock('\Volcanus\Database\Driver\DriverInterface');
+        /** @var $driverInterface \Volcanus\Database\Driver\DriverInterface|\PHPUnit\Framework\MockObject\MockObject */
+        $driverInterface = $this->createMock(\Volcanus\Database\Driver\DriverInterface::class);
         $driverInterface->expects($this->any())
             ->method('query')
             ->will($this->returnValue($statementInterface));

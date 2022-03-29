@@ -82,7 +82,7 @@ class Phalcon4CacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaTables = $this->buildMetaTables();
 
-        /** @var $cacheProvider \Phalcon\Cache\Adapter\AdapterInterface|\PHPUnit_Framework_MockObject_MockObject */
+        /** @var $cacheProvider \Phalcon\Cache\Adapter\AdapterInterface|\PHPUnit\Framework\MockObject\MockObject */
         $cacheProvider = $this->createMock(\Phalcon\Cache\Adapter\AdapterInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')
@@ -104,7 +104,7 @@ class Phalcon4CacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaTables = $this->buildMetaTables();
 
-        /** @var $cacheProvider \Phalcon\Cache\Adapter\AdapterInterface|\PHPUnit_Framework_MockObject_MockObject */
+        /** @var $cacheProvider \Phalcon\Cache\Adapter\AdapterInterface|\PHPUnit\Framework\MockObject\MockObject */
         $cacheProvider = $this->createMock(\Phalcon\Cache\Adapter\AdapterInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')
@@ -126,7 +126,7 @@ class Phalcon4CacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaColumns = $this->buildMetaColumns();
 
-        /** @var $cacheProvider \Phalcon\Cache\Adapter\AdapterInterface|\PHPUnit_Framework_MockObject_MockObject */
+        /** @var $cacheProvider \Phalcon\Cache\Adapter\AdapterInterface|\PHPUnit\Framework\MockObject\MockObject */
         $cacheProvider = $this->createMock(\Phalcon\Cache\Adapter\AdapterInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')
@@ -148,7 +148,7 @@ class Phalcon4CacheProcessorTest extends AbstractCacheProcessorTest
     {
         $metaColumns = $this->buildMetaColumns();
 
-        /** @var $cacheProvider \Phalcon\Cache\Adapter\AdapterInterface|\PHPUnit_Framework_MockObject_MockObject */
+        /** @var $cacheProvider \Phalcon\Cache\Adapter\AdapterInterface|\PHPUnit\Framework\MockObject\MockObject */
         $cacheProvider = $this->createMock(\Phalcon\Cache\Adapter\AdapterInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')
