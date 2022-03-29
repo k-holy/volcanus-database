@@ -19,21 +19,21 @@ interface TransactionInterface
     /**
      * トランザクションを開始します。
      *
-     * @return boolean 処理に失敗した場合に false を返します。
+     * @return bool 処理に失敗した場合に false を返します。
      */
     public function begin();
 
     /**
      * トランザクションをコミットします。
      *
-     * @return boolean 処理に失敗した場合に false を返します。
+     * @return bool 処理に失敗した場合に false を返します。
      */
     public function commit();
 
     /**
      * トランザクションをロールバックします。
      *
-     * @return boolean 処理に失敗した場合に false を返します。
+     * @return bool 処理に失敗した場合に false を返します。
      */
     public function rollback();
 

@@ -116,7 +116,7 @@ interface DriverInterface
     /**
      * テーブルオブジェクトを配列で返します。
      *
-     * @return array of Table
+     * @return Table[]
      */
     public function getMetaTables();
 
@@ -124,7 +124,7 @@ interface DriverInterface
      * 指定テーブルのカラムオブジェクトを配列で返します。
      *
      * @param string $table テーブル名
-     * @return array of Column
+     * @return Column[]
      */
     public function getMetaColumns($table);
 

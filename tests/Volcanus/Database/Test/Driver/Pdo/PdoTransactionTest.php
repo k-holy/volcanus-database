@@ -23,7 +23,7 @@ class PdoTransactionTest extends \PHPUnit\Framework\TestCase
     /** @var \PDO */
     private static $pdo;
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->getPdo()->exec("DELETE FROM test");
         $this->getPdo()->exec("UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'test'");
@@ -69,11 +69,9 @@ SQL
         $this->assertEquals('1', $count[0]);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testBeginRaiseRuntimeException()
     {
+        $this->expectException(\RuntimeException::class);
         /** @var $pdo \Volcanus\Database\Test\Driver\Pdo\PdoMock|\PHPUnit_Framework_MockObject_MockObject */
         $pdo = $this->createMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
         $pdo->expects($this->once())
@@ -84,11 +82,9 @@ SQL
         $transaction->begin();
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testCommitRaiseRuntimeException()
     {
+        $this->expectException(\RuntimeException::class);
         /** @var $pdo \Volcanus\Database\Test\Driver\Pdo\PdoMock|\PHPUnit_Framework_MockObject_MockObject */
         $pdo = $this->createMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
         $pdo->expects($this->once())
@@ -99,11 +95,9 @@ SQL
         $transaction->commit();
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testRollbackRaiseRuntimeException()
     {
+        $this->expectException(\RuntimeException::class);
         /** @var $pdo \Volcanus\Database\Test\Driver\Pdo\PdoMock|\PHPUnit_Framework_MockObject_MockObject */
         $pdo = $this->createMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
         $pdo->expects($this->once())

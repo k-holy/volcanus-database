@@ -16,8 +16,8 @@ namespace Volcanus\Database;
 class Statement
 {
 
-    const FETCH_ASSOC = 'assoc';
-    const FETCH_NUM = 'num';
-    const FETCH_CLASS = 'class';
+    const FETCH_ASSOC = 1;
+    const FETCH_NUM = 2;
+    const FETCH_CLASS = 3;
 
 }

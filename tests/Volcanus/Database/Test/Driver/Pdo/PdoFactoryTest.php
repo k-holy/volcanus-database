@@ -61,11 +61,9 @@ class PdoFactoryTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(\PDO::ERRMODE_WARNING, $pdo->getAttribute(\PDO::ATTR_ERRMODE));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testCreateRaiseExceptionWhenInvalidDsn()
     {
+        $this->expectException(\InvalidArgumentException::class);
         /** @noinspection PhpUnusedLocalVariableInspection */
         $pdo = PdoFactory::create('unsupported-driver:');
     }

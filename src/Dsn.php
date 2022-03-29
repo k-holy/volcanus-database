@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpUnused */
+
 /**
  * Volcanus libraries for PHP
  *
@@ -68,7 +69,7 @@ class Dsn extends AbstractPropertyAccessor
      */
     public function __construct(array $properties = [])
     {
-        $this->initialize($properties);
+        parent::__construct($properties);
     }
 
     /**
@@ -77,7 +78,7 @@ class Dsn extends AbstractPropertyAccessor
      * @param string $dsn
      * @return self
      */
-    public static function createFromString($dsn)
+    public static function createFromString(string $dsn): Dsn
     {
         $parser = new DsnParser($dsn);
         return new self($parser->getAttributes());
@@ -88,7 +89,7 @@ class Dsn extends AbstractPropertyAccessor
      *
      * @return string PDO用DSN
      */
-    public function toPdo()
+    public function toPdo(): string
     {
         $options = $this->options;
 

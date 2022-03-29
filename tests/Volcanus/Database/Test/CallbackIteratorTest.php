@@ -18,26 +18,6 @@ use Volcanus\Database\CallbackIterator;
 class CallbackIteratorTest extends \PHPUnit\Framework\TestCase
 {
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testConstructorRaiseInvalidArgumentExceptionWhenInvalidType()
-    {
-        /** @noinspection PhpUnusedLocalVariableInspection */
-        /** @noinspection PhpParamsInspection */
-        $iterator = new CallbackIterator(new \ArrayIterator([]), false);
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testConstructorRaiseInvalidArgumentExceptionWhenInvalidObject()
-    {
-        /** @noinspection PhpUnusedLocalVariableInspection */
-        /** @noinspection PhpParamsInspection */
-        $iterator = new CallbackIterator(new \ArrayIterator([]), new \StdClass());
-    }
-
     public function testCurrent()
     {
         $values = [];

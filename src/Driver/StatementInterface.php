@@ -21,7 +21,7 @@ interface StatementInterface extends \IteratorAggregate
      *
      * @param callable $callback コールバック
      */
-    public function setFetchCallback($callback);
+    public function setFetchCallback(callable $callback);
 
     /**
      * プリペアドステートメントを実行します。
@@ -35,9 +35,9 @@ interface StatementInterface extends \IteratorAggregate
      *
      * @param int $mode フェッチモード定数 (Statement::FETCH_**)
      * @param mixed $option フェッチモードのオプション引数
-     * @param array $arguments Statement::FETCH_CLASS の場合のコンストラクタ引数
+     * @param array|null $arguments Statement::FETCH_CLASS の場合のコンストラクタ引数
      */
-    public function setFetchMode($mode, $option = null, array $arguments = null);
+    public function setFetchMode(int $mode, $option = null, array $arguments = null);
 
     /**
      * 結果セットから次の行を取得して返します。
@@ -51,6 +51,6 @@ interface StatementInterface extends \IteratorAggregate
      *
      * @return array
      */
-    public function fetchAll();
+    public function fetchAll(): array;
 
 }

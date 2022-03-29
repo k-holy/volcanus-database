@@ -25,7 +25,7 @@ class SqliteMetaDataProcessor extends AbstractMetaDataProcessor
     /**
      * コンストラクタ
      *
-     * @param \Volcanus\Database\MetaData\Cache\CacheProcessorInterface $cacheProcessor キャッシュプロセッサ
+     * @param CacheProcessorInterface|null $cacheProcessor キャッシュプロセッサ
      */
     public function __construct(CacheProcessorInterface $cacheProcessor = null)
     {
@@ -37,10 +37,10 @@ class SqliteMetaDataProcessor extends AbstractMetaDataProcessor
     /**
      * テーブルオブジェクトを配列で返します。
      *
-     * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
-     * @return array of Table
+     * @param DriverInterface $driver データベースドライバ
+     * @return Table[]
      */
-    protected function doGetMetaTables(DriverInterface $driver)
+    protected function doGetMetaTables(DriverInterface $driver): array
     {
         $tableListStatement = $driver->query($this->tableList());
         $tableListStatement->setFetchMode(Statement::FETCH_NUM);
@@ -56,11 +56,11 @@ class SqliteMetaDataProcessor extends AbstractMetaDataProcessor
     /**
      * 指定テーブルのカラムオブジェクトを配列で返します。
      *
-     * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
+     * @param DriverInterface $driver データベースドライバ
      * @param string $table テーブル名
-     * @return array of Column
+     * @return Column[]
      */
-    protected function doGetMetaColumns(DriverInterface $driver, $table)
+    protected function doGetMetaColumns(DriverInterface $driver, string $table): array
     {
         $indexListStatement = $driver->query($this->indexListOf($table));
         $indexListStatement->setFetchMode(Statement::FETCH_ASSOC);
@@ -118,7 +118,7 @@ class SqliteMetaDataProcessor extends AbstractMetaDataProcessor
      *
      * @return string SQL
      */
-    private function tableList()
+    private function tableList(): string
     {
         return "SELECT name FROM sqlite_master WHERE type='table'";
     }
@@ -129,7 +129,7 @@ class SqliteMetaDataProcessor extends AbstractMetaDataProcessor
      * @param string $table テーブル名
      * @return string SQL
      */
-    private function tableInfoOf($table)
+    private function tableInfoOf(string $table): string
     {
         return sprintf('PRAGMA table_info(%s);', $table);
     }
@@ -140,7 +140,7 @@ class SqliteMetaDataProcessor extends AbstractMetaDataProcessor
      * @param string $table テーブル名
      * @return string SQL
      */
-    private function indexListOf($table)
+    private function indexListOf(string $table): string
     {
         return sprintf('PRAGMA index_list(%s);', $table);
     }
@@ -151,7 +151,7 @@ class SqliteMetaDataProcessor extends AbstractMetaDataProcessor
      * @param string $name インデックス名
      * @return string SQL
      */
-    private function indexInfoOf($name)
+    private function indexInfoOf(string $name): string
     {
         return sprintf('PRAGMA index_info(%s);', $name);
     }

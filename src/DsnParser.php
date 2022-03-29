@@ -24,9 +24,9 @@ class DsnParser
     /**
      * コンストラクタ
      *
-     * @param string $dsn DSN文字列
+     * @param string|null $dsn DSN文字列
      */
-    public function __construct($dsn = null)
+    public function __construct(string $dsn = null)
     {
         $this->initialize($dsn);
     }
@@ -34,10 +34,10 @@ class DsnParser
     /**
      * オブジェクトを初期化します。
      *
-     * @param string $dsn DSN文字列
-     * @return $this
+     * @param string|null $dsn DSN文字列
+     * @return self
      */
-    public function initialize($dsn = null)
+    public function initialize(string $dsn = null): self
     {
         $this->attributes = [
             'driver' => null,
@@ -61,7 +61,7 @@ class DsnParser
      *
      * @return array of DSN attributes
      */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
@@ -90,7 +90,7 @@ class DsnParser
      * @param string $dsn DSN文字列
      * @return array
      */
-    public function parse($dsn)
+    public function parse(string $dsn): array
     {
 
         $this->attributes = [
@@ -138,7 +138,7 @@ class DsnParser
      * @param string $value DSN文字列
      * @return string "driver://" までを除去した文字列
      */
-    public function parseDriver($value)
+    public function parseDriver(string $value): string
     {
         $endOfScheme = strpos($value, '://');
 
@@ -183,7 +183,7 @@ class DsnParser
      * @param string $value "driver://" までを除去した文字列
      * @return string "username:password@" までを除去した文字列
      */
-    public function parseUsernameAndPassword($value)
+    public function parseUsernameAndPassword(string $value): string
     {
         $endOfUserAndPassword = strrpos($value, '@');
 
@@ -210,19 +210,14 @@ class DsnParser
      * @param string $value "username:password@" までを除去した文字列
      * @return string "hostname:port/" までを除去した文字列
      */
-    public function parseHostnameAndPort($value)
+    public function parseHostnameAndPort(string $value): string
     {
 
         // hostname(+port) と database(+option) を分割
         $hostspecAndDatabase = explode('/', $value, 2);
 
-        if (count($hostspecAndDatabase) === 1) {
-            $hostspec = $hostspecAndDatabase[0];
-            $value = '';
-        } else {
-            $hostspec = $hostspecAndDatabase[0];
-            $value = $hostspecAndDatabase[1];
-        }
+        $hostspec = $hostspecAndDatabase[0];
+        $value = (count($hostspecAndDatabase) === 1) ? '' : $hostspecAndDatabase[1];
 
         if (strlen($hostspec) >= 1) {
             $hostnameAndPort = explode(':', $hostspec);
@@ -243,7 +238,7 @@ class DsnParser
      * @param string $value "hostname:port/" までを除去した文字列
      * @return string "database?option=value" までを除去した文字列
      */
-    public function parseDatabaseAndOptions($value)
+    public function parseDatabaseAndOptions(string $value): string
     {
         $endOfDatabase = strpos($value, '?');
 

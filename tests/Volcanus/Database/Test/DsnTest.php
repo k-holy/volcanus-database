@@ -67,22 +67,18 @@ class DsnTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testToPdoRaiseExceptionWhenUnsupportedDriver()
     {
+        $this->expectException(\RuntimeException::class);
         $dsn = new Dsn([
             'driver' => 'unsupported_driver',
         ]);
         $dsn->toPdo();
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testToPdoRaiseExceptionWhenUnsupportedOption()
     {
+        $this->expectException(\RuntimeException::class);
         $dsn = new Dsn([
             'driver' => 'mysql',
             'hostname' => 'localhost',

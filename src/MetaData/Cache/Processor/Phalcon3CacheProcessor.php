@@ -37,9 +37,9 @@ class Phalcon3CacheProcessor implements CacheProcessorInterface
     /**
      * テーブルオブジェクトの配列がキャッシュに存在するかどうかを返します。
      *
-     * @return boolean
+     * @return bool
      */
-    public function hasMetaTables()
+    public function hasMetaTables(): bool
     {
         return $this->cache->exists(
             self::META_TABLES_ID
@@ -62,10 +62,10 @@ class Phalcon3CacheProcessor implements CacheProcessorInterface
      * テーブルオブジェクトの配列をキャッシュに保存します。
      *
      * @param array $tables Tables
-     * @param int $lifetime キャッシュの生存期間（秒） 0の場合は永続
-     * @return boolean 成功時はtrue、失敗時はfalse
+     * @param int|null $lifetime キャッシュの生存期間（秒） 0の場合は永続
+     * @return bool 成功時はtrue、失敗時はfalse
      */
-    public function setMetaTables($tables, $lifetime = null)
+    public function setMetaTables(array $tables, int $lifetime = null): bool
     {
         if ($lifetime === null) {
             $this->cache->save(
@@ -82,9 +82,9 @@ class Phalcon3CacheProcessor implements CacheProcessorInterface
     /**
      * テーブルオブジェクトの配列をキャッシュから破棄します。
      *
-     * @return boolean 成功時はtrue、失敗時はfalse
+     * @return bool 成功時はtrue、失敗時はfalse
      */
-    public function unsetMetaTables()
+    public function unsetMetaTables(): bool
     {
         return $this->cache->delete(
             self::META_TABLES_ID
@@ -95,9 +95,9 @@ class Phalcon3CacheProcessor implements CacheProcessorInterface
      * 指定したテーブルのカラムオブジェクトの配列がキャッシュに存在するかどうかを返します。
      *
      * @param string $table テーブル名
-     * @return boolean
+     * @return bool
      */
-    public function hasMetaColumns($table)
+    public function hasMetaColumns(string $table): bool
     {
         return $this->cache->exists(
             sprintf(self::META_COLUMNS_ID, $table)
@@ -110,7 +110,7 @@ class Phalcon3CacheProcessor implements CacheProcessorInterface
      * @param string $table テーブル名
      * @return mixed null | array of Column from cache
      */
-    public function getMetaColumns($table)
+    public function getMetaColumns(string $table)
     {
         return $this->cache->get(
             sprintf(self::META_COLUMNS_ID, $table)
@@ -122,10 +122,10 @@ class Phalcon3CacheProcessor implements CacheProcessorInterface
      *
      * @param string $table テーブル名
      * @param array $columns Column
-     * @param int $lifetime キャッシュの生存期間（秒） 0の場合は永続
-     * @return boolean 成功時はtrue、失敗時はfalse
+     * @param int|null $lifetime キャッシュの生存期間（秒） 0の場合は永続
+     * @return bool 成功時はtrue、失敗時はfalse
      */
-    public function setMetaColumns($table, $columns, $lifetime = null)
+    public function setMetaColumns(string $table, array $columns, int $lifetime = null): bool
     {
         if ($lifetime === null) {
             $this->cache->save(
@@ -143,9 +143,9 @@ class Phalcon3CacheProcessor implements CacheProcessorInterface
      * 指定したテーブルのカラムオブジェクトの配列をキャッシュから破棄します。
      *
      * @param string $table テーブル名
-     * @return boolean 成功時はtrue、失敗時はfalse
+     * @return bool 成功時はtrue、失敗時はfalse
      */
-    public function unsetMetaColumns($table)
+    public function unsetMetaColumns(string $table): bool
     {
         return $this->cache->delete(
             sprintf(self::META_COLUMNS_ID, $table)

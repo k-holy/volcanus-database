@@ -24,16 +24,18 @@ class PdoDriverTest extends \PHPUnit\Framework\TestCase
     /** @var \PDO */
     private static $pdo;
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->getPdo()->exec("DELETE FROM test");
         $this->getPdo()->exec("UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'test'");
     }
 
-    public function getPdo()
+    public function getPdo(): \PDO
     {
         if (!isset(static::$pdo)) {
-            static::$pdo = new \PDO('sqlite::memory:');
+            $pdo = new \PDO('sqlite::memory:');
+            $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
+            static::$pdo = $pdo;
             static::$pdo->exec(<<<'SQL'
 CREATE TABLE test(
   id    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT 
@@ -94,11 +96,9 @@ SQL
         );
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testCreateMetaDataProcessorRaiseExceptionWhenAfterDisconnected()
     {
+        $this->expectException(\RuntimeException::class);
         $driver = new PdoDriver($this->getPdo());
         $driver->disconnect();
         $driver->createMetaDataProcessor();
@@ -112,11 +112,9 @@ SQL
         );
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testPrepareRaiseExceptionWhenInvalidQuery()
     {
+        $this->expectException(\RuntimeException::class);
         $driver = new PdoDriver($this->getPdo());
         $driver->prepare("SELECT id, name FROM undefined_table WHERE id = :id");
     }
@@ -129,11 +127,9 @@ SQL
         );
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testQueryRaiseExceptionWhenInvalidQuery()
     {
+        $this->expectException(\RuntimeException::class);
         $driver = new PdoDriver($this->getPdo());
         $driver->query("SELECT * FROM undefined_table_called_by_testQueryRaiseExceptionWhenInvalidQuery");
     }
@@ -175,7 +171,7 @@ SQL
     {
         $driver = new PdoDriver($this->getPdo());
         $driver->execute("SELECT * FROM undefined_table_called_by_testGetLastError");
-        $this->assertContains('undefined_table_called_by_testGetLastError', $driver->getLastError());
+        $this->assertStringContainsString('undefined_table_called_by_testGetLastError', $driver->getLastError());
     }
 
     public function testLastInsertId()
@@ -205,20 +201,16 @@ SQL
         $this->assertInstanceOf('\Volcanus\Database\MetaData\Column', $columns['name']);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testGetMetaTablesRaiseExceptionWhenMetaDataProcessorIsNotSet()
     {
+        $this->expectException(\RuntimeException::class);
         $driver = new PdoDriver();
         $driver->getMetaTables();
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testGetMetaColumnsRaiseExceptionWhenMetaDataProcessorIsNotSet()
     {
+        $this->expectException(\RuntimeException::class);
         $driver = new PdoDriver();
         $driver->getMetaColumns('test');
     }

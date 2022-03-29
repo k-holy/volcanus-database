@@ -36,10 +36,10 @@ class PdoTransaction implements TransactionInterface
     /**
      * トランザクションを開始します。
      *
-     * @return boolean 処理に失敗した場合に false を返します。
+     * @return bool 処理に失敗した場合に false を返します。
      * @throws \RuntimeException
      */
-    public function begin()
+    public function begin(): bool
     {
         try {
             return $this->pdo->beginTransaction();
@@ -53,10 +53,10 @@ class PdoTransaction implements TransactionInterface
     /**
      * トランザクションをコミットします。
      *
-     * @return boolean 処理に失敗した場合に false を返します。
+     * @return bool 処理に失敗した場合に false を返します。
      * @throws \RuntimeException
      */
-    public function commit()
+    public function commit(): bool
     {
         try {
             return $this->pdo->commit();
@@ -70,10 +70,10 @@ class PdoTransaction implements TransactionInterface
     /**
      * トランザクションをロールバックします。
      *
-     * @return boolean 処理に失敗した場合に false を返します。
+     * @return bool 処理に失敗した場合に false を返します。
      * @throws \RuntimeException
      */
-    public function rollback()
+    public function rollback(): bool
     {
         try {
             return $this->pdo->rollBack();

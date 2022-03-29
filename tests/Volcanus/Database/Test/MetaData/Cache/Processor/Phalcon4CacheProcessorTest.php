@@ -19,7 +19,7 @@ use Volcanus\Database\MetaData\Cache\Processor\Phalcon4CacheProcessor;
 class Phalcon4CacheProcessorTest extends AbstractCacheProcessorTest
 {
 
-    public function setUp()
+    public function setUp(): void
     {
         if (!class_exists('\Phalcon\Version')) {
             $this->markTestSkipped('needs \Phalcon.');
