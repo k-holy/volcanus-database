@@ -9,8 +9,6 @@
 namespace Volcanus\Database\Test\Driver\Pdo;
 
 use Volcanus\Database\Driver\Pdo\PdoTransaction;
-use Volcanus\Database\Driver\Pdo\PdoDriver;
-use Volcanus\Database\Statement;
 
 /**
  * Test for PdoTransaction
@@ -29,7 +27,7 @@ class PdoTransactionTest extends \PHPUnit\Framework\TestCase
         $this->getPdo()->exec("UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'test'");
     }
 
-    public function getPdo()
+    public function getPdo(): \PDO
     {
         if (!isset(static::$pdo)) {
             static::$pdo = new \PDO('sqlite::memory:');
@@ -72,8 +70,8 @@ SQL
     public function testBeginRaiseRuntimeException()
     {
         $this->expectException(\RuntimeException::class);
-        /** @var $pdo \Volcanus\Database\Test\Driver\Pdo\PdoMock|\PHPUnit_Framework_MockObject_MockObject */
-        $pdo = $this->createMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
+        /** @var $pdo PdoMock|\PHPUnit\Framework\MockObject\MockObject */
+        $pdo = $this->createMock(PdoMock::class);
         $pdo->expects($this->once())
             ->method('beginTransaction')
             ->will($this->throwException(new \PDOException()));
@@ -85,8 +83,8 @@ SQL
     public function testCommitRaiseRuntimeException()
     {
         $this->expectException(\RuntimeException::class);
-        /** @var $pdo \Volcanus\Database\Test\Driver\Pdo\PdoMock|\PHPUnit_Framework_MockObject_MockObject */
-        $pdo = $this->createMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
+        /** @var $pdo PdoMock|\PHPUnit\Framework\MockObject\MockObject */
+        $pdo = $this->createMock(PdoMock::class);
         $pdo->expects($this->once())
             ->method('commit')
             ->will($this->throwException(new \PDOException()));
@@ -98,8 +96,8 @@ SQL
     public function testRollbackRaiseRuntimeException()
     {
         $this->expectException(\RuntimeException::class);
-        /** @var $pdo \Volcanus\Database\Test\Driver\Pdo\PdoMock|\PHPUnit_Framework_MockObject_MockObject */
-        $pdo = $this->createMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
+        /** @var $pdo PdoMock|\PHPUnit\Framework\MockObject\MockObject */
+        $pdo = $this->createMock(PdoMock::class);
         $pdo->expects($this->once())
             ->method('rollback')
             ->will($this->throwException(new \PDOException()));

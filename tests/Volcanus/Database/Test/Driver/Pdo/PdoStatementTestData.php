@@ -1,4 +1,7 @@
 <?php
+/** @noinspection PhpUnusedPrivateFieldInspection */
+/** @noinspection PhpPropertyOnlyWrittenInspection */
+
 /**
  * Volcanus libraries for PHP
  *
@@ -11,6 +14,12 @@ namespace Volcanus\Database\Test\Driver\Pdo;
 /**
  * TestData for PdoStatement
  *
+ * @property string $userId
+ * @property string $userName
+ * @property string $birthday
+ * @property string $createdAt
+ * @property string $now
+
  * @author k.holy74@gmail.com
  */
 class PdoStatementTestData
@@ -43,7 +52,7 @@ class PdoStatementTestData
     /**
      * __construct()
      *
-     * @param array $properties プロパティの配列
+     * @param array|null $properties プロパティの配列
      */
     public function __construct(array $properties = null)
     {
@@ -135,6 +144,7 @@ class PdoStatementTestData
      * 現在日時をセットします。
      *
      * @param \DateTime $now
+     * @noinspection PhpUnusedPrivateMethodInspection
      */
     private function setNow(\DateTime $now)
     {
@@ -145,8 +155,9 @@ class PdoStatementTestData
      * 年齢を返します。
      *
      * @return int
+     * @noinspection PhpUnused
      */
-    public function getAge()
+    public function getAge(): ?int
     {
         if ($this->birthday !== null && $this->now !== null) {
             $birthday = \DateTime::createFromFormat('Y-m-d', $this->birthday);

@@ -84,7 +84,7 @@ abstract class AbstractDriver implements DriverInterface
      * @param string $query SQL
      * @return StatementInterface
      */
-    public function prepare($query): StatementInterface
+    public function prepare(string $query): StatementInterface
     {
         $this->lastQuery = $query;
         return $this->doPrepare($query);
@@ -96,7 +96,7 @@ abstract class AbstractDriver implements DriverInterface
      * @param string $query SQL
      * @return StatementInterface
      */
-    public function query($query): StatementInterface
+    public function query(string $query): StatementInterface
     {
         $this->lastQuery = $query;
         return $this->doQuery($query);
@@ -108,7 +108,7 @@ abstract class AbstractDriver implements DriverInterface
      * @param string $query SQL
      * @return int
      */
-    public function execute($query): int
+    public function execute(string $query): int
     {
         $this->lastQuery = $query;
         return $this->doExecute($query);
@@ -145,7 +145,7 @@ abstract class AbstractDriver implements DriverInterface
      * @param string $table テーブル名
      * @return Column[]
      */
-    public function getMetaColumns($table): array
+    public function getMetaColumns(string $table): array
     {
         if (!isset($this->metaDataProcessor)) {
             throw new \RuntimeException(
@@ -160,7 +160,7 @@ abstract class AbstractDriver implements DriverInterface
      *
      * @param string $char エスケープに使用する文字
      */
-    public function setEscapeCharacter($char)
+    public function setEscapeCharacter(string $char)
     {
         $this->escapeCharacter = $char;
     }
@@ -171,7 +171,7 @@ abstract class AbstractDriver implements DriverInterface
      * @param string $pattern パターン文字列
      * @return string エスケープされたパターン文字列
      */
-    public function escapeLikePattern($pattern): string
+    public function escapeLikePattern(string $pattern): string
     {
         return strtr($pattern, [
             '_' => $this->escapeCharacter . '_',
