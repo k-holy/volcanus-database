@@ -21,12 +21,12 @@ abstract class AbstractCacheProcessorTest extends \PHPUnit\Framework\TestCase
 
     protected $cacheDir;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->cacheDir = __DIR__ . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->clearDirectory();
     }

@@ -22,13 +22,13 @@ class PdoStatementTest extends \PHPUnit\Framework\TestCase
     /** @var \PDO */
     private static $pdo;
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->getPdo()->exec("DELETE FROM users");
         $this->getPdo()->exec("UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'users'");
     }
 
-    private function getPdo()
+    private function getPdo(): \PDO
     {
         if (!isset(static::$pdo)) {
             static::$pdo = new \PDO('sqlite::memory:', null, null, [
@@ -130,33 +130,27 @@ SQL
         $this->assertNull($user['birthday']);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testExecuteRaiseExceptionWhenParameterIsInvalidType()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $statement = new PdoStatement(
             $this->getPdo()->prepare("SELECT * FROM users WHERE user_id = :user_id")
         );
         $statement->execute(false);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testExecuteRaiseExceptionWhenParameterIsInvalidIbject()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $statement = new PdoStatement(
             $this->getPdo()->prepare("SELECT * FROM users WHERE user_id = :user_id")
         );
         $statement->execute(new \StdClass());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testExecuteRaiseExceptionWhenPDOExceptionIsThrown()
     {
+        $this->expectException(\RuntimeException::class);
         $statement = new PDOStatement(
             $this->getPdo()->prepare("SELECT * FROM users WHERE user_id = :user_id")
         );
@@ -165,15 +159,13 @@ SQL
         ]);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testSetFetchModeRaiseInvalidArgumentExceptionWhenUnsupportedFetchMode()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $statement = new PdoStatement(
             $this->getPdo()->query("SELECT count(*) AS cnt FROM users")
         );
-        $statement->setFetchMode('Unsupported-FetchMode');
+        $statement->setFetchMode(9999999);
     }
 
     public function testFetchAssoc()
@@ -459,19 +451,6 @@ SQL
                     break;
             }
         }
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testFetchCallbackRaiseExceptionWhenCallbackIsNotCallable()
-    {
-        $pdo = $this->getPdo();
-        $statement = new PdoStatement($pdo->prepare("SELECT * FROM users"));
-        $statement->execute();
-        $statement->setFetchMode(Statement::FETCH_ASSOC);
-        /** @noinspection PhpParamsInspection */
-        $statement->setFetchCallback(true);
     }
 
     public function testFetchAllByFetchAssoc()

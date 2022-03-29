@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpUnused */
+
 /**
  * Volcanus libraries for PHP
  *
@@ -17,12 +18,12 @@ use Volcanus\Database\AbstractPropertyAccessor;
  * @property string $type
  * @property int $maxLength
  * @property int $scale
- * @property boolean $binary
+ * @property bool $binary
  * @property mixed $default
- * @property boolean $notNull
- * @property boolean $primaryKey
- * @property boolean $uniqueKey
- * @property boolean $autoIncrement
+ * @property bool $notNull
+ * @property bool $primaryKey
+ * @property bool $uniqueKey
+ * @property bool $autoIncrement
  * @property string $comment
  *
  * @author k.holy74@gmail.com
@@ -92,7 +93,7 @@ class Column extends AbstractPropertyAccessor
      */
     public function __construct(array $properties = [])
     {
-        $this->initialize($properties);
+        parent::__construct($properties);
     }
 
 }

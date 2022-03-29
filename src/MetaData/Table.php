@@ -44,7 +44,7 @@ class Table extends AbstractPropertyAccessor
      */
     public function __construct(array $properties = [])
     {
-        $this->initialize($properties);
+        parent::__construct($properties);
     }
 
 }

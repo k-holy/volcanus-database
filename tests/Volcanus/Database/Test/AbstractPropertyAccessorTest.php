@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpMultipleClassesDeclarationsInOneFile */
+
 /**
  * Volcanus libraries for PHP
  *
@@ -28,11 +29,9 @@ class AbstractPropertyAccessorTest extends \PHPUnit\Framework\TestCase
         $this->assertNotSame($now, $test->datetime);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testConstructorRaiseInvalidArgumentExceptionUndefinedProperty()
     {
+        $this->expectException(\InvalidArgumentException::class);
         /** @noinspection PhpUnusedLocalVariableInspection */
         $test = new Test([
             'undefined_property' => 'Foo',
@@ -60,21 +59,18 @@ class AbstractPropertyAccessorTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($test->null);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testGetRaiseInvalidArgumentExceptionUndefinedProperty()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $test = new Test();
         /** @noinspection PhpUndefinedFieldInspection */
+        /** @noinspection PhpExpressionResultUnusedInspection */
         $test->undefined_property;
     }
 
-    /**
-     * @expectedException \LogicException
-     */
     public function testSetRaiseLogicException()
     {
+        $this->expectException(\LogicException::class);
         $test = new Test([
             'string' => 'Foo',
             'boolean' => true,
@@ -82,11 +78,9 @@ class AbstractPropertyAccessorTest extends \PHPUnit\Framework\TestCase
         $test->string = 'Bar';
     }
 
-    /**
-     * @expectedException \LogicException
-     */
     public function testUnsetRaiseLogicException()
     {
+        $this->expectException(\LogicException::class);
         $test = new Test([
             'string' => 'Foo',
         ]);
@@ -186,11 +180,9 @@ class AbstractPropertyAccessorTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($test['null']);
     }
 
-    /**
-     * @expectedException \LogicException
-     */
     public function testSetRaiseLogicExceptionByArrayAccess()
     {
+        $this->expectException(\LogicException::class);
         $test = new Test([
             'string' => 'Foo',
             'boolean' => true,
@@ -198,11 +190,9 @@ class AbstractPropertyAccessorTest extends \PHPUnit\Framework\TestCase
         $test['string'] = 'Bar';
     }
 
-    /**
-     * @expectedException \LogicException
-     */
     public function testUnsetRaiseLogicExceptionByArrayAccess()
     {
+        $this->expectException(\LogicException::class);
         $test = new Test([
             'string' => 'Foo',
         ]);
@@ -216,7 +206,7 @@ class AbstractPropertyAccessorTest extends \PHPUnit\Framework\TestCase
  *
  * @property string $string
  * @property $null
- * @property boolean $boolean
+ * @property bool $boolean
  * @property \DateTime $datetime
  */
 class Test extends AbstractPropertyAccessor
@@ -228,7 +218,7 @@ class Test extends AbstractPropertyAccessor
 
     public function __construct(array $properties = [])
     {
-        $this->initialize($properties);
+        parent::__construct($properties);
     }
 
 }
