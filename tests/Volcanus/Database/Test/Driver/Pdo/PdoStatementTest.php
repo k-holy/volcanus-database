@@ -22,13 +22,13 @@ class PdoStatementTest extends \PHPUnit\Framework\TestCase
     /** @var \PDO */
     private static $pdo;
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->getPdo()->exec("DELETE FROM users");
         $this->getPdo()->exec("UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'users'");
     }
 
-    private function getPdo()
+    private function getPdo(): \PDO
     {
         if (!isset(static::$pdo)) {
             static::$pdo = new \PDO('sqlite::memory:', null, null, [
@@ -130,33 +130,27 @@ SQL
         $this->assertNull($user['birthday']);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testExecuteRaiseExceptionWhenParameterIsInvalidType()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $statement = new PdoStatement(
             $this->getPdo()->prepare("SELECT * FROM users WHERE user_id = :user_id")
         );
         $statement->execute(false);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testExecuteRaiseExceptionWhenParameterIsInvalidIbject()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $statement = new PdoStatement(
             $this->getPdo()->prepare("SELECT * FROM users WHERE user_id = :user_id")
         );
         $statement->execute(new \StdClass());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testExecuteRaiseExceptionWhenPDOExceptionIsThrown()
     {
+        $this->expectException(\RuntimeException::class);
         $statement = new PDOStatement(
             $this->getPdo()->prepare("SELECT * FROM users WHERE user_id = :user_id")
         );
@@ -165,15 +159,13 @@ SQL
         ]);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testSetFetchModeRaiseInvalidArgumentExceptionWhenUnsupportedFetchMode()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $statement = new PdoStatement(
             $this->getPdo()->query("SELECT count(*) AS cnt FROM users")
         );
-        $statement->setFetchMode('Unsupported-FetchMode');
+        $statement->setFetchMode(9999999);
     }
 
     public function testFetchAssoc()
@@ -270,11 +262,11 @@ SQL
         ));
         $statement->execute(['userId' => 1]);
         $statement->setFetchMode(Statement::FETCH_CLASS,
-            '\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData'
+            PdoStatementTestData::class
         );
         $user = $statement->fetch();
 
-        $this->assertInstanceOf('\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData', $user);
+        $this->assertInstanceOf(PdoStatementTestData::class, $user);
         $this->assertEquals('1', $user->userId);
         $this->assertEquals('test1', $user->userName);
         $this->assertEquals('1980-12-20', $user->birthday);
@@ -308,7 +300,7 @@ SQL
         ));
         $statement->execute(['userId' => 1]);
         $statement->setFetchMode(Statement::FETCH_CLASS,
-            '\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData',
+            PdoStatementTestData::class,
             [
                 [
                     'now' => $now,
@@ -317,7 +309,7 @@ SQL
         );
         $user = $statement->fetch();
 
-        $this->assertInstanceOf('\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData', $user);
+        $this->assertInstanceOf(PdoStatementTestData::class, $user);
         $this->assertEquals('1', $user->userId);
         $this->assertEquals('test1', $user->userName);
         $this->assertEquals('1980-12-20', $user->birthday);
@@ -382,7 +374,7 @@ SQL
         });
         $user = $statement->fetch();
 
-        $this->assertInstanceOf('\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData', $user);
+        $this->assertInstanceOf(PdoStatementTestData::class, $user);
         $this->assertEquals(1, $user->userId);
         $this->assertEquals('test1', $user->userName);
         $this->assertEquals('1980-12-20', $user->birthday);
@@ -390,6 +382,7 @@ SQL
         $this->assertEquals(33, $user->age);
     }
 
+    /** @noinspection PhpUnusedParameterInspection */
     public function testFetchCallbackReturnedFalseWhenFetchReturnedFalse()
     {
         $pdo = $this->getPdo();
@@ -405,7 +398,6 @@ SQL
         $statement = new PdoStatement($pdo->prepare("SELECT * FROM users WHERE user_id = :userId"));
         $statement->execute(['userId' => 1000]);
         $statement->setFetchMode(Statement::FETCH_ASSOC);
-        /** @noinspection PhpUnusedParameterInspection */
         $statement->setFetchCallback(function ($cols) use ($now) {
             return true;
         });
@@ -444,7 +436,7 @@ SQL
         });
 
         foreach ($statement as $user) {
-            $this->assertInstanceOf('\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData', $user);
+            $this->assertInstanceOf(PdoStatementTestData::class, $user);
             $this->assertEquals($now->getTimestamp(), $user->createdAt);
             switch ($user->userId) {
                 case 1:
@@ -459,19 +451,6 @@ SQL
                     break;
             }
         }
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testFetchCallbackRaiseExceptionWhenCallbackIsNotCallable()
-    {
-        $pdo = $this->getPdo();
-        $statement = new PdoStatement($pdo->prepare("SELECT * FROM users"));
-        $statement->execute();
-        $statement->setFetchMode(Statement::FETCH_ASSOC);
-        /** @noinspection PhpParamsInspection */
-        $statement->setFetchCallback(true);
     }
 
     public function testFetchAllByFetchAssoc()
@@ -600,20 +579,20 @@ SQL
         ));
         $statement->execute();
         $statement->setFetchMode(Statement::FETCH_CLASS,
-            '\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData'
+            PdoStatementTestData::class
         );
         $users = $statement->fetchAll();
 
         $this->assertCount(2, $users);
 
-        $this->assertInstanceOf('\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData', $users[0]);
+        $this->assertInstanceOf(PdoStatementTestData::class, $users[0]);
         $this->assertEquals('1', $users[0]->userId);
         $this->assertEquals('test1', $users[0]->userName);
         $this->assertEquals('1980-12-20', $users[0]->birthday);
         $this->assertEquals($now->getTimestamp(), $users[0]->createdAt);
         $this->assertNull($users[0]->age);
 
-        $this->assertInstanceOf('\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData', $users[1]);
+        $this->assertInstanceOf(PdoStatementTestData::class, $users[1]);
         $this->assertEquals('2', $users[1]->userId);
         $this->assertEquals('test2', $users[1]->userName);
         $this->assertEquals('1996-01-01', $users[1]->birthday);
@@ -654,7 +633,7 @@ SQL
         ));
         $statement->execute();
         $statement->setFetchMode(Statement::FETCH_CLASS,
-            '\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData',
+            PdoStatementTestData::class,
             [
                 [
                     'now' => $now,
@@ -664,14 +643,14 @@ SQL
 
         $this->assertCount(2, $users);
 
-        $this->assertInstanceOf('\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData', $users[0]);
+        $this->assertInstanceOf(PdoStatementTestData::class, $users[0]);
         $this->assertEquals('1', $users[0]->userId);
         $this->assertEquals('test1', $users[0]->userName);
         $this->assertEquals('1980-12-20', $users[0]->birthday);
         $this->assertEquals($now->getTimestamp(), $users[0]->createdAt);
         $this->assertEquals(33, $users[0]->age);
 
-        $this->assertInstanceOf('\Volcanus\Database\Test\Driver\Pdo\PdoStatementTestData', $users[1]);
+        $this->assertInstanceOf(PdoStatementTestData::class, $users[1]);
         $this->assertEquals('2', $users[1]->userId);
         $this->assertEquals('test2', $users[1]->userName);
         $this->assertEquals('1996-01-01', $users[1]->birthday);

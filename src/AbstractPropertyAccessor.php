@@ -32,7 +32,7 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
      * @param array $properties プロパティの配列
      * @return $this
      */
-    public function initialize(array $properties = [])
+    public function initialize(array $properties = []): AbstractPropertyAccessor
     {
         foreach (array_keys(get_object_vars($this)) as $name) {
             $this->{$name} = null;
@@ -132,7 +132,7 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
      * @param array $properties
      * @return static
      */
-    public static function __set_state($properties)
+    public static function __set_state(array $properties)
     {
         return new static($properties);
     }
@@ -142,7 +142,7 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
      *
      * @return \ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): \ArrayIterator
     {
         return new \ArrayIterator(get_object_vars($this));
     }
@@ -152,7 +152,7 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return get_object_vars($this);
     }
@@ -163,7 +163,7 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
      * @param mixed $name
      * @return bool
      */
-    public function offsetExists($name)
+    public function offsetExists($name): bool
     {
         return $this->__isset($name);
     }

@@ -10,8 +10,11 @@ namespace Volcanus\Database\Test\Driver\Pdo;
 
 use Volcanus\Database\Dsn;
 use Volcanus\Database\Driver\Pdo\PdoDriver;
+use Volcanus\Database\Driver\Pdo\PdoStatement;
 use Volcanus\Database\Statement;
+use Volcanus\Database\MetaData\Column;
 use Volcanus\Database\MetaData\SqliteMetaDataProcessor;
+use Volcanus\Database\MetaData\Table;
 
 /**
  * Test for PdoDriver
@@ -24,16 +27,18 @@ class PdoDriverTest extends \PHPUnit\Framework\TestCase
     /** @var \PDO */
     private static $pdo;
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->getPdo()->exec("DELETE FROM test");
         $this->getPdo()->exec("UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'test'");
     }
 
-    public function getPdo()
+    public function getPdo(): \PDO
     {
         if (!isset(static::$pdo)) {
-            static::$pdo = new \PDO('sqlite::memory:');
+            $pdo = new \PDO('sqlite::memory:');
+            $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
+            static::$pdo = $pdo;
             static::$pdo->exec(<<<'SQL'
 CREATE TABLE test(
   id    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT 
@@ -51,7 +56,7 @@ SQL
             'driver' => 'sqlite',
             'database' => ':memory:',
         ]));
-        $this->assertInstanceOf('\Volcanus\Database\Driver\Pdo\PdoDriver', $driver);
+        $this->assertInstanceOf(PdoDriver::class, $driver);
     }
 
     public function testConnect()
@@ -89,16 +94,14 @@ SQL
     public function testCreateMetaDataProcessor()
     {
         $driver = new PdoDriver($this->getPdo());
-        $this->assertInstanceOf('\Volcanus\Database\MetaData\SqliteMetaDataProcessor',
+        $this->assertInstanceOf(SqliteMetaDataProcessor::class,
             $driver->createMetaDataProcessor()
         );
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testCreateMetaDataProcessorRaiseExceptionWhenAfterDisconnected()
     {
+        $this->expectException(\RuntimeException::class);
         $driver = new PdoDriver($this->getPdo());
         $driver->disconnect();
         $driver->createMetaDataProcessor();
@@ -107,16 +110,14 @@ SQL
     public function testPrepareReturnedPdoStatement()
     {
         $driver = new PdoDriver($this->getPdo());
-        $this->assertInstanceOf('\Volcanus\Database\Driver\Pdo\PdoStatement',
+        $this->assertInstanceOf(PdoStatement::class,
             $driver->prepare("SELECT id, name FROM test WHERE id = :id")
         );
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testPrepareRaiseExceptionWhenInvalidQuery()
     {
+        $this->expectException(\RuntimeException::class);
         $driver = new PdoDriver($this->getPdo());
         $driver->prepare("SELECT id, name FROM undefined_table WHERE id = :id");
     }
@@ -124,16 +125,14 @@ SQL
     public function testQueryReturnedPdoStatement()
     {
         $driver = new PdoDriver($this->getPdo());
-        $this->assertInstanceOf('\Volcanus\Database\Driver\Pdo\PdoStatement',
+        $this->assertInstanceOf(PdoStatement::class,
             $driver->query("SELECT count(*) FROM test")
         );
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testQueryRaiseExceptionWhenInvalidQuery()
     {
+        $this->expectException(\RuntimeException::class);
         $driver = new PdoDriver($this->getPdo());
         $driver->query("SELECT * FROM undefined_table_called_by_testQueryRaiseExceptionWhenInvalidQuery");
     }
@@ -175,7 +174,7 @@ SQL
     {
         $driver = new PdoDriver($this->getPdo());
         $driver->execute("SELECT * FROM undefined_table_called_by_testGetLastError");
-        $this->assertContains('undefined_table_called_by_testGetLastError', $driver->getLastError());
+        $this->assertStringContainsString('undefined_table_called_by_testGetLastError', $driver->getLastError());
     }
 
     public function testLastInsertId()
@@ -192,7 +191,7 @@ SQL
         $driver = new PdoDriver($this->getPdo());
         $tables = $driver->getMetaTables();
         $this->assertArrayHasKey('test', $tables);
-        $this->assertInstanceOf('\Volcanus\Database\MetaData\Table', $tables['test']);
+        $this->assertInstanceOf(Table::class, $tables['test']);
     }
 
     public function testGetMetaColumns()
@@ -201,24 +200,20 @@ SQL
         $columns = $driver->getMetaColumns('test');
         $this->assertArrayHasKey('id', $columns);
         $this->assertArrayHasKey('name', $columns);
-        $this->assertInstanceOf('\Volcanus\Database\MetaData\Column', $columns['id']);
-        $this->assertInstanceOf('\Volcanus\Database\MetaData\Column', $columns['name']);
+        $this->assertInstanceOf(Column::class, $columns['id']);
+        $this->assertInstanceOf(Column::class, $columns['name']);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testGetMetaTablesRaiseExceptionWhenMetaDataProcessorIsNotSet()
     {
+        $this->expectException(\RuntimeException::class);
         $driver = new PdoDriver();
         $driver->getMetaTables();
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testGetMetaColumnsRaiseExceptionWhenMetaDataProcessorIsNotSet()
     {
+        $this->expectException(\RuntimeException::class);
         $driver = new PdoDriver();
         $driver->getMetaColumns('test');
     }

@@ -8,9 +8,9 @@
 
 namespace Volcanus\Database\Driver\Pdo;
 
+use Volcanus\Database\CallbackIterator;
 use Volcanus\Database\Statement;
 use Volcanus\Database\Driver\StatementInterface;
-use Volcanus\Database\CallbackIterator;
 
 /**
  * PDOステートメント
@@ -51,13 +51,13 @@ class PdoStatement implements StatementInterface
      *
      * @param callable $callback コールバック
      */
-    public function setFetchCallback($callback)
+    public function setFetchCallback(callable $callback)
     {
         if (!is_callable($callback)) {
             throw new \InvalidArgumentException(
                 sprintf('CallbackIterator accepts only callable, invalid type:%s',
                     (is_object($callback))
-                        ? get_class($callback)
+                        ? get_class((object)$callback)
                         : gettype($callback)
                 )
             );
@@ -73,7 +73,7 @@ class PdoStatement implements StatementInterface
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    public function execute($parameters = null)
+    public function execute($parameters = null): bool
     {
         if (isset($parameters)) {
             if (!is_array($parameters) && !($parameters instanceof \Traversable)) {
@@ -115,20 +115,18 @@ class PdoStatement implements StatementInterface
      *
      * @param int $mode フェッチモード定数 (Statement::FETCH_**)
      * @param mixed $option フェッチモードのオプション引数
-     * @param array $arguments Statement::FETCH_CLASS の場合のコンストラクタ引数
+     * @param array|null $arguments Statement::FETCH_CLASS の場合のコンストラクタ引数
      * @return $this
      */
-    public function setFetchMode($mode, $option = null, array $arguments = null)
+    public function setFetchMode(int $mode, $option = null, array $arguments = null): PdoStatement
     {
         $this->fetchMode = $mode;
         $fetchMode = $this->convertFetchMode($mode);
         switch (func_num_args()) {
             case 3:
-                /** @noinspection PhpMethodParametersCountMismatchInspection */
                 $this->statement->setFetchMode($fetchMode, $option, $arguments);
                 break;
             case 2:
-                /** @noinspection PhpMethodParametersCountMismatchInspection */
                 $this->statement->setFetchMode($fetchMode, $option);
                 break;
             case 1:
@@ -136,6 +134,16 @@ class PdoStatement implements StatementInterface
                 break;
         }
         return $this;
+    }
+
+    /**
+     * 現在のデフォルトのフェッチモードを返します。
+     *
+     * @return int|null
+     */
+    public function getFetchMode(): ?int
+    {
+        return $this->fetchMode;
     }
 
     /**
@@ -157,7 +165,7 @@ class PdoStatement implements StatementInterface
      *
      * @return array
      */
-    public function fetchAll()
+    public function fetchAll(): array
     {
         return $this->statement->fetchAll();
     }
@@ -174,7 +182,7 @@ class PdoStatement implements StatementInterface
             : new \IteratorIterator($this->statement);
     }
 
-    private function convertFetchMode($mode)
+    private function convertFetchMode($mode): int
     {
         switch ($mode) {
             case Statement::FETCH_ASSOC:

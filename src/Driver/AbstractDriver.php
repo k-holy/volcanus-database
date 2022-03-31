@@ -9,7 +9,9 @@
 namespace Volcanus\Database\Driver;
 
 use Volcanus\Database\Dsn;
+use Volcanus\Database\MetaData\Column;
 use Volcanus\Database\MetaData\MetaDataProcessorInterface;
+use Volcanus\Database\MetaData\Table;
 
 /**
  * ドライバインタフェース
@@ -20,12 +22,12 @@ abstract class AbstractDriver implements DriverInterface
 {
 
     /**
-     * @var \Volcanus\Database\Dsn
+     * @var Dsn
      */
     protected $dsn;
 
     /**
-     * @var \Volcanus\Database\MetaData\MetaDataProcessorInterface
+     * @var MetaDataProcessorInterface
      */
     protected $metaDataProcessor;
 
@@ -42,7 +44,7 @@ abstract class AbstractDriver implements DriverInterface
     /**
      * DSNをセットします。
      *
-     * @param \Volcanus\Database\Dsn $dsn
+     * @param Dsn $dsn
      */
     public function setDsn(Dsn $dsn)
     {
@@ -52,7 +54,7 @@ abstract class AbstractDriver implements DriverInterface
     /**
      * メタデータプロセッサをセットします。
      *
-     * @param \Volcanus\Database\MetaData\MetaDataProcessorInterface $metaDataProcessor
+     * @param MetaDataProcessorInterface $metaDataProcessor
      */
     public function setMetaDataProcessor(MetaDataProcessorInterface $metaDataProcessor)
     {
@@ -62,9 +64,9 @@ abstract class AbstractDriver implements DriverInterface
     /**
      * ドライバに合ったメタデータプロセッサを生成します。
      *
-     * @return \Volcanus\Database\MetaData\MetaDataProcessorInterface
+     * @return MetaDataProcessorInterface
      */
-    public function createMetaDataProcessor()
+    public function createMetaDataProcessor(): MetaDataProcessorInterface
     {
         $driverName = $this->getDriverName();
         if (!isset($driverName)) {
@@ -80,9 +82,9 @@ abstract class AbstractDriver implements DriverInterface
      * SQL実行準備を行い、ステートメントオブジェクトを返します。
      *
      * @param string $query SQL
-     * @return \Volcanus\Database\Driver\StatementInterface
+     * @return StatementInterface
      */
-    public function prepare($query)
+    public function prepare(string $query): StatementInterface
     {
         $this->lastQuery = $query;
         return $this->doPrepare($query);
@@ -92,9 +94,9 @@ abstract class AbstractDriver implements DriverInterface
      * SQLを実行し、ステートメントオブジェクトを返します。
      *
      * @param string $query SQL
-     * @return \Volcanus\Database\Driver\StatementInterface
+     * @return StatementInterface
      */
-    public function query($query)
+    public function query(string $query): StatementInterface
     {
         $this->lastQuery = $query;
         return $this->doQuery($query);
@@ -106,7 +108,7 @@ abstract class AbstractDriver implements DriverInterface
      * @param string $query SQL
      * @return int
      */
-    public function execute($query)
+    public function execute(string $query): int
     {
         $this->lastQuery = $query;
         return $this->doExecute($query);
@@ -117,7 +119,7 @@ abstract class AbstractDriver implements DriverInterface
      *
      * @return string
      */
-    public function getLastQuery()
+    public function getLastQuery(): string
     {
         return $this->lastQuery;
     }
@@ -125,9 +127,9 @@ abstract class AbstractDriver implements DriverInterface
     /**
      * テーブルオブジェクトを配列で返します。
      *
-     * @return array of Table
+     * @return Table[]
      */
-    public function getMetaTables()
+    public function getMetaTables(): array
     {
         if (!isset($this->metaDataProcessor)) {
             throw new \RuntimeException(
@@ -141,9 +143,9 @@ abstract class AbstractDriver implements DriverInterface
      * 指定テーブルのカラムオブジェクトを配列で返します。
      *
      * @param string $table テーブル名
-     * @return array of Column
+     * @return Column[]
      */
-    public function getMetaColumns($table)
+    public function getMetaColumns(string $table): array
     {
         if (!isset($this->metaDataProcessor)) {
             throw new \RuntimeException(
@@ -158,7 +160,7 @@ abstract class AbstractDriver implements DriverInterface
      *
      * @param string $char エスケープに使用する文字
      */
-    public function setEscapeCharacter($char)
+    public function setEscapeCharacter(string $char)
     {
         $this->escapeCharacter = $char;
     }
@@ -169,7 +171,7 @@ abstract class AbstractDriver implements DriverInterface
      * @param string $pattern パターン文字列
      * @return string エスケープされたパターン文字列
      */
-    public function escapeLikePattern($pattern)
+    public function escapeLikePattern(string $pattern): string
     {
         return strtr($pattern, [
             '_' => $this->escapeCharacter . '_',
@@ -182,17 +184,17 @@ abstract class AbstractDriver implements DriverInterface
      * SQL実行準備を行い、ステートメントオブジェクトを返します。
      *
      * @param string $query SQL
-     * @return \Volcanus\Database\Driver\StatementInterface
+     * @return StatementInterface
      */
-    abstract protected function doPrepare($query);
+    abstract protected function doPrepare(string $query): StatementInterface;
 
     /**
      * SQLを実行し、ステートメントオブジェクトを返します。
      *
      * @param string $query SQL
-     * @return \Volcanus\Database\Driver\StatementInterface
+     * @return StatementInterface
      */
-    abstract protected function doQuery($query);
+    abstract protected function doQuery(string $query): StatementInterface;
 
     /**
      * SQLを実行します。
@@ -200,6 +202,6 @@ abstract class AbstractDriver implements DriverInterface
      * @param string $query SQL
      * @return int
      */
-    abstract protected function doExecute($query);
+    abstract protected function doExecute(string $query): int;
 
 }

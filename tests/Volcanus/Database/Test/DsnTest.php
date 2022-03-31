@@ -21,7 +21,7 @@ class DsnTest extends \PHPUnit\Framework\TestCase
     public function testCreateFromString()
     {
         $dsn = Dsn::createFromString('sqlite::memory:');
-        $this->assertInstanceOf('\Volcanus\Database\Dsn', $dsn);
+        $this->assertInstanceOf(Dsn::class, $dsn);
     }
 
     public function testToPdoSqlite()
@@ -67,22 +67,18 @@ class DsnTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testToPdoRaiseExceptionWhenUnsupportedDriver()
     {
+        $this->expectException(\RuntimeException::class);
         $dsn = new Dsn([
             'driver' => 'unsupported_driver',
         ]);
         $dsn->toPdo();
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testToPdoRaiseExceptionWhenUnsupportedOption()
     {
+        $this->expectException(\RuntimeException::class);
         $dsn = new Dsn([
             'driver' => 'mysql',
             'hostname' => 'localhost',

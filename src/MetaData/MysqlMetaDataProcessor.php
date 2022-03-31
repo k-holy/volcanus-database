@@ -8,10 +8,10 @@
 
 namespace Volcanus\Database\MetaData;
 
+use Volcanus\Database\Driver\DriverInterface;
 use Volcanus\Database\MetaData\Cache\CacheProcessorInterface;
 use Volcanus\Database\MetaData\Table;
 use Volcanus\Database\MetaData\Column;
-use Volcanus\Database\Driver\DriverInterface;
 use Volcanus\Database\Statement;
 
 /**
@@ -25,7 +25,7 @@ class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
     /**
      * コンストラクタ
      *
-     * @param \Volcanus\Database\MetaData\Cache\CacheProcessorInterface $cacheProcessor キャッシュプロセッサ
+     * @param CacheProcessorInterface|null $cacheProcessor キャッシュプロセッサ
      */
     public function __construct(CacheProcessorInterface $cacheProcessor = null)
     {
@@ -37,10 +37,11 @@ class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
     /**
      * テーブルオブジェクトを配列で返します。
      *
-     * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
-     * @return array of Table
+     * @param DriverInterface $driver データベースドライバ
+     * @return Table[]
+     * @throws \Exception
      */
-    protected function doGetMetaTables(DriverInterface $driver)
+    protected function doGetMetaTables(DriverInterface $driver): array
     {
         $tableListStatement = $driver->query($this->tableList());
         $tableListStatement->setFetchMode(Statement::FETCH_NUM);
@@ -56,11 +57,12 @@ class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
     /**
      * 指定テーブルのカラムオブジェクトを配列で返します。
      *
-     * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
+     * @param DriverInterface $driver データベースドライバ
      * @param string $table テーブル名
-     * @return array of Column
+     * @return Column[]
+     * @throws \Exception
      */
-    protected function doGetMetaColumns(DriverInterface $driver, $table)
+    protected function doGetMetaColumns(DriverInterface $driver, string $table): array
     {
         $columnsStatement = $driver->query($this->showFullColumnsFrom($table));
         $columnsStatement->setFetchMode(Statement::FETCH_ASSOC);
@@ -115,7 +117,7 @@ class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
      *
      * @return string SQL
      */
-    private function tableList()
+    private function tableList(): string
     {
         return 'SHOW TABLES;';
     }
@@ -126,7 +128,7 @@ class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
      * @param string $table テーブル名
      * @return string SQL
      */
-    private function showFullColumnsFrom($table)
+    private function showFullColumnsFrom(string $table): string
     {
         return sprintf('SHOW FULL COLUMNS FROM %s', $table);
     }

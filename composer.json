@@ -3,7 +3,7 @@
   "homepage": "https://github.com/k-holy/volcanus-database",
   "type": "library",
   "description": "database abstraction layer",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "license": "MIT",
   "authors": [
     {
@@ -17,12 +17,12 @@
     }
   },
   "require": {
-    "php": "^5.6||^7.1"
+    "ext-pdo": "*",
+    "php": ">=7.1.3||>=8.0.2"
   },
   "require-dev": {
-    "doctrine/cache": "^1.4||^1.7",
-    "phpunit/phpunit": "^5.7.20||^6.0",
+    "phpunit/phpunit": "^7.5||^9.5",
     "psr/simple-cache": "^1.0",
-    "symfony/cache": "^3.4||^4.4"
+    "symfony/cache": "^4.4||^5.4"
   }
 }

@@ -8,17 +8,17 @@
 
 namespace Volcanus\Database\Driver\Pdo;
 
-use Volcanus\Database\Driver\DriverInterface;
 use Volcanus\Database\Driver\AbstractDriver;
-use Volcanus\Database\Driver\Pdo\PdoFactory;
+use Volcanus\Database\Driver\DriverInterface;
+use Volcanus\Database\Driver\StatementInterface;
 use Volcanus\Database\Dsn;
 use Volcanus\Database\MetaData\MetaDataProcessorInterface;
 
 /**
  * PDOコネクション
  *
- * @property \Volcanus\Database\Dsn $dsn
- * @property \Volcanus\Database\MetaData\MetaDataProcessorInterface $metaDataProcessor
+ * @property Dsn $dsn
+ * @property MetaDataProcessorInterface $metaDataProcessor
  * @property string $lastQuery
  * @property string $escapeCharacter
  *
@@ -35,8 +35,8 @@ class PdoDriver extends AbstractDriver
     /**
      * コンストラクタ
      *
-     * @param \PDO $pdo
-     * @param \Volcanus\Database\MetaData\MetaDataProcessorInterface $metaDataProcessor
+     * @param \PDO|null $pdo
+     * @param MetaDataProcessorInterface|null $metaDataProcessor
      */
     public function __construct(\PDO $pdo = null, MetaDataProcessorInterface $metaDataProcessor = null)
     {
@@ -56,10 +56,10 @@ class PdoDriver extends AbstractDriver
     /**
      * DSNからインスタンスを生成します。
      *
-     * @param \Volcanus\Database\Dsn
+     * @param Dsn $dsn
      * @return static
      */
-    public static function createFromDsn(Dsn $dsn)
+    public static function createFromDsn(Dsn $dsn): self
     {
         $driver = new static(PdoFactory::createFromDsn($dsn));
         $driver->setDsn($dsn);
@@ -69,10 +69,10 @@ class PdoDriver extends AbstractDriver
     /**
      * DBに接続します。
      *
-     * @param \Volcanus\Database\Dsn $dsn DSNオブジェクト
+     * @param Dsn|null $dsn DSNオブジェクト
      * @return $this
      */
-    public function connect(Dsn $dsn = null)
+    public function connect(Dsn $dsn = null): DriverInterface
     {
         if (isset($dsn)) {
             $this->dsn = $dsn;
@@ -86,7 +86,7 @@ class PdoDriver extends AbstractDriver
      *
      * @return bool
      */
-    public function disconnect()
+    public function disconnect(): bool
     {
         $this->pdo = null;
         return true;
@@ -97,7 +97,7 @@ class PdoDriver extends AbstractDriver
      *
      * @return bool
      */
-    public function connected()
+    public function connected(): bool
     {
         return isset($this->pdo);
     }
@@ -107,7 +107,7 @@ class PdoDriver extends AbstractDriver
      *
      * @return string|null ドライバ名
      */
-    public function getDriverName()
+    public function getDriverName(): ?string
     {
         if (isset($this->pdo)) {
             return $this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
@@ -120,7 +120,7 @@ class PdoDriver extends AbstractDriver
      *
      * @return string|null
      */
-    public function getLastError()
+    public function getLastError(): ?string
     {
         $errors = $this->pdo->errorInfo();
         return (isset($errors[2])) ? $errors[2] : null;
@@ -129,7 +129,7 @@ class PdoDriver extends AbstractDriver
     /**
      * 直近のinsert操作で生成されたIDを返します。
      *
-     * @return mixed 実行結果
+     * @return false|string 実行結果
      */
     public function lastInsertId()
     {
@@ -142,7 +142,7 @@ class PdoDriver extends AbstractDriver
      * @param string $value クォートしたい値
      * @return string クォート結果の文字列
      */
-    public function quote($value)
+    public function quote(string $value): string
     {
         return $this->pdo->quote($value, \PDO::PARAM_STR);
     }
@@ -153,7 +153,7 @@ class PdoDriver extends AbstractDriver
      * @param string $query SQL
      * @return PdoStatement
      */
-    protected function doPrepare($query)
+    protected function doPrepare(string $query): StatementInterface
     {
         $statement = $this->pdo->prepare($query);
         if ($statement === false) {
@@ -170,7 +170,7 @@ class PdoDriver extends AbstractDriver
      * @param string $query SQL
      * @return PdoStatement
      */
-    protected function doQuery($query)
+    protected function doQuery(string $query): StatementInterface
     {
         $statement = $this->pdo->query($query);
         if ($statement === false) {
@@ -187,7 +187,7 @@ class PdoDriver extends AbstractDriver
      * @param string $query SQL
      * @return int
      */
-    protected function doExecute($query)
+    protected function doExecute(string $query): int
     {
         return $this->pdo->exec($query);
     }

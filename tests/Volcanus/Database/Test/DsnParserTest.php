@@ -23,7 +23,7 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
         $parser = new DsnParser();
         $parser->parseDriver('driver://username:password@hostname:port/database?option=value');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['driver'], 'driver');
+        $this->assertEquals('driver', $attributes['driver']);
     }
 
     public function testParseDriverAndDatabaseForSqliteOnUnix()
@@ -31,8 +31,8 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
         $parser = new DsnParser();
         $parser->parseDriver('sqlite:/full/path/to/file.sqlite');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['driver'], 'sqlite');
-        $this->assertEquals($attributes['database'], '/full/path/to/file.sqlite');
+        $this->assertEquals('sqlite', $attributes['driver']);
+        $this->assertEquals('/full/path/to/file.sqlite', $attributes['database']);
     }
 
     public function testParseDriverAndDatabaseForSqliteOnWindows()
@@ -40,8 +40,8 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
         $parser = new DsnParser();
         $parser->parseDriver('sqlite:c:\full\path\to\file.sqlite');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['driver'], 'sqlite');
-        $this->assertEquals($attributes['database'], 'c:\full\path\to\file.sqlite');
+        $this->assertEquals('sqlite', $attributes['driver']);
+        $this->assertEquals('c:\full\path\to\file.sqlite', $attributes['database']);
     }
 
     public function testParseDriverAndDatabaseForLegacySqliteOnUnix()
@@ -49,8 +49,8 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
         $parser = new DsnParser();
         $parser->parseDriver('sqlite:///full/path/to/file.sqlite');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['driver'], 'sqlite');
-        $this->assertEquals($attributes['database'], '/full/path/to/file.sqlite');
+        $this->assertEquals('sqlite', $attributes['driver']);
+        $this->assertEquals('/full/path/to/file.sqlite', $attributes['database']);
     }
 
     public function testParseDriverAndDatabaseForLegacySqliteOnWindows()
@@ -58,8 +58,8 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
         $parser = new DsnParser();
         $parser->parseDriver('sqlite://c:\full\path\to\file.sqlite');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['driver'], 'sqlite');
-        $this->assertEquals($attributes['database'], 'c:\full\path\to\file.sqlite');
+        $this->assertEquals('sqlite', $attributes['driver']);
+        $this->assertEquals('c:\full\path\to\file.sqlite', $attributes['database']);
     }
 
     public function testParseUsernameAndPassword()
@@ -67,8 +67,8 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
         $parser = new DsnParser();
         $parser->parseUsernameAndPassword('username:password@hostname:port/database?option=value');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['username'], 'username');
-        $this->assertEquals($attributes['password'], 'password');
+        $this->assertEquals('username', $attributes['username']);
+        $this->assertEquals('password', $attributes['password']);
     }
 
     public function testParseUsername()
@@ -76,7 +76,7 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
         $parser = new DsnParser();
         $parser->parseUsernameAndPassword('username@hostname:port/database?option=value');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['username'], 'username');
+        $this->assertEquals('username', $attributes['username']);
     }
 
     public function testParseHostnameAndPort()
@@ -84,8 +84,8 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
         $parser = new DsnParser();
         $parser->parseHostnameAndPort('hostname:port/database?option=value');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['hostname'], 'hostname');
-        $this->assertEquals($attributes['port'], 'port');
+        $this->assertEquals('hostname', $attributes['hostname']);
+        $this->assertEquals('port', $attributes['port']);
     }
 
     public function testParseHostname()
@@ -93,7 +93,7 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
         $parser = new DsnParser();
         $parser->parseHostnameAndPort('hostname/database?option=value');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['hostname'], 'hostname');
+        $this->assertEquals('hostname', $attributes['hostname']);
     }
 
     public function testParseDatabaseAndOptions()
@@ -101,10 +101,10 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
         $parser = new DsnParser();
         $parser->parseDatabaseAndOptions('database?opt1=val1&opt2=val2&opt3=val3');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['database'], 'database');
-        $this->assertEquals($attributes['options']['opt1'], 'val1');
-        $this->assertEquals($attributes['options']['opt2'], 'val2');
-        $this->assertEquals($attributes['options']['opt3'], 'val3');
+        $this->assertEquals('database', $attributes['database']);
+        $this->assertEquals('val1', $attributes['options']['opt1']);
+        $this->assertEquals('val2', $attributes['options']['opt2']);
+        $this->assertEquals('val3', $attributes['options']['opt3']);
     }
 
     public function testParseDatabase()
@@ -112,34 +112,34 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
         $parser = new DsnParser();
         $parser->parseDatabaseAndOptions('database');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['database'], 'database');
+        $this->assertEquals('database', $attributes['database']);
     }
 
     public function testParseDriverAndUsernameAndPasswordAndHostnameAndPortAndDatabaseAndOptions()
     {
         $parser = new DsnParser('driver://username:password@hostname:port/database?opt1=val1&opt2=val2&opt3=val3');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['driver'], 'driver');
-        $this->assertEquals($attributes['username'], 'username');
-        $this->assertEquals($attributes['password'], 'password');
-        $this->assertEquals($attributes['hostname'], 'hostname');
-        $this->assertEquals($attributes['port'], 'port');
-        $this->assertEquals($attributes['database'], 'database');
-        $this->assertEquals($attributes['options']['opt1'], 'val1');
-        $this->assertEquals($attributes['options']['opt2'], 'val2');
-        $this->assertEquals($attributes['options']['opt3'], 'val3');
+        $this->assertEquals('driver', $attributes['driver']);
+        $this->assertEquals('username', $attributes['username']);
+        $this->assertEquals('password', $attributes['password']);
+        $this->assertEquals('hostname', $attributes['hostname']);
+        $this->assertEquals('port', $attributes['port']);
+        $this->assertEquals('database', $attributes['database']);
+        $this->assertEquals('val1', $attributes['options']['opt1']);
+        $this->assertEquals('val2', $attributes['options']['opt2']);
+        $this->assertEquals('val3', $attributes['options']['opt3']);
     }
 
     public function testParseDriverAndUsernameAndPasswordAndHostnameAndPortAndDatabase()
     {
         $parser = new DsnParser('driver://username:password@hostname:port/database');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['driver'], 'driver');
-        $this->assertEquals($attributes['username'], 'username');
-        $this->assertEquals($attributes['password'], 'password');
-        $this->assertEquals($attributes['hostname'], 'hostname');
-        $this->assertEquals($attributes['port'], 'port');
-        $this->assertEquals($attributes['database'], 'database');
+        $this->assertEquals('driver', $attributes['driver']);
+        $this->assertEquals('username', $attributes['username']);
+        $this->assertEquals('password', $attributes['password']);
+        $this->assertEquals('hostname', $attributes['hostname']);
+        $this->assertEquals('port', $attributes['port']);
+        $this->assertEquals('database', $attributes['database']);
         $this->assertNull($attributes['options']);
     }
 
@@ -147,12 +147,12 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
     {
         $parser = new DsnParser('driver://username@hostname:port/database');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['driver'], 'driver');
-        $this->assertEquals($attributes['username'], 'username');
+        $this->assertEquals('driver', $attributes['driver']);
+        $this->assertEquals('username', $attributes['username']);
         $this->assertNull($attributes['password']);
-        $this->assertEquals($attributes['hostname'], 'hostname');
-        $this->assertEquals($attributes['port'], 'port');
-        $this->assertEquals($attributes['database'], 'database');
+        $this->assertEquals('hostname', $attributes['hostname']);
+        $this->assertEquals('port', $attributes['port']);
+        $this->assertEquals('database', $attributes['database']);
         $this->assertNull($attributes['options']);
     }
 
@@ -160,10 +160,10 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
     {
         $parser = new DsnParser('driver://username:password@hostname');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['driver'], 'driver');
-        $this->assertEquals($attributes['username'], 'username');
-        $this->assertEquals($attributes['password'], 'password');
-        $this->assertEquals($attributes['hostname'], 'hostname');
+        $this->assertEquals('driver', $attributes['driver']);
+        $this->assertEquals('username', $attributes['username']);
+        $this->assertEquals('password', $attributes['password']);
+        $this->assertEquals('hostname', $attributes['hostname']);
         $this->assertNull($attributes['port']);
         $this->assertNull($attributes['database']);
         $this->assertNull($attributes['options']);
@@ -173,12 +173,12 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
     {
         $parser = new DsnParser('driver://username@hostname/database');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['driver'], 'driver');
-        $this->assertEquals($attributes['username'], 'username');
+        $this->assertEquals('driver', $attributes['driver']);
+        $this->assertEquals('username', $attributes['username']);
         $this->assertNull($attributes['password']);
-        $this->assertEquals($attributes['hostname'], 'hostname');
+        $this->assertEquals('hostname', $attributes['hostname']);
         $this->assertNull($attributes['port']);
-        $this->assertEquals($attributes['database'], 'database');
+        $this->assertEquals('database', $attributes['database']);
         $this->assertNull($attributes['options']);
     }
 
@@ -186,10 +186,10 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
     {
         $parser = new DsnParser('driver://username@hostname');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['driver'], 'driver');
-        $this->assertEquals($attributes['username'], 'username');
+        $this->assertEquals('driver', $attributes['driver']);
+        $this->assertEquals('username', $attributes['username']);
         $this->assertNull($attributes['password']);
-        $this->assertEquals($attributes['hostname'], 'hostname');
+        $this->assertEquals('hostname', $attributes['hostname']);
         $this->assertNull($attributes['port']);
         $this->assertNull($attributes['database']);
         $this->assertNull($attributes['options']);
@@ -199,12 +199,12 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
     {
         $parser = new DsnParser('driver://hostname:port/database');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['driver'], 'driver');
+        $this->assertEquals('driver', $attributes['driver']);
         $this->assertNull($attributes['username']);
         $this->assertNull($attributes['password']);
-        $this->assertEquals($attributes['hostname'], 'hostname');
-        $this->assertEquals($attributes['port'], 'port');
-        $this->assertEquals($attributes['database'], 'database');
+        $this->assertEquals('hostname', $attributes['hostname']);
+        $this->assertEquals('port', $attributes['port']);
+        $this->assertEquals('database', $attributes['database']);
         $this->assertNull($attributes['options']);
     }
 
@@ -212,12 +212,12 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
     {
         $parser = new DsnParser('driver://hostname/database');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['driver'], 'driver');
+        $this->assertEquals('driver', $attributes['driver']);
         $this->assertNull($attributes['username']);
         $this->assertNull($attributes['password']);
-        $this->assertEquals($attributes['hostname'], 'hostname');
+        $this->assertEquals('hostname', $attributes['hostname']);
         $this->assertNull($attributes['port']);
-        $this->assertEquals($attributes['database'], 'database');
+        $this->assertEquals('database', $attributes['database']);
         $this->assertNull($attributes['options']);
     }
 
@@ -225,11 +225,11 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
     {
         $parser = new DsnParser('driver://hostname:port');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['driver'], 'driver');
+        $this->assertEquals('driver', $attributes['driver']);
         $this->assertNull($attributes['username']);
         $this->assertNull($attributes['password']);
-        $this->assertEquals($attributes['hostname'], 'hostname');
-        $this->assertEquals($attributes['port'], 'port');
+        $this->assertEquals('hostname', $attributes['hostname']);
+        $this->assertEquals('port', $attributes['port']);
         $this->assertNull($attributes['database']);
         $this->assertNull($attributes['options']);
     }
@@ -238,10 +238,10 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
     {
         $parser = new DsnParser('driver://hostname');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['driver'], 'driver');
+        $this->assertEquals('driver', $attributes['driver']);
         $this->assertNull($attributes['username']);
         $this->assertNull($attributes['password']);
-        $this->assertEquals($attributes['hostname'], 'hostname');
+        $this->assertEquals('hostname', $attributes['hostname']);
         $this->assertNull($attributes['port']);
         $this->assertNull($attributes['database']);
         $this->assertNull($attributes['options']);
@@ -251,12 +251,12 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
     {
         $parser = new DsnParser('driver:///database');
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['driver'], 'driver');
+        $this->assertEquals('driver', $attributes['driver']);
         $this->assertNull($attributes['username']);
         $this->assertNull($attributes['password']);
         $this->assertNull($attributes['hostname']);
         $this->assertNull($attributes['port']);
-        $this->assertEquals($attributes['database'], 'database');
+        $this->assertEquals('database', $attributes['database']);
         $this->assertNull($attributes['options']);
     }
 
@@ -277,22 +277,20 @@ class DsnParserTest extends \PHPUnit\Framework\TestCase
             rawurlencode('val3:/@')
         ));
         $attributes = $parser->getAttributes();
-        $this->assertEquals($attributes['driver'], 'driver:/@');
-        $this->assertEquals($attributes['username'], 'username:/@');
-        $this->assertEquals($attributes['password'], 'password:/@');
-        $this->assertEquals($attributes['hostname'], 'hostname:/@');
-        $this->assertEquals($attributes['port'], 'port:/@');
-        $this->assertEquals($attributes['database'], 'database:/@');
-        $this->assertEquals($attributes['options']['opt1:/@'], 'val1:/@');
-        $this->assertEquals($attributes['options']['opt2:/@'], 'val2:/@');
-        $this->assertEquals($attributes['options']['opt3:/@'], 'val3:/@');
+        $this->assertEquals('driver:/@', $attributes['driver']);
+        $this->assertEquals('username:/@', $attributes['username']);
+        $this->assertEquals('password:/@', $attributes['password']);
+        $this->assertEquals('hostname:/@', $attributes['hostname']);
+        $this->assertEquals('port:/@', $attributes['port']);
+        $this->assertEquals('database:/@', $attributes['database']);
+        $this->assertEquals('val1:/@', $attributes['options']['opt1:/@']);
+        $this->assertEquals('val2:/@', $attributes['options']['opt2:/@']);
+        $this->assertEquals('val3:/@', $attributes['options']['opt3:/@']);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testParseRaiseInvalidArgumentExceptionWhenDriverNotFound()
     {
+        $this->expectException(\InvalidArgumentException::class);
         /** @noinspection PhpUnusedLocalVariableInspection */
         $parser = new DsnParser('username:password@hostname:port/database?option=value');
     }

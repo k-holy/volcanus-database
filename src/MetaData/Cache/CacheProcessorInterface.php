@@ -22,9 +22,9 @@ interface CacheProcessorInterface
     /**
      * テーブルオブジェクトの配列がキャッシュに存在するかどうかを返します。
      *
-     * @return boolean
+     * @return bool
      */
-    public function hasMetaTables();
+    public function hasMetaTables(): bool;
 
     /**
      * キャッシュから読み込んだテーブルオブジェクトの配列を返します。
@@ -37,25 +37,25 @@ interface CacheProcessorInterface
      * テーブルオブジェクトの配列をキャッシュに保存します。
      *
      * @param array $tables Tables
-     * @param int $lifetime キャッシュの生存期間（秒） 0の場合は永続
-     * @return boolean 成功時はtrue、失敗時はfalse
+     * @param int|null $lifetime キャッシュの生存期間（秒） 0の場合は永続
+     * @return bool 成功時はtrue、失敗時はfalse
      */
-    public function setMetaTables($tables, $lifetime = null);
+    public function setMetaTables(array $tables, int $lifetime = null): bool;
 
     /**
      * テーブルオブジェクトの配列をキャッシュから破棄します。
      *
-     * @return boolean 成功時はtrue、失敗時はfalse
+     * @return bool 成功時はtrue、失敗時はfalse
      */
-    public function unsetMetaTables();
+    public function unsetMetaTables(): bool;
 
     /**
      * 指定したテーブルのカラムオブジェクトの配列がキャッシュに存在するかどうかを返します。
      *
      * @param string $table テーブル名
-     * @return boolean
+     * @return bool
      */
-    public function hasMetaColumns($table);
+    public function hasMetaColumns(string $table): bool;
 
     /**
      * キャッシュから読み込んだ指定したテーブルのカラムオブジェクトの配列を返します。
@@ -63,24 +63,24 @@ interface CacheProcessorInterface
      * @param string $table テーブル名
      * @return mixed null | array of Column from cache
      */
-    public function getMetaColumns($table);
+    public function getMetaColumns(string $table);
 
     /**
      * 指定したテーブルのカラムオブジェクトの配列をキャッシュに保存します。
      *
      * @param string $table テーブル名
      * @param array $columns Column
-     * @param int $lifetime キャッシュの生存期間（秒） 0の場合は永続
-     * @return boolean 成功時はtrue、失敗時はfalse
+     * @param int|null $lifetime キャッシュの生存期間（秒） 0の場合は永続
+     * @return bool 成功時はtrue、失敗時はfalse
      */
-    public function setMetaColumns($table, $columns, $lifetime = null);
+    public function setMetaColumns(string $table, array $columns, int $lifetime = null): bool;
 
     /**
      * 指定したテーブルのカラムオブジェクトの配列をキャッシュから破棄します。
      *
      * @param string $table テーブル名
-     * @return boolean 成功時はtrue、失敗時はfalse
+     * @return bool 成功時はtrue、失敗時はfalse
      */
-    public function unsetMetaColumns($table);
+    public function unsetMetaColumns(string $table): bool;
 
 }

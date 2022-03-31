@@ -8,8 +8,8 @@
 
 namespace Volcanus\Database\MetaData;
 
-use Volcanus\Database\MetaData\Cache\CacheProcessorInterface;
 use Volcanus\Database\Driver\DriverInterface;
+use Volcanus\Database\MetaData\Cache\CacheProcessorInterface;
 
 /**
  * メタデータプロセッサ抽象クラス
@@ -20,14 +20,14 @@ abstract class AbstractMetaDataProcessor implements MetaDataProcessorInterface
 {
 
     /**
-     * @var \Volcanus\Database\MetaData\Cache\CacheProcessorInterface
+     * @var CacheProcessorInterface
      */
     protected $cacheProcessor;
 
     /**
      * キャッシュプロセッサをセットします。
      *
-     * @param \Volcanus\Database\MetaData\Cache\CacheProcessorInterface $cacheProcessor キャッシュプロセッサ
+     * @param CacheProcessorInterface $cacheProcessor キャッシュプロセッサ
      */
     public function setCacheProcessor(CacheProcessorInterface $cacheProcessor)
     {
@@ -37,10 +37,10 @@ abstract class AbstractMetaDataProcessor implements MetaDataProcessorInterface
     /**
      * テーブルオブジェクトを配列で返します。
      *
-     * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
-     * @return array of Table
+     * @param DriverInterface $driver データベースドライバ
+     * @return Table[]
      */
-    public function getMetaTables(DriverInterface $driver)
+    public function getMetaTables(DriverInterface $driver): array
     {
         if (isset($this->cacheProcessor)) {
             if ($this->cacheProcessor->hasMetaTables()) {
@@ -57,11 +57,11 @@ abstract class AbstractMetaDataProcessor implements MetaDataProcessorInterface
     /**
      * 指定テーブルのカラムオブジェクトを配列で返します。
      *
-     * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
+     * @param DriverInterface $driver データベースドライバ
      * @param string $table テーブル名
-     * @return array of Column
+     * @return Column[]
      */
-    public function getMetaColumns(DriverInterface $driver, $table)
+    public function getMetaColumns(DriverInterface $driver, string $table): array
     {
         if (isset($this->cacheProcessor)) {
             if ($this->cacheProcessor->hasMetaColumns($table)) {
@@ -78,18 +78,18 @@ abstract class AbstractMetaDataProcessor implements MetaDataProcessorInterface
     /**
      * テーブルオブジェクトを配列で返します。
      *
-     * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
-     * @return array of Table
+     * @param DriverInterface $driver データベースドライバ
+     * @return Table[]
      */
-    abstract protected function doGetMetaTables(DriverInterface $driver);
+    abstract protected function doGetMetaTables(DriverInterface $driver): array;
 
     /**
      * 指定テーブルのカラムオブジェクトを配列で返します。
      *
-     * @param \Volcanus\Database\Driver\DriverInterface $driver データベースドライバ
+     * @param DriverInterface $driver データベースドライバ
      * @param string $table テーブル名
-     * @return array of Column
+     * @return Column[]
      */
-    abstract protected function doGetMetaColumns(DriverInterface $driver, $table);
+    abstract protected function doGetMetaColumns(DriverInterface $driver, string $table): array;
 
 }

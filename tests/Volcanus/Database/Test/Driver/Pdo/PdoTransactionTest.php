@@ -9,8 +9,6 @@
 namespace Volcanus\Database\Test\Driver\Pdo;
 
 use Volcanus\Database\Driver\Pdo\PdoTransaction;
-use Volcanus\Database\Driver\Pdo\PdoDriver;
-use Volcanus\Database\Statement;
 
 /**
  * Test for PdoTransaction
@@ -23,13 +21,13 @@ class PdoTransactionTest extends \PHPUnit\Framework\TestCase
     /** @var \PDO */
     private static $pdo;
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->getPdo()->exec("DELETE FROM test");
         $this->getPdo()->exec("UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = 'test'");
     }
 
-    public function getPdo()
+    public function getPdo(): \PDO
     {
         if (!isset(static::$pdo)) {
             static::$pdo = new \PDO('sqlite::memory:');
@@ -69,13 +67,11 @@ SQL
         $this->assertEquals('1', $count[0]);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testBeginRaiseRuntimeException()
     {
-        /** @var $pdo \Volcanus\Database\Test\Driver\Pdo\PdoMock|\PHPUnit_Framework_MockObject_MockObject */
-        $pdo = $this->createMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
+        $this->expectException(\RuntimeException::class);
+        /** @var $pdo PdoMock|\PHPUnit\Framework\MockObject\MockObject */
+        $pdo = $this->createMock(PdoMock::class);
         $pdo->expects($this->once())
             ->method('beginTransaction')
             ->will($this->throwException(new \PDOException()));
@@ -84,13 +80,11 @@ SQL
         $transaction->begin();
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testCommitRaiseRuntimeException()
     {
-        /** @var $pdo \Volcanus\Database\Test\Driver\Pdo\PdoMock|\PHPUnit_Framework_MockObject_MockObject */
-        $pdo = $this->createMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
+        $this->expectException(\RuntimeException::class);
+        /** @var $pdo PdoMock|\PHPUnit\Framework\MockObject\MockObject */
+        $pdo = $this->createMock(PdoMock::class);
         $pdo->expects($this->once())
             ->method('commit')
             ->will($this->throwException(new \PDOException()));
@@ -99,13 +93,11 @@ SQL
         $transaction->commit();
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testRollbackRaiseRuntimeException()
     {
-        /** @var $pdo \Volcanus\Database\Test\Driver\Pdo\PdoMock|\PHPUnit_Framework_MockObject_MockObject */
-        $pdo = $this->createMock('\Volcanus\Database\Test\Driver\Pdo\PdoMock');
+        $this->expectException(\RuntimeException::class);
+        /** @var $pdo PdoMock|\PHPUnit\Framework\MockObject\MockObject */
+        $pdo = $this->createMock(PdoMock::class);
         $pdo->expects($this->once())
             ->method('rollback')
             ->will($this->throwException(new \PDOException()));

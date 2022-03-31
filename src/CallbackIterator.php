@@ -27,17 +27,8 @@ class CallbackIterator extends \IteratorIterator
      * @param \Traversable $iterator
      * @param callable $callback 要素を返す際に実行するコールバック関数
      */
-    public function __construct(\Traversable $iterator, $callback)
+    public function __construct(\Traversable $iterator, callable $callback)
     {
-        if (!is_callable($callback)) {
-            throw new \InvalidArgumentException(
-                sprintf('CallbackIterator accepts only callable, invalid type:%s',
-                    (is_object($callback))
-                        ? get_class($callback)
-                        : gettype($callback)
-                )
-            );
-        }
         $this->callback = $callback;
         parent::__construct($iterator);
     }
