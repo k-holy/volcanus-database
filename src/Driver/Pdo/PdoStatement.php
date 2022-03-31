@@ -8,9 +8,9 @@
 
 namespace Volcanus\Database\Driver\Pdo;
 
+use Volcanus\Database\CallbackIterator;
 use Volcanus\Database\Statement;
 use Volcanus\Database\Driver\StatementInterface;
-use Volcanus\Database\CallbackIterator;
 
 /**
  * PDOステートメント
@@ -134,6 +134,16 @@ class PdoStatement implements StatementInterface
                 break;
         }
         return $this;
+    }
+
+    /**
+     * 現在のデフォルトのフェッチモードを返します。
+     *
+     * @return int|null
+     */
+    public function getFetchMode(): ?int
+    {
+        return $this->fetchMode;
     }
 
     /**

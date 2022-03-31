@@ -8,8 +8,8 @@
 
 namespace Volcanus\Database\MetaData\Cache\Processor;
 
-use Volcanus\Database\MetaData\Cache\CacheProcessorInterface;
 use Phalcon\Cache\Adapter\AdapterInterface;
+use Volcanus\Database\MetaData\Cache\CacheProcessorInterface;
 
 /**
  * Phalcon4 Cache プロセッサ
