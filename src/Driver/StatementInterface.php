@@ -40,6 +40,13 @@ interface StatementInterface extends \IteratorAggregate
     public function setFetchMode(int $mode, $option = null, array $arguments = null);
 
     /**
+     * 現在のデフォルトのフェッチモードを返します。
+     *
+     * @return int|null
+     */
+    public function getFetchMode(): ?int;
+
+    /**
      * 結果セットから次の行を取得して返します。
      *
      * @return mixed

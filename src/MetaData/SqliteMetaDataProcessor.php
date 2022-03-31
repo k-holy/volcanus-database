@@ -8,10 +8,10 @@
 
 namespace Volcanus\Database\MetaData;
 
-use Volcanus\Database\MetaData\Cache\CacheProcessorInterface;
-use Volcanus\Database\MetaData\Table;
-use Volcanus\Database\MetaData\Column;
 use Volcanus\Database\Driver\DriverInterface;
+use Volcanus\Database\MetaData\Cache\CacheProcessorInterface;
+use Volcanus\Database\MetaData\Column;
+use Volcanus\Database\MetaData\Table;
 use Volcanus\Database\Statement;
 
 /**

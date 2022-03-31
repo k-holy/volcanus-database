@@ -8,8 +8,8 @@
 
 namespace Volcanus\Database\MetaData;
 
-use Volcanus\Database\MetaData\Cache\CacheProcessorInterface;
 use Volcanus\Database\Driver\DriverInterface;
+use Volcanus\Database\MetaData\Cache\CacheProcessorInterface;
 
 /**
  * メタデータプロセッサ抽象クラス

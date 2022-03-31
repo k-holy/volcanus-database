@@ -10,8 +10,8 @@ namespace Volcanus\Database\Driver;
 
 use Volcanus\Database\Dsn;
 use Volcanus\Database\MetaData\Column;
-use Volcanus\Database\MetaData\Table;
 use Volcanus\Database\MetaData\MetaDataProcessorInterface;
+use Volcanus\Database\MetaData\Table;
 
 /**
  * ドライバインタフェース

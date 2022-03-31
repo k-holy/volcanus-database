@@ -9,7 +9,9 @@
 namespace Volcanus\Database\Driver;
 
 use Volcanus\Database\Dsn;
+use Volcanus\Database\MetaData\Column;
 use Volcanus\Database\MetaData\MetaDataProcessorInterface;
+use Volcanus\Database\MetaData\Table;
 
 /**
  * ドライバインタフェース
@@ -22,7 +24,7 @@ interface DriverInterface
     /**
      * DSNをセットします。
      *
-     * @param Dsn
+     * @param Dsn $dsn
      */
     public function setDsn(Dsn $dsn);
 

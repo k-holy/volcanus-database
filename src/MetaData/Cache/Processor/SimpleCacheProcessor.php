@@ -8,8 +8,8 @@
 
 namespace Volcanus\Database\MetaData\Cache\Processor;
 
-use Volcanus\Database\MetaData\Cache\CacheProcessorInterface;
 use Psr\SimpleCache\CacheInterface;
+use Volcanus\Database\MetaData\Cache\CacheProcessorInterface;
 
 /**
  * PSR-16 Simple Cache プロセッサ
