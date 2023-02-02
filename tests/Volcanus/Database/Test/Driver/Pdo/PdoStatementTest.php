@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -20,7 +20,7 @@ class PdoStatementTest extends \PHPUnit\Framework\TestCase
 {
 
     /** @var \PDO */
-    private static $pdo;
+    private static \PDO $pdo;
 
     public function tearDown(): void
     {
@@ -128,24 +128,6 @@ SQL
 
         $this->assertNull($user['user_name']);
         $this->assertNull($user['birthday']);
-    }
-
-    public function testExecuteRaiseExceptionWhenParameterIsInvalidType()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $statement = new PdoStatement(
-            $this->getPdo()->prepare("SELECT * FROM users WHERE user_id = :user_id")
-        );
-        $statement->execute(false);
-    }
-
-    public function testExecuteRaiseExceptionWhenParameterIsInvalidIbject()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $statement = new PdoStatement(
-            $this->getPdo()->prepare("SELECT * FROM users WHERE user_id = :user_id")
-        );
-        $statement->execute(new \StdClass());
     }
 
     public function testExecuteRaiseExceptionWhenPDOExceptionIsThrown()

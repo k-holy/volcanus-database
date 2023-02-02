@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -38,7 +38,7 @@ class CallbackIterator extends \IteratorIterator
      *
      * @return mixed
      */
-    public function current()
+    public function current(): mixed
     {
         return call_user_func($this->callback, parent::current());
     }

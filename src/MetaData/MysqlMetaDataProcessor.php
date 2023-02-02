@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -87,8 +87,8 @@ class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
             $notNull = ($cols['Null'] !== 'YES');
             $primaryKey = ($cols['Key'] === 'PRI');
             $uniqueKey = ($cols['Key'] === 'UNI');
-            $autoIncrement = (strpos($cols['Extra'], 'auto_increment') !== false);
-            $binary = (strpos($type, 'blob') !== false);
+            $autoIncrement = (isset($cols['Extra']) && str_contains($cols['Extra'], 'auto_increment'));
+            $binary = (str_contains($type, 'blob'));
             $default = null;
             if (!$binary && isset($cols['Default']) && strcasecmp($cols['Default'], 'NULL') !== 0) {
                 $default = $cols['Default'];

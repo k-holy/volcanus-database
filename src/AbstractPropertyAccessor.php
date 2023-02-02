@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -30,9 +30,9 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
      * プロパティを引数の配列からセットして自身を返します。
      *
      * @param array $properties プロパティの配列
-     * @return $this
+     * @return self
      */
-    public function initialize(array $properties = []): AbstractPropertyAccessor
+    public function initialize(array $properties = []): static
     {
         foreach (array_keys(get_object_vars($this)) as $name) {
             $this->{$name} = null;
@@ -56,10 +56,10 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
     /**
      * __isset
      *
-     * @param mixed $name
+     * @param string $name
      * @return bool
      */
-    public function __isset($name)
+    public function __isset(string $name): bool
     {
         return (property_exists($this, $name) && $this->{$name} !== null);
     }
@@ -67,9 +67,10 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
     /**
      * __get
      *
-     * @param mixed $name
+     * @param string $name
+     * @return mixed
      */
-    public function __get($name)
+    public function __get(string $name): mixed
     {
         if (!property_exists($this, $name)) {
             throw new \InvalidArgumentException(
@@ -82,10 +83,10 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
     /**
      * __set
      *
-     * @param mixed $name
+     * @param string $name
      * @param mixed $value
      */
-    public function __set($name, $value)
+    public function __set(string $name, mixed $value)
     {
         throw new \LogicException(
             sprintf('The property "%s" could not set.', $name)
@@ -95,9 +96,9 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
     /**
      * __unset
      *
-     * @param mixed $name
+     * @param string $name
      */
-    public function __unset($name)
+    public function __unset(string $name)
     {
         throw new \LogicException(
             sprintf('The property "%s" could not unset.', $name)
@@ -163,7 +164,7 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
      * @param mixed $name
      * @return bool
      */
-    public function offsetExists($name): bool
+    public function offsetExists(mixed $name): bool
     {
         return $this->__isset($name);
     }
@@ -174,7 +175,7 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
      * @param mixed $name
      * @return mixed
      */
-    public function offsetGet($name)
+    public function offsetGet(mixed $name): mixed
     {
         return $this->__get($name);
     }
@@ -184,8 +185,9 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
      *
      * @param mixed $name
      * @param mixed $value
+     * @return void
      */
-    public function offsetSet($name, $value)
+    public function offsetSet(mixed $name, mixed $value): void
     {
         $this->__set($name, $value);
     }
@@ -194,8 +196,9 @@ abstract class AbstractPropertyAccessor implements \ArrayAccess, \IteratorAggreg
      * ArrayAccess::offsetUnset()
      *
      * @param mixed $name
+     * @return void
      */
-    public function offsetUnset($name)
+    public function offsetUnset(mixed $name): void
     {
         $this->__unset($name);
     }

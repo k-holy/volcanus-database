@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -19,7 +19,7 @@ use Volcanus\Database\MetaData\Column;
 abstract class AbstractCacheProcessorTest extends \PHPUnit\Framework\TestCase
 {
 
-    protected $cacheDir;
+    protected string $cacheDir;
 
     public function setUp(): void
     {

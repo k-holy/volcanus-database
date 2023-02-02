@@ -1,7 +1,7 @@
 <?php /** @noinspection PhpUnused */
 
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -32,59 +32,59 @@ class Column extends AbstractPropertyAccessor
 {
 
     /**
-     * @var string カラム名
+     * @var string|null カラム名
      */
-    protected $name;
+    protected ?string $name = null;
 
     /**
-     * @var string データ型
+     * @var string|null データ型
      */
-    protected $type;
+    protected ?string $type = null;
 
     /**
-     * @var int 最大文字数
+     * @var int|null 最大文字数
      */
-    protected $maxLength;
+    protected ?int $maxLength = null;
 
     /**
-     * @var int 桁数
+     * @var int|null 桁数
      */
-    protected $scale;
+    protected ?int $scale = null;
 
     /**
-     * @var bool バイナリデータかどうか
+     * @var bool|null バイナリデータかどうか
      */
-    protected $binary;
+    protected ?bool $binary = null;
 
     /**
-     * @var mixed デフォルト値
+     * @var mixed|null デフォルト値
      */
-    protected $default;
+    protected mixed $default = null;
 
     /**
-     * @var bool NOT NULL制約が付与されているかどうか
+     * @var bool|null NOT NULL制約が付与されているかどうか
      */
-    protected $notNull;
+    protected ?bool $notNull = null;
 
     /**
-     * @var bool PRIMARY KEYかどうか
+     * @var bool|null PRIMARY KEYかどうか
      */
-    protected $primaryKey;
+    protected ?bool $primaryKey = null;
 
     /**
-     * @var bool UNIQUE KEYかどうか
+     * @var bool|null UNIQUE KEYかどうか
      */
-    protected $uniqueKey;
+    protected ?bool $uniqueKey = null;
 
     /**
-     * @var bool AUTO INCREMENTかどうか
+     * @var bool|null AUTO INCREMENTかどうか
      */
-    protected $autoIncrement;
+    protected ?bool $autoIncrement = null;
 
     /**
-     * @var string コメント
+     * @var string|null コメント
      */
-    protected $comment;
+    protected ?string $comment = null;
 
     /**
      * コンストラクタ

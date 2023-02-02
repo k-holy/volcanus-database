@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -25,7 +25,7 @@ class PdoDriverTest extends \PHPUnit\Framework\TestCase
 {
 
     /** @var \PDO */
-    private static $pdo;
+    private static \PDO $pdo;
 
     public function tearDown(): void
     {
@@ -122,6 +122,14 @@ SQL
         $driver->prepare("SELECT id, name FROM undefined_table WHERE id = :id");
     }
 
+    public function testPrepareRaiseExceptionWhenAfterDisconnected()
+    {
+        $this->expectException(\RuntimeException::class);
+        $driver = new PdoDriver($this->getPdo());
+        $driver->disconnect();
+        $driver->prepare("SELECT id, name FROM test WHERE id = :id");
+    }
+
     public function testQueryReturnedPdoStatement()
     {
         $driver = new PdoDriver($this->getPdo());
@@ -137,6 +145,14 @@ SQL
         $driver->query("SELECT * FROM undefined_table_called_by_testQueryRaiseExceptionWhenInvalidQuery");
     }
 
+    public function testQueryRaiseExceptionWhenAfterDisconnected()
+    {
+        $this->expectException(\RuntimeException::class);
+        $driver = new PdoDriver($this->getPdo());
+        $driver->disconnect();
+        $driver->query("SELECT count(*) FROM test");
+    }
+
     public function testExecuteReturnedAffectedRows()
     {
         $driver = new PdoDriver($this->getPdo());
@@ -144,6 +160,14 @@ SQL
         $this->assertEquals(1, $driver->execute("INSERT INTO test (name) VALUES ('test')"));
         $this->assertEquals(1, $driver->execute("INSERT INTO test (name) VALUES ('test')"));
         $this->assertEquals(2, $driver->execute("UPDATE test SET name='retest' WHERE name='test'"));
+    }
+
+    public function testExecuteRaiseExceptionWhenAfterDisconnected()
+    {
+        $this->expectException(\RuntimeException::class);
+        $driver = new PdoDriver($this->getPdo());
+        $driver->disconnect();
+        $driver->execute("SELECT count(*) FROM test");
     }
 
     public function testPrepareSetLastQuery()
@@ -177,6 +201,15 @@ SQL
         $this->assertStringContainsString('undefined_table_called_by_testGetLastError', $driver->getLastError());
     }
 
+    public function testGetLastErrorRaiseExceptionWhenAfterDisconnected()
+    {
+        $this->expectException(\RuntimeException::class);
+        $driver = new PdoDriver($this->getPdo());
+        $driver->execute("SELECT * FROM undefined_table_called_by_testGetLastError");
+        $driver->disconnect();
+        $driver->getLastError();
+    }
+
     public function testLastInsertId()
     {
         $driver = new PdoDriver($this->getPdo());
@@ -184,6 +217,15 @@ SQL
         $this->assertEquals(1, $driver->lastInsertId());
         $driver->execute("INSERT INTO test (name) VALUES ('test')");
         $this->assertEquals(2, $driver->lastInsertId());
+    }
+
+    public function testLastInsertIdRaiseExceptionWhenAfterDisconnected()
+    {
+        $this->expectException(\RuntimeException::class);
+        $driver = new PdoDriver($this->getPdo());
+        $driver->execute("INSERT INTO test (name) VALUES ('test')");
+        $driver->disconnect();
+        $driver->lastInsertId();
     }
 
     public function testGetMetaTables()
@@ -223,6 +265,14 @@ SQL
         $driver = new PdoDriver($this->getPdo());
         $this->assertEquals("'Foo'", $driver->quote('Foo'));
         $this->assertEquals("'''Foo'''", $driver->quote("'Foo'"));
+    }
+
+    public function testQuoteRaiseExceptionWhenAfterDisconnected()
+    {
+        $this->expectException(\RuntimeException::class);
+        $driver = new PdoDriver($this->getPdo());
+        $driver->disconnect();
+        $driver->quote('Foo');
     }
 
     public function testEscapeCharacter()

@@ -1,7 +1,7 @@
 <?php /** @noinspection PhpUnused */
 
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -28,39 +28,39 @@ class Dsn extends AbstractPropertyAccessor
 {
 
     /**
-     * @var string ドライバ種別 (mysql, pgsql, sqlite)
+     * @var string|null ドライバ種別 (mysql, pgsql, sqlite)
      */
-    protected $driver;
+    protected ?string $driver = null;
 
     /**
-     * @var string データベース名
+     * @var string|null データベース名
      */
-    protected $database;
+    protected ?string $database = null;
 
     /**
-     * @var string ホスト名
+     * @var string|null ホスト名
      */
-    protected $hostname;
+    protected ?string $hostname = null;
 
     /**
-     * @var string ポート番号
+     * @var string|null ポート番号
      */
-    protected $port;
+    protected ?string $port = null;
 
     /**
-     * @var string ユーザ名
+     * @var string|null ユーザ名
      */
-    protected $username;
+    protected ?string $username = null;
 
     /**
-     * @var string パスワード
+     * @var string|null パスワード
      */
-    protected $password;
+    protected ?string $password = null;
 
     /**
-     * @var array ドライバ固有の接続オプション
+     * @var array|null ドライバ固有の接続オプション
      */
-    protected $options;
+    protected ?array $options = null;
 
     /**
      * コンストラクタ

@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -23,15 +23,15 @@ class PdoStatement implements StatementInterface
     /**
      * @var \PDOStatement
      */
-    private $statement;
+    private \PDOStatement $statement;
 
     /**
      * @var int フェッチモード
      */
-    private $fetchMode;
+    private int $fetchMode;
 
     /**
-     * @var callable フェッチ後に実行するコールバック
+     * @var callable|null フェッチ後に実行するコールバック
      */
     private $callback;
 
@@ -43,6 +43,7 @@ class PdoStatement implements StatementInterface
     public function __construct(\PDOStatement $statement)
     {
         $this->statement = $statement;
+        $this->fetchMode = Statement::FETCH_ASSOC;
         $this->callback = null;
     }
 
@@ -53,38 +54,18 @@ class PdoStatement implements StatementInterface
      */
     public function setFetchCallback(callable $callback)
     {
-        if (!is_callable($callback)) {
-            throw new \InvalidArgumentException(
-                sprintf('CallbackIterator accepts only callable, invalid type:%s',
-                    (is_object($callback))
-                        ? get_class((object)$callback)
-                        : gettype($callback)
-                )
-            );
-        }
         $this->callback = $callback;
     }
 
     /**
      * プリペアドステートメントを実行します。
      *
-     * @param array|\Traversable $parameters パラメータ
+     * @param iterable|null $parameters パラメータ
      * @return bool
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
      */
-    public function execute($parameters = null): bool
+    public function execute(iterable $parameters = null): bool
     {
         if (isset($parameters)) {
-            if (!is_array($parameters) && !($parameters instanceof \Traversable)) {
-                throw new \InvalidArgumentException(
-                    sprintf('Parameters accepts an Array or Traversable, invalid type:%s',
-                        (is_object($parameters))
-                            ? get_class($parameters)
-                            : gettype($parameters)
-                    )
-                );
-            }
             foreach ($parameters as $name => $value) {
                 $type = \PDO::PARAM_STR;
                 if (is_int($value)) {
@@ -114,11 +95,11 @@ class PdoStatement implements StatementInterface
      * このステートメントのデフォルトのフェッチモードを設定します。
      *
      * @param int $mode フェッチモード定数 (Statement::FETCH_**)
-     * @param mixed $option フェッチモードのオプション引数
+     * @param mixed|null $option フェッチモードのオプション引数
      * @param array|null $arguments Statement::FETCH_CLASS の場合のコンストラクタ引数
      * @return $this
      */
-    public function setFetchMode(int $mode, $option = null, array $arguments = null): PdoStatement
+    public function setFetchMode(int $mode, mixed $option = null, array $arguments = null): PdoStatement
     {
         $this->fetchMode = $mode;
         $fetchMode = $this->convertFetchMode($mode);
@@ -139,9 +120,9 @@ class PdoStatement implements StatementInterface
     /**
      * 現在のデフォルトのフェッチモードを返します。
      *
-     * @return int|null
+     * @return int
      */
-    public function getFetchMode(): ?int
+    public function getFetchMode(): int
     {
         return $this->fetchMode;
     }
@@ -151,7 +132,7 @@ class PdoStatement implements StatementInterface
      *
      * @return mixed
      */
-    public function fetch()
+    public function fetch(): mixed
     {
         $result = $this->statement->fetch();
         if (!isset($this->callback) || $result === false) {
@@ -175,7 +156,7 @@ class PdoStatement implements StatementInterface
      *
      * @return \Traversable
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return (isset($this->callback))
             ? new CallbackIterator($this->statement, $this->callback)

@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -28,9 +28,9 @@ class PdoDriver extends AbstractDriver
 {
 
     /**
-     * @var \PDO
+     * @var \PDO|null
      */
-    private $pdo;
+    private ?\PDO $pdo = null;
 
     /**
      * コンストラクタ
@@ -40,8 +40,6 @@ class PdoDriver extends AbstractDriver
      */
     public function __construct(\PDO $pdo = null, MetaDataProcessorInterface $metaDataProcessor = null)
     {
-        $this->pdo = null;
-        $this->lastQuery = null;
         if (isset($pdo)) {
             $this->pdo = $pdo;
             if (!isset($metaDataProcessor)) {
@@ -122,6 +120,11 @@ class PdoDriver extends AbstractDriver
      */
     public function getLastError(): ?string
     {
+        if ($this->pdo === null) {
+            throw new \RuntimeException(
+                'PDO not connected.'
+            );
+        }
         $errors = $this->pdo->errorInfo();
         return (isset($errors[2])) ? $errors[2] : null;
     }
@@ -131,8 +134,13 @@ class PdoDriver extends AbstractDriver
      *
      * @return false|string 実行結果
      */
-    public function lastInsertId()
+    public function lastInsertId(): bool|string
     {
+        if ($this->pdo === null) {
+            throw new \RuntimeException(
+                'PDO not connected.'
+            );
+        }
         return $this->pdo->lastInsertId();
     }
 
@@ -144,6 +152,11 @@ class PdoDriver extends AbstractDriver
      */
     public function quote(string $value): string
     {
+        if ($this->pdo === null) {
+            throw new \RuntimeException(
+                'PDO not connected.'
+            );
+        }
         return $this->pdo->quote($value, \PDO::PARAM_STR);
     }
 
@@ -155,6 +168,11 @@ class PdoDriver extends AbstractDriver
      */
     protected function doPrepare(string $query): StatementInterface
     {
+        if ($this->pdo === null) {
+            throw new \RuntimeException(
+                'PDO not connected.'
+            );
+        }
         $statement = $this->pdo->prepare($query);
         if ($statement === false) {
             throw new \RuntimeException(
@@ -172,6 +190,11 @@ class PdoDriver extends AbstractDriver
      */
     protected function doQuery(string $query): StatementInterface
     {
+        if ($this->pdo === null) {
+            throw new \RuntimeException(
+                'PDO not connected.'
+            );
+        }
         $statement = $this->pdo->query($query);
         if ($statement === false) {
             throw new \RuntimeException(
@@ -189,6 +212,11 @@ class PdoDriver extends AbstractDriver
      */
     protected function doExecute(string $query): int
     {
+        if ($this->pdo === null) {
+            throw new \RuntimeException(
+                'PDO not connected.'
+            );
+        }
         return $this->pdo->exec($query);
     }
 
