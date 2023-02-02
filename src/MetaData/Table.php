@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -23,19 +23,19 @@ class Table extends AbstractPropertyAccessor
 {
 
     /**
-     * @var string テーブル名
+     * @var string|null テーブル名
      */
-    protected $name;
+    protected ?string $name = null;
 
     /**
-     * @var string コメント
+     * @var string|null コメント
      */
-    protected $comment;
+    protected ?string $comment = null;
 
     /**
-     * @var array カラム配列
+     * @var array|null カラム配列
      */
-    protected $columns;
+    protected ?array $columns = null;
 
     /**
      * コンストラクタ

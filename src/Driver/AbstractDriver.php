@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -22,24 +22,24 @@ abstract class AbstractDriver implements DriverInterface
 {
 
     /**
-     * @var Dsn
+     * @var Dsn|null
      */
-    protected $dsn;
+    protected ?Dsn $dsn = null;
 
     /**
-     * @var MetaDataProcessorInterface
+     * @var MetaDataProcessorInterface|null
      */
-    protected $metaDataProcessor;
+    protected ?MetaDataProcessorInterface $metaDataProcessor = null;
 
     /**
-     * @var string LastQuery
+     * @var string|null LastQuery
      */
-    protected $lastQuery;
+    protected ?string $lastQuery = null;
 
     /**
      * @var string LIKE演算子のエスケープ文字
      */
-    protected $escapeCharacter = '\\';
+    protected string $escapeCharacter = '\\';
 
     /**
      * DSNをセットします。
@@ -70,7 +70,9 @@ abstract class AbstractDriver implements DriverInterface
     {
         $driverName = $this->getDriverName();
         if (!isset($driverName)) {
-            throw new \RuntimeException('Could not create MetaDataProcessor disconnected.');
+            throw new \RuntimeException(
+                'Could not create MetaDataProcessor disconnected.'
+            );
         }
         $className = sprintf('\Volcanus\Database\MetaData\%sMetaDataProcessor',
             ucfirst($driverName)

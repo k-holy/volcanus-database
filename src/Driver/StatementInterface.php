@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -26,18 +26,18 @@ interface StatementInterface extends \IteratorAggregate
     /**
      * プリペアドステートメントを実行します。
      *
-     * @param array|\Traversable $parameters パラメータ
+     * @param iterable|null $parameters パラメータ
      */
-    public function execute($parameters = null);
+    public function execute(iterable $parameters = null);
 
     /**
      * このステートメントのデフォルトのフェッチモードを設定します。
      *
      * @param int $mode フェッチモード定数 (Statement::FETCH_**)
-     * @param mixed $option フェッチモードのオプション引数
+     * @param mixed|null $option フェッチモードのオプション引数
      * @param array|null $arguments Statement::FETCH_CLASS の場合のコンストラクタ引数
      */
-    public function setFetchMode(int $mode, $option = null, array $arguments = null);
+    public function setFetchMode(int $mode, mixed $option = null, array $arguments = null);
 
     /**
      * 現在のデフォルトのフェッチモードを返します。
@@ -51,7 +51,7 @@ interface StatementInterface extends \IteratorAggregate
      *
      * @return mixed
      */
-    public function fetch();
+    public function fetch(): mixed;
 
     /**
      * 結果セットから全ての行を取得して配列で返します。

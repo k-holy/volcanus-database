@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -113,7 +113,7 @@ interface DriverInterface
      *
      * @return mixed 実行結果
      */
-    public function lastInsertId();
+    public function lastInsertId(): mixed;
 
     /**
      * テーブルオブジェクトを配列で返します。

@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -19,7 +19,7 @@ class DsnParser
     /**
      * @var array of DSN attributes
      */
-    private $attributes;
+    private array $attributes = [];
 
     /**
      * コンストラクタ
@@ -144,7 +144,7 @@ class DsnParser
 
         if ($endOfScheme === false) {
 
-            if (strpos($value, 'sqlite:') === 0) {
+            if (str_starts_with($value, 'sqlite:')) {
                 // sqlite:/path/to/file
                 // sqlite:C:\path\to\file
                 // sqlite::memory:
