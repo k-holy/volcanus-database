@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -89,7 +89,7 @@ class SqliteMetaDataProcessor extends AbstractMetaDataProcessor
             }
             $notNull = (bool)$cols['notnull'];
             $primaryKey = (bool)$cols['pk'];
-            $uniqueKey = (array_key_exists($name, $indexes) && $indexes[$name]['unique'] === '1');
+            $uniqueKey = (array_key_exists($name, $indexes) && isset($indexes[$name]['unique']) && (int)$indexes[$name]['unique'] === 1);
             $autoIncrement = ($primaryKey && strcasecmp($type, 'INTEGER') === 0);
             $binary = (strcasecmp($type, 'BLOB') === 0);
             $default = null;

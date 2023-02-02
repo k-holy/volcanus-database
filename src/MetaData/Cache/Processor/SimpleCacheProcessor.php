@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -22,7 +22,7 @@ class SimpleCacheProcessor implements CacheProcessorInterface
     /**
      * @var CacheInterface
      */
-    private $cache;
+    private CacheInterface $cache;
 
     /**
      * コンストラクタ
@@ -53,7 +53,7 @@ class SimpleCacheProcessor implements CacheProcessorInterface
      * @return mixed null | array of Table from cache
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function getMetaTables()
+    public function getMetaTables(): mixed
     {
         return $this->cache->get(
             self::META_TABLES_ID
@@ -114,7 +114,7 @@ class SimpleCacheProcessor implements CacheProcessorInterface
      * @return mixed null | array of Column from cache
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function getMetaColumns(string $table)
+    public function getMetaColumns(string $table): mixed
     {
         return $this->cache->get(
             sprintf(self::META_COLUMNS_ID, $table)

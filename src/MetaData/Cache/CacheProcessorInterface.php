@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -31,7 +31,7 @@ interface CacheProcessorInterface
      *
      * @return mixed null | array of Table from cache
      */
-    public function getMetaTables();
+    public function getMetaTables(): mixed;
 
     /**
      * テーブルオブジェクトの配列をキャッシュに保存します。
@@ -63,7 +63,7 @@ interface CacheProcessorInterface
      * @param string $table テーブル名
      * @return mixed null | array of Column from cache
      */
-    public function getMetaColumns(string $table);
+    public function getMetaColumns(string $table): mixed;
 
     /**
      * 指定したテーブルのカラムオブジェクトの配列をキャッシュに保存します。

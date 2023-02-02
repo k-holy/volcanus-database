@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -8,6 +8,7 @@
 
 namespace Volcanus\Database\Test\Driver\Pdo;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use Volcanus\Database\Driver\Pdo\PdoTransaction;
 
 /**
@@ -19,7 +20,7 @@ class PdoTransactionTest extends \PHPUnit\Framework\TestCase
 {
 
     /** @var \PDO */
-    private static $pdo;
+    private static \PDO $pdo;
 
     public function tearDown(): void
     {
@@ -70,7 +71,7 @@ SQL
     public function testBeginRaiseRuntimeException()
     {
         $this->expectException(\RuntimeException::class);
-        /** @var $pdo PdoMock|\PHPUnit\Framework\MockObject\MockObject */
+        /** @var $pdo PdoMock|MockObject */
         $pdo = $this->createMock(PdoMock::class);
         $pdo->expects($this->once())
             ->method('beginTransaction')
@@ -83,7 +84,7 @@ SQL
     public function testCommitRaiseRuntimeException()
     {
         $this->expectException(\RuntimeException::class);
-        /** @var $pdo PdoMock|\PHPUnit\Framework\MockObject\MockObject */
+        /** @var $pdo PdoMock|MockObject */
         $pdo = $this->createMock(PdoMock::class);
         $pdo->expects($this->once())
             ->method('commit')
@@ -96,7 +97,7 @@ SQL
     public function testRollbackRaiseRuntimeException()
     {
         $this->expectException(\RuntimeException::class);
-        /** @var $pdo PdoMock|\PHPUnit\Framework\MockObject\MockObject */
+        /** @var $pdo PdoMock|MockObject */
         $pdo = $this->createMock(PdoMock::class);
         $pdo->expects($this->once())
             ->method('rollback')

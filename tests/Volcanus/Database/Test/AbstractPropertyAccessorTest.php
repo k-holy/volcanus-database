@@ -1,7 +1,7 @@
 <?php /** @noinspection PhpMultipleClassesDeclarationsInOneFile */
 
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -64,7 +64,6 @@ class AbstractPropertyAccessorTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\InvalidArgumentException::class);
         $test = new Test();
         /** @noinspection PhpUndefinedFieldInspection */
-        /** @noinspection PhpExpressionResultUnusedInspection */
         $test->undefined_property;
     }
 
@@ -211,10 +210,10 @@ class AbstractPropertyAccessorTest extends \PHPUnit\Framework\TestCase
  */
 class Test extends AbstractPropertyAccessor
 {
-    protected $string;
-    protected $null;
-    protected $boolean;
-    protected $datetime;
+    protected ?string $string = null;
+    protected ?string $null = null;
+    protected ?bool $boolean = null;
+    protected ?\DateTime $datetime = null;
 
     public function __construct(array $properties = [])
     {

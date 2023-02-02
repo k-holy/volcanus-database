@@ -3,7 +3,7 @@
 /** @noinspection PhpPropertyOnlyWrittenInspection */
 
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -25,29 +25,29 @@ namespace Volcanus\Database\Test\Driver\Pdo;
 class PdoStatementTestData
 {
     /**
-     * @var string
+     * @var string|null
      */
-    private $userId;
+    private ?string $userId = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $userName;
+    private ?string $userName = null;
 
     /**
-     * @var string Y-m-d
+     * @var string|null Y-m-d
      */
-    private $birthday;
+    private ?string $birthday = null;
 
     /**
-     * @var string タイムスタンプ値
+     * @var string|null タイムスタンプ値
      */
-    private $createdAt;
+    private ?string $createdAt = null;
 
     /**
-     * @var \DateTime 現在日時
+     * @var \DateTime|null 現在日時
      */
-    private $now;
+    private ?\DateTime $now = null;
 
     /**
      * __construct()
@@ -77,10 +77,10 @@ class PdoStatementTestData
     /**
      * __isset
      *
-     * @param mixed $name
+     * @param string $name
      * @return bool
      */
-    public function __isset($name)
+    public function __isset(string $name)
     {
         return (property_exists($this, $name) && $this->{$name} !== null);
     }
@@ -88,10 +88,10 @@ class PdoStatementTestData
     /**
      * __get
      *
-     * @param mixed $name
-     * @throws \InvalidArgumentException
+     * @param string $name
+     * @return mixed
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         if (method_exists($this, 'get' . ucfirst($name))) {
             return $this->{'get' . ucfirst($name)}();
@@ -107,11 +107,11 @@ class PdoStatementTestData
     /**
      * __set
      *
-     * @param mixed $name
+     * @param string $name
      * @param mixed $value
      * @throws \InvalidArgumentException
      */
-    public function __set($name, $value)
+    public function __set(string $name, mixed $value)
     {
         if (method_exists($this, 'set' . ucfirst($name))) {
             $this->{'set' . ucfirst($name)}($value);
@@ -127,10 +127,10 @@ class PdoStatementTestData
     /**
      * __unset
      *
-     * @param mixed $name
+     * @param string $name
      * @throws \InvalidArgumentException
      */
-    public function __unset($name)
+    public function __unset(string $name)
     {
         if (!property_exists($this, $name)) {
             throw new \InvalidArgumentException(
@@ -144,9 +144,10 @@ class PdoStatementTestData
      * 現在日時をセットします。
      *
      * @param \DateTime $now
+     * @return void
      * @noinspection PhpUnusedPrivateMethodInspection
      */
-    private function setNow(\DateTime $now)
+    private function setNow(\DateTime $now): void
     {
         $this->now = $now;
     }
@@ -154,7 +155,7 @@ class PdoStatementTestData
     /**
      * 年齢を返します。
      *
-     * @return int
+     * @return int|null
      * @noinspection PhpUnused
      */
     public function getAge(): ?int
