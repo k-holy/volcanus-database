@@ -8,6 +8,7 @@
 
 namespace Volcanus\Database\Test\MetaData;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use Volcanus\Database\Driver\DriverInterface;
 use Volcanus\Database\Driver\StatementInterface;
 use Volcanus\Database\MetaData\Column;
@@ -40,7 +41,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         $metaDataProcessor = new MysqlMetaDataProcessor();
         $metaTablesCache = $metaDataProcessor->getMetaTables($this->getDriverForGetMetaTables());
 
-        /** @var $cacheProcessorInterface CacheProcessorInterface|\PHPUnit\Framework\MockObject\MockObject */
+        /** @var $cacheProcessorInterface CacheProcessorInterface|MockObject */
         $cacheProcessorInterface = $this->createMock(CacheProcessorInterface::class);
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaTables')
@@ -60,7 +61,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         $metaDataProcessor = new MysqlMetaDataProcessor();
         $metaTablesCache = $metaDataProcessor->getMetaTables($this->getDriverForGetMetaTables());
 
-        /** @var $cacheProcessorInterface CacheProcessorInterface|\PHPUnit\Framework\MockObject\MockObject */
+        /** @var $cacheProcessorInterface CacheProcessorInterface|MockObject */
         $cacheProcessorInterface = $this->createMock(CacheProcessorInterface::class);
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaTables')
@@ -108,7 +109,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         $metaDataProcessor = new MysqlMetaDataProcessor();
         $metaColumnsCache = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
 
-        /** @var $cacheProcessorInterface CacheProcessorInterface|\PHPUnit\Framework\MockObject\MockObject */
+        /** @var $cacheProcessorInterface CacheProcessorInterface|MockObject */
         $cacheProcessorInterface = $this->createMock(CacheProcessorInterface::class);
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaColumns')
@@ -127,7 +128,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         $metaDataProcessor = new MysqlMetaDataProcessor();
         $metaColumnsCache = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
 
-        /** @var $cacheProcessorInterface CacheProcessorInterface|\PHPUnit\Framework\MockObject\MockObject */
+        /** @var $cacheProcessorInterface CacheProcessorInterface|MockObject */
         $cacheProcessorInterface = $this->createMock(CacheProcessorInterface::class);
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaColumns')
@@ -170,6 +171,20 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('blob', $metaColumns['user_binary']->type);
     }
 
+    public function testGetColumnTypeMySql8()
+    {
+        $metaDataProcessor = new MysqlMetaDataProcessor();
+        $metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsersMySql8(), 'users');
+
+        $this->assertEquals('int', $metaColumns['user_id']->type);
+        $this->assertEquals('int', $metaColumns['user_type']->type);
+        $this->assertEquals('enum', $metaColumns['user_gender']->type);
+        $this->assertEquals('varchar', $metaColumns['user_key']->type);
+        $this->assertEquals('varchar', $metaColumns['user_name']->type);
+        $this->assertEquals('decimal', $metaColumns['user_decimal']->type);
+        $this->assertEquals('blob', $metaColumns['user_binary']->type);
+    }
+
     public function testGetColumnMaxLength()
     {
         $metaDataProcessor = new MysqlMetaDataProcessor();
@@ -196,6 +211,20 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($metaColumns['user_name']->scale);
         $this->assertEquals('5', $metaColumns['user_decimal']->scale);
         $this->assertNull($metaColumns['user_binary']->scale);
+    }
+
+    public function testGetColumnIsUnsigned()
+    {
+        $metaDataProcessor = new MysqlMetaDataProcessor();
+        $metaColumns = $metaDataProcessor->getMetaColumns($this->getDriverForGetMetaColumnsOfUsers(), 'users');
+
+        $this->assertTrue($metaColumns['user_id']->unsigned);
+        $this->assertFalse($metaColumns['user_type']->unsigned);
+        $this->assertFalse($metaColumns['user_gender']->unsigned);
+        $this->assertFalse($metaColumns['user_key']->unsigned);
+        $this->assertFalse($metaColumns['user_name']->unsigned);
+        $this->assertFalse($metaColumns['user_decimal']->unsigned);
+        $this->assertFalse($metaColumns['user_binary']->unsigned);
     }
 
     public function testGetColumnIsBinary()
@@ -296,9 +325,9 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('ユーザーバイナリ', $metaColumns['user_binary']->comment);
     }
 
-    private function getDriverForGetMetaTables()
+    private function getDriverForGetMetaTables(): MockObject|DriverInterface
     {
-        /** @var $statementInterface StatementInterface|\PHPUnit\Framework\MockObject\MockObject */
+        /** @var $statementInterface StatementInterface|MockObject */
         $statementInterface = $this->createMock(StatementInterface::class);
         $statementInterface->expects($this->any())
             ->method('setFetchMode')
@@ -314,7 +343,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
                 )
             ));
 
-        /** @var $driverInterface DriverInterface|\PHPUnit\Framework\MockObject\MockObject */
+        /** @var $driverInterface DriverInterface|MockObject */
         $driverInterface = $this->createMock(DriverInterface::class);
         $driverInterface->expects($this->any())
             ->method('query')
@@ -323,9 +352,9 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         return $driverInterface;
     }
 
-    private function getDriverForGetMetaColumnsOfUsers()
+    private function getDriverForGetMetaColumnsOfUsers(): MockObject|DriverInterface
     {
-        /** @var $statementInterface StatementInterface|\PHPUnit\Framework\MockObject\MockObject */
+        /** @var $statementInterface StatementInterface|MockObject */
         $statementInterface = $this->createMock(StatementInterface::class);
         $statementInterface->expects($this->any())
             ->method('setFetchMode')
@@ -371,7 +400,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
                         [
                             'Field' => 'user_gender',
                             'Type' => 'enum(\'female\', \'male\')',
-                            'Collation' => 'NULL',
+                            'Collation' => 'utf8mb4_general_ci',
                             'Null' => 'NO',
                             'Key' => null,
                             'Default' => 'NULL',
@@ -382,7 +411,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
                         [
                             'Field' => 'user_key',
                             'Type' => 'varchar(64)',
-                            'Collation' => 'utf8_bin',
+                            'Collation' => 'utf8mb4_bin',
                             'Null' => 'NO',
                             'Key' => 'UNI',
                             'Default' => 'NULL',
@@ -393,7 +422,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
                         [
                             'Field' => 'user_name',
                             'Type' => 'varchar(255)',
-                            'Collation' => 'utf8_general_ci',
+                            'Collation' => 'utf8mb4_general_ci',
                             'Null' => 'YES',
                             'Key' => null,
                             'Default' => 'NULL',
@@ -427,7 +456,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
                 )
             ));
 
-        /** @var $driverInterface DriverInterface|\PHPUnit\Framework\MockObject\MockObject */
+        /** @var $driverInterface DriverInterface|MockObject */
         $driverInterface = $this->createMock(DriverInterface::class);
         $driverInterface->expects($this->any())
             ->method('query')
@@ -436,9 +465,122 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         return $driverInterface;
     }
 
-    private function getDriverForGetMetaColumnsOfMessages()
+    private function getDriverForGetMetaColumnsOfUsersMySql8(): MockObject|DriverInterface
     {
-        /** @var $statementInterface StatementInterface|\PHPUnit\Framework\MockObject\MockObject */
+        /** @var $statementInterface StatementInterface|MockObject */
+        $statementInterface = $this->createMock(StatementInterface::class);
+        $statementInterface->expects($this->any())
+            ->method('setFetchMode')
+            ->will($this->returnValue(true));
+        $statementInterface->expects($this->any())
+            ->method('getIterator')
+            ->will($this->returnValue(
+                new \ArrayIterator(
+                /*
+                CREATE TABLE users(
+                     user_id      INTEGER UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY  comment 'ユーザーID'
+                    ,user_type    INTEGER                         NOT NULL DEFAULT 1    comment 'ユーザー種別'
+                    ,user_gender  ENUM('female', 'male')          NOT NULL              comment 'ユーザー性別'
+                    ,user_key     VARCHAR(64)  BINARY             NOT NULL UNIQUE       comment 'ユーザー識別子'
+                    ,user_name    VARCHAR(255)                             DEFAULT NULL comment 'ユーザー名'
+                    ,user_decimal DECIMAL(10,5)                                         comment 'ユーザー小数'
+                    ,user_binary  BLOB                                                  comment 'ユーザーバイナリ'
+                ) comment 'ユーザー情報';
+                */
+                    [
+                        [
+                            'Field' => 'user_id',
+                            'Type' => 'int unsigned',
+                            'Collation' => null,
+                            'Null' => 'NO',
+                            'Key' => 'PRI',
+                            'Default' => 'NULL',
+                            'Extra' => 'auto_increment',
+                            'Privileged' => 'select,insert,update,references',
+                            'Comment' => 'ユーザーID',
+                        ],
+                        [
+                            'Field' => 'user_type',
+                            'Type' => 'int',
+                            'Collation' => null,
+                            'Null' => 'NO',
+                            'Key' => null,
+                            'Default' => '1',
+                            'Extra' => null,
+                            'Privileged' => 'select,insert,update,references',
+                            'Comment' => 'ユーザー種別',
+                        ],
+                        [
+                            'Field' => 'user_gender',
+                            'Type' => 'enum(\'female\', \'male\')',
+                            'Collation' => 'utf8mb4_0900_ai_ci',
+                            'Null' => 'NO',
+                            'Key' => null,
+                            'Default' => 'NULL',
+                            'Extra' => null,
+                            'Privileged' => 'select,insert,update,references',
+                            'Comment' => 'ユーザー性別',
+                        ],
+                        [
+                            'Field' => 'user_key',
+                            'Type' => 'varchar(64)',
+                            'Collation' => 'utf8mb4_bin',
+                            'Null' => 'NO',
+                            'Key' => 'UNI',
+                            'Default' => 'NULL',
+                            'Extra' => null,
+                            'Privileged' => 'select,insert,update,references',
+                            'Comment' => 'ユーザー識別子',
+                        ],
+                        [
+                            'Field' => 'user_name',
+                            'Type' => 'varchar(255)',
+                            'Collation' => 'utf8mb4_0900_ai_ci',
+                            'Null' => 'YES',
+                            'Key' => null,
+                            'Default' => 'NULL',
+                            'Extra' => null,
+                            'Privileged' => 'select,insert,update,references',
+                            'Comment' => 'ユーザー名',
+                        ],
+                        [
+                            'Field' => 'user_decimal',
+                            'Type' => 'decimal(10,5)',
+                            'Collation' => null,
+                            'Null' => 'YES',
+                            'Key' => null,
+                            'Default' => 'NULL',
+                            'Extra' => null,
+                            'Privileged' => 'select,insert,update,references',
+                            'Comment' => 'ユーザー小数',
+                        ],
+                        [
+                            'Field' => 'user_binary',
+                            'Type' => 'blob',
+                            'Collation' => null,
+                            'Null' => 'YES',
+                            'Key' => null,
+                            'Default' => 'NULL',
+                            'Extra' => null,
+                            'Privileged' => 'select,insert,update,references',
+                            'Comment' => 'ユーザーバイナリ',
+                        ],
+                    ]
+                )
+            ));
+
+        /** @var $driverInterface DriverInterface|MockObject */
+        $driverInterface = $this->createMock(DriverInterface::class);
+        $driverInterface->expects($this->any())
+            ->method('query')
+            ->will($this->returnValue($statementInterface));
+
+        return $driverInterface;
+    }
+
+    private function getDriverForGetMetaColumnsOfMessages(): MockObject|DriverInterface
+    {
+        /** @var $statementInterface StatementInterface|MockObject */
         $statementInterface = $this->createMock(StatementInterface::class);
         $statementInterface->expects($this->any())
             ->method('setFetchMode')
@@ -505,7 +647,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
                 )
             ));
 
-        /** @var $driverInterface DriverInterface|\PHPUnit\Framework\MockObject\MockObject */
+        /** @var $driverInterface DriverInterface|MockObject */
         $driverInterface = $this->createMock(DriverInterface::class);
         $driverInterface->expects($this->any())
             ->method('query')
