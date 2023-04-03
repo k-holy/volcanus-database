@@ -18,6 +18,7 @@ use Volcanus\Database\AbstractPropertyAccessor;
  * @property string $type
  * @property int $maxLength
  * @property int $scale
+ * @property bool $unsigned
  * @property bool $binary
  * @property mixed $default
  * @property bool $notNull
@@ -50,6 +51,11 @@ class Column extends AbstractPropertyAccessor
      * @var int|null 桁数
      */
     protected ?int $scale = null;
+
+    /**
+     * @var bool|null 符号なしかどうか
+     */
+    protected ?bool $unsigned = null;
 
     /**
      * @var bool|null バイナリデータかどうか

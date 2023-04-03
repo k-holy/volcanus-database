@@ -72,17 +72,22 @@ class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
             $type = $cols['Type'];
             $maxLength = null;
             $scale = null;
-            if (preg_match('/^(.+)\((\d+),(\d+)/', $type, $matches)) {
-                $type = $matches[1];
-                $maxLength = ctype_digit($matches[2]) ? $matches[2] : -1;
-                $scale = ctype_digit($matches[3]) ? $matches[3] : -1;
-            } elseif (preg_match('/^(.+)\((\d+)/', $type, $matches)) {
-                $type = $matches[1];
-                $maxLength = ctype_digit($matches[2]) ? $matches[2] : -1;
-            } elseif (preg_match('/^(enum)\((.*)\)$/i', $type, $matches)) {
+            $unsigned = false;
+            if (preg_match('/^(enum)\((.*)\)$/i', $type, $matches)) {
                 $type = $matches[1];
                 $zlen = max(array_map('strlen', explode(',', $matches[2]))) - 2;
                 $maxLength = ($zlen > 0) ? $zlen : 1;
+            } elseif (preg_match('/^([a-z0-9]+)\((\d+),(\d+)/i', $type, $matches)) {
+                $type = $matches[1];
+                $maxLength = ctype_digit($matches[2]) ? $matches[2] : -1;
+                $scale = ctype_digit($matches[3]) ? $matches[3] : -1;
+            } elseif (preg_match('/^([a-z0-9]+)\((\d+)\)( unsigned)?$/i', $type, $matches)) { // < MySQL8.0
+                $type = $matches[1];
+                $maxLength = ctype_digit($matches[2]) ? $matches[2] : -1;
+                $unsigned = isset($matches[3]);
+            } elseif (preg_match('/^([a-z0-9]+)( unsigned)?$/i', $type, $matches)) { // >= MySQL8.0
+                $type = $matches[1];
+                $unsigned = isset($matches[2]);
             }
             $notNull = ($cols['Null'] !== 'YES');
             $primaryKey = ($cols['Key'] === 'PRI');
@@ -99,6 +104,7 @@ class MysqlMetaDataProcessor extends AbstractMetaDataProcessor
                 'type' => $type,
                 'maxLength' => $maxLength,
                 'scale' => $scale,
+                'unsigned' => $unsigned,
                 'binary' => $binary,
                 'default' => $default,
                 'notNull' => $notNull,
