@@ -48,7 +48,7 @@ SQL
         return static::$pdo;
     }
 
-    private function insertUser($parameters)
+    private function insertUser($parameters): void
     {
         $pdo = $this->getPdo();
         $pdo->beginTransaction();

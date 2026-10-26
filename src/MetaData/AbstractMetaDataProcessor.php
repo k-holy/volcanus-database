@@ -29,7 +29,7 @@ abstract class AbstractMetaDataProcessor implements MetaDataProcessorInterface
      *
      * @param CacheProcessorInterface $cacheProcessor キャッシュプロセッサ
      */
-    public function setCacheProcessor(CacheProcessorInterface $cacheProcessor)
+    public function setCacheProcessor(CacheProcessorInterface $cacheProcessor): void
     {
         $this->cacheProcessor = $cacheProcessor;
     }

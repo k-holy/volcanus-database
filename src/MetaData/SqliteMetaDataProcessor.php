@@ -27,7 +27,7 @@ class SqliteMetaDataProcessor extends AbstractMetaDataProcessor
      *
      * @param CacheProcessorInterface|null $cacheProcessor キャッシュプロセッサ
      */
-    public function __construct(CacheProcessorInterface $cacheProcessor = null)
+    public function __construct(?CacheProcessorInterface $cacheProcessor = null)
     {
         if ($cacheProcessor !== null) {
             $this->setCacheProcessor($cacheProcessor);

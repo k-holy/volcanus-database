@@ -38,7 +38,7 @@ class PdoDriver extends AbstractDriver
      * @param \PDO|null $pdo
      * @param MetaDataProcessorInterface|null $metaDataProcessor
      */
-    public function __construct(\PDO $pdo = null, MetaDataProcessorInterface $metaDataProcessor = null)
+    public function __construct(?\PDO $pdo = null, ?MetaDataProcessorInterface $metaDataProcessor = null)
     {
         if (isset($pdo)) {
             $this->pdo = $pdo;
@@ -70,7 +70,7 @@ class PdoDriver extends AbstractDriver
      * @param Dsn|null $dsn DSNオブジェクト
      * @return $this
      */
-    public function connect(Dsn $dsn = null): DriverInterface
+    public function connect(?Dsn $dsn = null): DriverInterface
     {
         if (isset($dsn)) {
             $this->dsn = $dsn;

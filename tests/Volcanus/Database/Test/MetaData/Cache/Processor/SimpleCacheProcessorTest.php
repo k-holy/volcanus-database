@@ -8,7 +8,8 @@
 
 namespace Volcanus\Database\Test\MetaData\Cache\Processor;
 
-use Volcanus\Database\Test\MetaData\Cache\AbstractCacheProcessorTest;
+use Volcanus\Database\MetaData\Column;
+use Volcanus\Database\MetaData\Table;
 use Volcanus\Database\MetaData\Cache\Processor\SimpleCacheProcessor;
 
 use Psr\SimpleCache\CacheInterface;
@@ -20,8 +21,80 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
  *
  * @author k.holy74@gmail.com
  */
-class SimpleCacheProcessorTest extends AbstractCacheProcessorTest
+class SimpleCacheProcessorTest extends \PHPUnit\Framework\TestCase
 {
+
+    private string $cacheDir;
+
+    public function setUp(): void
+    {
+        $this->cacheDir = __DIR__ . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
+    }
+
+    public function tearDown(): void
+    {
+        $this->clearDirectory();
+    }
+
+    protected function buildMetaTables(): array
+    {
+        return [
+            new Table([
+                'name' => 'users',
+                'comment' => 'Table of Users',
+                'columns' => $this->buildMetaColumns(),
+            ]),
+        ];
+    }
+
+    protected function buildMetaColumns(): array
+    {
+        return [
+            'id' => new Column([
+                'name' => 'user_id',
+                'type' => 'integer',
+                'maxLength' => '11',
+                'scale' => null,
+                'binary' => false,
+                'default' => null,
+                'notNull' => true,
+                'primaryKey' => true,
+                'uniqueKey' => true,
+                'autoIncrement' => false,
+                'comment' => 'Primary key of User',
+            ]),
+            'name' => new Column([
+                'name' => 'user_name',
+                'type' => 'varchar',
+                'maxLength' => '255',
+                'scale' => null,
+                'binary' => false,
+                'default' => null,
+                'notNull' => true,
+                'primaryKey' => false,
+                'uniqueKey' => false,
+                'autoIncrement' => false,
+                'comment' => 'Name of User',
+            ]),
+        ];
+    }
+
+    protected function clearDirectory(): void
+    {
+        $it = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($this->cacheDir, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+        foreach ($it as $file) {
+            if ($file->isDir()) {
+                if ($file->getRealpath() !== $this->cacheDir) {
+                    rmdir($file);
+                }
+            } elseif ($file->isFile() && $file->getBaseName() !== '.gitignore') {
+                unlink($file);
+            }
+        }
+    }
 
     private function createCacheProvider()
     {
@@ -96,13 +169,13 @@ class SimpleCacheProcessorTest extends AbstractCacheProcessorTest
         $cacheProvider = $this->createMock(CacheInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProvider->expects($this->once())
             ->method('has')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProvider->expects($this->once())
             ->method('get')
-            ->will($this->returnValue($metaTables));
+            ->willReturn($metaTables);
 
         $cacheProcessor = new SimpleCacheProcessor($cacheProvider);
         $this->assertTrue($cacheProcessor->setMetaTables($metaTables));
@@ -119,13 +192,13 @@ class SimpleCacheProcessorTest extends AbstractCacheProcessorTest
         $cacheProvider = $this->createMock(CacheInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProvider->expects($this->once())
             ->method('delete')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProvider->expects($this->once())
             ->method('has')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $cacheProcessor = new SimpleCacheProcessor($cacheProvider);
         $this->assertTrue($cacheProcessor->setMetaTables($metaTables));
@@ -142,13 +215,13 @@ class SimpleCacheProcessorTest extends AbstractCacheProcessorTest
         $cacheProvider = $this->createMock(CacheInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProvider->expects($this->once())
             ->method('has')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProvider->expects($this->once())
             ->method('get')
-            ->will($this->returnValue($metaColumns));
+            ->willReturn($metaColumns);
 
         $cacheProcessor = new SimpleCacheProcessor($cacheProvider);
         $this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns));
@@ -165,13 +238,13 @@ class SimpleCacheProcessorTest extends AbstractCacheProcessorTest
         $cacheProvider = $this->createMock(CacheInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProvider->expects($this->once())
             ->method('delete')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProvider->expects($this->once())
             ->method('has')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $cacheProcessor = new SimpleCacheProcessor($cacheProvider);
         $this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns));

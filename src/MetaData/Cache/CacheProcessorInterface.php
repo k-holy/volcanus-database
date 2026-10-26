@@ -16,8 +16,8 @@ namespace Volcanus\Database\MetaData\Cache;
 interface CacheProcessorInterface
 {
 
-    const META_TABLES_ID = 'meta_tables';
-    const META_COLUMNS_ID = 'meta_columns[%s]';
+    const string META_TABLES_ID = 'meta_tables';
+    const string META_COLUMNS_ID = 'meta_columns[%s]';
 
     /**
      * テーブルオブジェクトの配列がキャッシュに存在するかどうかを返します。
@@ -40,7 +40,7 @@ interface CacheProcessorInterface
      * @param int|null $lifetime キャッシュの生存期間（秒） 0の場合は永続
      * @return bool 成功時はtrue、失敗時はfalse
      */
-    public function setMetaTables(array $tables, int $lifetime = null): bool;
+    public function setMetaTables(array $tables, ?int $lifetime = null): bool;
 
     /**
      * テーブルオブジェクトの配列をキャッシュから破棄します。
@@ -73,7 +73,7 @@ interface CacheProcessorInterface
      * @param int|null $lifetime キャッシュの生存期間（秒） 0の場合は永続
      * @return bool 成功時はtrue、失敗時はfalse
      */
-    public function setMetaColumns(string $table, array $columns, int $lifetime = null): bool;
+    public function setMetaColumns(string $table, array $columns, ?int $lifetime = null): bool;
 
     /**
      * 指定したテーブルのカラムオブジェクトの配列をキャッシュから破棄します。
