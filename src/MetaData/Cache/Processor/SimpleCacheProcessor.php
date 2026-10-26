@@ -68,7 +68,7 @@ class SimpleCacheProcessor implements CacheProcessorInterface
      * @return bool 成功時はtrue、失敗時はfalse
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function setMetaTables(array $tables, int $lifetime = null): bool
+    public function setMetaTables(array $tables, ?int $lifetime = null): bool
     {
         if ($lifetime === null) {
             return $this->cache->set(
@@ -130,7 +130,7 @@ class SimpleCacheProcessor implements CacheProcessorInterface
      * @return bool 成功時はtrue、失敗時はfalse
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function setMetaColumns(string $table, array $columns, int $lifetime = null): bool
+    public function setMetaColumns(string $table, array $columns, ?int $lifetime = null): bool
     {
         if ($lifetime === null) {
             return $this->cache->set(
