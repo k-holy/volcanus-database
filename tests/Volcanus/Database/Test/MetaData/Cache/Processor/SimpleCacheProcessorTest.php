@@ -96,13 +96,13 @@ class SimpleCacheProcessorTest extends AbstractCacheProcessorTest
         $cacheProvider = $this->createMock(CacheInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProvider->expects($this->once())
             ->method('has')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProvider->expects($this->once())
             ->method('get')
-            ->will($this->returnValue($metaTables));
+            ->willReturn($metaTables);
 
         $cacheProcessor = new SimpleCacheProcessor($cacheProvider);
         $this->assertTrue($cacheProcessor->setMetaTables($metaTables));
@@ -119,13 +119,13 @@ class SimpleCacheProcessorTest extends AbstractCacheProcessorTest
         $cacheProvider = $this->createMock(CacheInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProvider->expects($this->once())
             ->method('delete')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProvider->expects($this->once())
             ->method('has')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $cacheProcessor = new SimpleCacheProcessor($cacheProvider);
         $this->assertTrue($cacheProcessor->setMetaTables($metaTables));
@@ -142,13 +142,13 @@ class SimpleCacheProcessorTest extends AbstractCacheProcessorTest
         $cacheProvider = $this->createMock(CacheInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProvider->expects($this->once())
             ->method('has')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProvider->expects($this->once())
             ->method('get')
-            ->will($this->returnValue($metaColumns));
+            ->willReturn($metaColumns);
 
         $cacheProcessor = new SimpleCacheProcessor($cacheProvider);
         $this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns));
@@ -165,13 +165,13 @@ class SimpleCacheProcessorTest extends AbstractCacheProcessorTest
         $cacheProvider = $this->createMock(CacheInterface::class);
         $cacheProvider->expects($this->once())
             ->method('set')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProvider->expects($this->once())
             ->method('delete')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProvider->expects($this->once())
             ->method('has')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $cacheProcessor = new SimpleCacheProcessor($cacheProvider);
         $this->assertTrue($cacheProcessor->setMetaColumns('users', $metaColumns));

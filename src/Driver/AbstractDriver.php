@@ -46,7 +46,7 @@ abstract class AbstractDriver implements DriverInterface
      *
      * @param Dsn $dsn
      */
-    public function setDsn(Dsn $dsn)
+    public function setDsn(Dsn $dsn): void
     {
         $this->dsn = $dsn;
     }
@@ -56,7 +56,7 @@ abstract class AbstractDriver implements DriverInterface
      *
      * @param MetaDataProcessorInterface $metaDataProcessor
      */
-    public function setMetaDataProcessor(MetaDataProcessorInterface $metaDataProcessor)
+    public function setMetaDataProcessor(MetaDataProcessorInterface $metaDataProcessor): void
     {
         $this->metaDataProcessor = $metaDataProcessor;
     }
@@ -162,7 +162,7 @@ abstract class AbstractDriver implements DriverInterface
      *
      * @param string $char エスケープに使用する文字
      */
-    public function setEscapeCharacter(string $char)
+    public function setEscapeCharacter(string $char): void
     {
         $this->escapeCharacter = $char;
     }

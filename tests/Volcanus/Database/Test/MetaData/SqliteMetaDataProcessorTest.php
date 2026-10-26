@@ -24,6 +24,7 @@ class SqliteMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
 
     private static PdoDriver $driver;
 
+    /** @noinspection SqlResolve */
     private function getDriver(): PdoDriver
     {
         if (!isset(self::$driver)) {
@@ -75,10 +76,10 @@ SQL
         $cacheProcessorInterface = $this->createMock(CacheProcessorInterface::class);
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaTables')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProcessorInterface->expects($this->once())
             ->method('getMetaTables')
-            ->will($this->returnValue($metaTablesCache));
+            ->willReturn($metaTablesCache);
 
         $metaDataProcessor = new SqliteMetaDataProcessor($cacheProcessorInterface);
 
@@ -94,7 +95,7 @@ SQL
         $cacheProcessorInterface = $this->createMock(CacheProcessorInterface::class);
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaTables')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $cacheProcessorInterface->expects($this->once())
             ->method('setMetaTables')
             ->with($this->equalTo($metaTablesCache));
@@ -142,10 +143,10 @@ SQL
         $cacheProcessorInterface = $this->createMock(CacheProcessorInterface::class);
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaColumns')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProcessorInterface->expects($this->once())
             ->method('getMetaColumns')
-            ->will($this->returnValue($metaColumnsCache));
+            ->willReturn($metaColumnsCache);
 
         $metaDataProcessor = new SqliteMetaDataProcessor($cacheProcessorInterface);
 
@@ -161,7 +162,7 @@ SQL
         $cacheProcessorInterface = $this->createMock(CacheProcessorInterface::class);
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaColumns')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $cacheProcessorInterface->expects($this->once())
             ->method('setMetaColumns')
             ->with(

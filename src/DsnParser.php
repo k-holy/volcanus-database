@@ -26,7 +26,7 @@ class DsnParser
      *
      * @param string|null $dsn DSN文字列
      */
-    public function __construct(string $dsn = null)
+    public function __construct(?string $dsn = null)
     {
         $this->initialize($dsn);
     }
@@ -37,7 +37,7 @@ class DsnParser
      * @param string|null $dsn DSN文字列
      * @return self
      */
-    public function initialize(string $dsn = null): self
+    public function initialize(?string $dsn = null): self
     {
         $this->attributes = [
             'driver' => null,

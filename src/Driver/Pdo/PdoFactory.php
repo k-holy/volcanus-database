@@ -28,7 +28,7 @@ class PdoFactory
      * @param array $options 接続オプションの配列
      * @return \PDO
      */
-    public static function create(string $dsn, string $username = null, string $password = null, array $options = []): \PDO
+    public static function create(string $dsn, ?string $username = null, ?string $password = null, array $options = []): \PDO
     {
 
         if (!isset($options[\PDO::ATTR_ERRMODE])) {

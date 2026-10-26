@@ -54,7 +54,7 @@ class PdoStatementTestData
      *
      * @param array|null $properties プロパティの配列
      */
-    public function __construct(array $properties = null)
+    public function __construct(?array $properties = null)
     {
         if ($properties !== null) {
             foreach (array_keys(get_object_vars($this)) as $name) {
