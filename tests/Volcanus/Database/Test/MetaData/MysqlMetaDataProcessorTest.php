@@ -45,10 +45,10 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         $cacheProcessorInterface = $this->createMock(CacheProcessorInterface::class);
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaTables')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProcessorInterface->expects($this->once())
             ->method('getMetaTables')
-            ->will($this->returnValue($metaTablesCache));
+            ->willReturn($metaTablesCache);
 
         $metaDataProcessor = new MysqlMetaDataProcessor($cacheProcessorInterface);
 
@@ -65,7 +65,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         $cacheProcessorInterface = $this->createMock(CacheProcessorInterface::class);
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaTables')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $cacheProcessorInterface->expects($this->once())
             ->method('setMetaTables')
             ->with($this->equalTo($metaTablesCache));
@@ -113,10 +113,10 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         $cacheProcessorInterface = $this->createMock(CacheProcessorInterface::class);
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaColumns')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $cacheProcessorInterface->expects($this->once())
             ->method('getMetaColumns')
-            ->will($this->returnValue($metaColumnsCache));
+            ->willReturn($metaColumnsCache);
 
         $metaDataProcessor = new MysqlMetaDataProcessor($cacheProcessorInterface);
 
@@ -132,7 +132,7 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         $cacheProcessorInterface = $this->createMock(CacheProcessorInterface::class);
         $cacheProcessorInterface->expects($this->once())
             ->method('hasMetaColumns')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $cacheProcessorInterface->expects($this->once())
             ->method('setMetaColumns')
             ->with(
@@ -331,23 +331,23 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         $statementInterface = $this->createMock(StatementInterface::class);
         $statementInterface->expects($this->any())
             ->method('setFetchMode')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $statementInterface->expects($this->any())
             ->method('getIterator')
-            ->will($this->returnValue(
+            ->willReturn(
                 new \ArrayIterator(
                     [
                         [0 => 'users'],
                         [0 => 'messages'],
                     ]
                 )
-            ));
+            );
 
         /** @var $driverInterface DriverInterface|MockObject */
         $driverInterface = $this->createMock(DriverInterface::class);
         $driverInterface->expects($this->any())
             ->method('query')
-            ->will($this->returnValue($statementInterface));
+            ->willReturn($statementInterface);
 
         return $driverInterface;
     }
@@ -358,10 +358,10 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         $statementInterface = $this->createMock(StatementInterface::class);
         $statementInterface->expects($this->any())
             ->method('setFetchMode')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $statementInterface->expects($this->any())
             ->method('getIterator')
-            ->will($this->returnValue(
+            ->willReturn(
                 new \ArrayIterator(
                 /*
                 CREATE TABLE users(
@@ -454,13 +454,13 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
                         ],
                     ]
                 )
-            ));
+            );
 
         /** @var $driverInterface DriverInterface|MockObject */
         $driverInterface = $this->createMock(DriverInterface::class);
         $driverInterface->expects($this->any())
             ->method('query')
-            ->will($this->returnValue($statementInterface));
+            ->willReturn($statementInterface);
 
         return $driverInterface;
     }
@@ -471,10 +471,10 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
         $statementInterface = $this->createMock(StatementInterface::class);
         $statementInterface->expects($this->any())
             ->method('setFetchMode')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $statementInterface->expects($this->any())
             ->method('getIterator')
-            ->will($this->returnValue(
+            ->willReturn(
                 new \ArrayIterator(
                 /*
                 CREATE TABLE users(
@@ -567,91 +567,13 @@ class MysqlMetaDataProcessorTest extends \PHPUnit\Framework\TestCase
                         ],
                     ]
                 )
-            ));
+            );
 
         /** @var $driverInterface DriverInterface|MockObject */
         $driverInterface = $this->createMock(DriverInterface::class);
         $driverInterface->expects($this->any())
             ->method('query')
-            ->will($this->returnValue($statementInterface));
-
-        return $driverInterface;
-    }
-
-    private function getDriverForGetMetaColumnsOfMessages(): MockObject|DriverInterface
-    {
-        /** @var $statementInterface StatementInterface|MockObject */
-        $statementInterface = $this->createMock(StatementInterface::class);
-        $statementInterface->expects($this->any())
-            ->method('setFetchMode')
-            ->will($this->returnValue(true));
-        $statementInterface->expects($this->any())
-            ->method('getIterator')
-            ->will($this->returnValue(
-                new \ArrayIterator(
-                /*
-                CREATE TABLE messages(
-                     message_id  INTEGER UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY comment 'メッセージID'
-                    ,title       VARCHAR(255)                    NOT NULL             comment 'タイトル'
-                    ,description TEXT             BINARY                              comment 'メッセージ'
-                    ,posted_by   INTEGER UNSIGNED                NOT NULL             comment '投稿者'
-                    ,FOREIGN KEY(posted_by) REFERENCES users(user_id) ON DELETE CASCADE
-                ) comment 'メッセージ情報';
-                */
-                    [
-                        [
-                            'Field' => 'message_id',
-                            'Type' => 'int(10) unsigned',
-                            'Collation' => 'NULL',
-                            'Null' => 'NO',
-                            'Key' => 'PRI',
-                            'Default' => 'NULL',
-                            'Extra' => 'auto_increment',
-                            'Privileged' => 'select,insert,update,references',
-                            'Comment' => 'メッセージID',
-                        ],
-                        [
-                            'Field' => 'title',
-                            'Type' => 'varchar(255)',
-                            'Collation' => 'utf8_general_ci',
-                            'Null' => 'NO',
-                            'Key' => null,
-                            'Default' => 'NULL',
-                            'Extra' => null,
-                            'Privileged' => 'select,insert,update,references',
-                            'Comment' => 'タイトル',
-                        ],
-                        [
-                            'Field' => 'description',
-                            'Type' => 'text',
-                            'Collation' => 'utf8_bin',
-                            'Null' => 'YES',
-                            'Key' => null,
-                            'Default' => 'NULL',
-                            'Extra' => null,
-                            'Privileged' => 'select,insert,update,references',
-                            'Comment' => 'メッセージ',
-                        ],
-                        [
-                            'Field' => 'posted_by',
-                            'Type' => 'int(10) unsigned',
-                            'Collation' => null,
-                            'Null' => 'NO',
-                            'Key' => 'MUL',
-                            'Default' => 'NULL',
-                            'Extra' => null,
-                            'Privileged' => 'select,insert,update,references',
-                            'Comment' => '投稿者',
-                        ],
-                    ]
-                )
-            ));
-
-        /** @var $driverInterface DriverInterface|MockObject */
-        $driverInterface = $this->createMock(DriverInterface::class);
-        $driverInterface->expects($this->any())
-            ->method('query')
-            ->will($this->returnValue($statementInterface));
+            ->willReturn($statementInterface);
 
         return $driverInterface;
     }

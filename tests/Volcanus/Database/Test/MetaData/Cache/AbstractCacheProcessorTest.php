@@ -74,7 +74,7 @@ abstract class AbstractCacheProcessorTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    protected function clearDirectory()
+    protected function clearDirectory(): void
     {
         $it = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($this->cacheDir, \FilesystemIterator::SKIP_DOTS),

@@ -28,7 +28,7 @@ interface StatementInterface extends \IteratorAggregate
      *
      * @param iterable|null $parameters パラメータ
      */
-    public function execute(iterable $parameters = null);
+    public function execute(?iterable $parameters = null);
 
     /**
      * このステートメントのデフォルトのフェッチモードを設定します。
@@ -37,7 +37,7 @@ interface StatementInterface extends \IteratorAggregate
      * @param mixed|null $option フェッチモードのオプション引数
      * @param array|null $arguments Statement::FETCH_CLASS の場合のコンストラクタ引数
      */
-    public function setFetchMode(int $mode, mixed $option = null, array $arguments = null);
+    public function setFetchMode(int $mode, mixed $option = null, ?array $arguments = null);
 
     /**
      * 現在のデフォルトのフェッチモードを返します。

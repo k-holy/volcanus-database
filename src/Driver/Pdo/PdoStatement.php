@@ -52,7 +52,7 @@ class PdoStatement implements StatementInterface
      *
      * @param callable $callback コールバック
      */
-    public function setFetchCallback(callable $callback)
+    public function setFetchCallback(callable $callback): void
     {
         $this->callback = $callback;
     }
@@ -63,7 +63,7 @@ class PdoStatement implements StatementInterface
      * @param iterable|null $parameters パラメータ
      * @return bool
      */
-    public function execute(iterable $parameters = null): bool
+    public function execute(?iterable $parameters = null): bool
     {
         if (isset($parameters)) {
             foreach ($parameters as $name => $value) {
@@ -80,7 +80,7 @@ class PdoStatement implements StatementInterface
         }
         try {
             return $this->statement->execute();
-        } catch (\PDOException $e) {
+        } catch (\PDOException) {
             ob_start();
             $this->statement->debugDumpParams();
             $debug = ob_get_contents();
@@ -99,7 +99,7 @@ class PdoStatement implements StatementInterface
      * @param array|null $arguments Statement::FETCH_CLASS の場合のコンストラクタ引数
      * @return $this
      */
-    public function setFetchMode(int $mode, mixed $option = null, array $arguments = null): PdoStatement
+    public function setFetchMode(int $mode, mixed $option = null, ?array $arguments = null): PdoStatement
     {
         $this->fetchMode = $mode;
         $fetchMode = $this->convertFetchMode($mode);
